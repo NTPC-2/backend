@@ -24,6 +24,7 @@ public class SecurityConfig {
         //메서드 참조 방식
         //http.csrf(AbstractHttpConfigurer::disable);
         //람다 활용 방식
+        //토큰 방식을 사용하면 csrf을 굳이 킬 필요가 없다.
         http.csrf((csrfConfig) -> csrfConfig.disable());
 
         //form 로그인 방식 disable
