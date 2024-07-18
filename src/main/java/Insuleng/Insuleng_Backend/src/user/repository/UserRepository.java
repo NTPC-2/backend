@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 //@Repository 어노테이션이 없어도 JpaRepository를 상속했기 때문에 자동으로 IoC된다.
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-
+    Boolean existsUserEntitiesByEmail(String email);
+    Boolean existsUserEntitiesByNickname(String nickname);
 }

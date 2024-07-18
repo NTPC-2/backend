@@ -1,6 +1,7 @@
 package Insuleng.Insuleng_Backend.src.user.entity;
 
 import Insuleng.Insuleng_Backend.config.BaseEntity;
+import Insuleng.Insuleng_Backend.src.user.dto.SignUpDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,7 @@ public class UserEntity extends BaseEntity {
     private String email;
 
     //비밀번호 글자 수 제한
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
@@ -48,5 +49,21 @@ public class UserEntity extends BaseEntity {
     //user 권한 ROLE_ADMIN, ROLE_USER로 구분
     @Column
     private String role;
+
+    //Oauth2 구현 시 기능 넣기
+//    @Column
+//    private Integer loginType;
+
+    //일반 user 회원가입
+    public UserEntity(SignUpDto signUpDto, String encodePwd){
+        this.email = signUpDto.getEmail();
+        this.username = signUpDto.getUsername();
+        this.nickname = signUpDto.getNickname();
+        this.phoneNumber = signUpDto.getPhoneNumber();
+        this.gender = signUpDto.getGender();
+        this.age = signUpDto.getAge();
+        this.role = "ROLE_USER";
+        this.password = encodePwd;
+    }
 
 }

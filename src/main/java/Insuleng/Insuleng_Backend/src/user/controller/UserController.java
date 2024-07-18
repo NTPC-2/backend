@@ -1,7 +1,6 @@
 package Insuleng.Insuleng_Backend.src.user.controller;
 
-import Insuleng.Insuleng_Backend.src.user.service.UserService;
-import lombok.Getter;
+import Insuleng.Insuleng_Backend.src.user.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    private final AuthService authService;
 
     @GetMapping("/hello")
     public String hello(){
