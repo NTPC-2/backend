@@ -32,11 +32,14 @@ public class UserEntity extends BaseEntity {
     private String nickname;
 
     @Column(nullable = false, length = 11)
-    private int phoneNumber;
+    private Integer phoneNumber;
 
     //enum 처리
     @Column(nullable = false)
-    private char gender;
+    private Character gender;
+
+    @Column(nullable = false)
+    private Integer age;
 
     //프로필 이미지
     @Column(length = 255)
