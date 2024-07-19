@@ -1,6 +1,7 @@
 package Insuleng.Insuleng_Backend.config;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class BaseEntity {
     @Column(name = "update_at", nullable = false)
     private LocalDateTime updateAt;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private Status status = Status.ACTIVE;
 }

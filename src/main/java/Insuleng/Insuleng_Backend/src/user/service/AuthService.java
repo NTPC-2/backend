@@ -1,5 +1,6 @@
 package Insuleng.Insuleng_Backend.src.user.service;
 
+import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.user.dto.SignUpDto;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
@@ -15,12 +16,12 @@ public class AuthService {
 
     public void signUp(SignUpDto signUpDto) {
         //이메일 중복검사
-        if(userRepository.existsUserEntitiesByEmail(signUpDto.getEmail()) == true){
+        if(userRepository.existsUserEntitiesByEmailAndStatus(signUpDto.getEmail(), Status.ACTIVE) == true){
             System.out.println("중복된 이메일 입니다");
             return;
         }
         //닉네임 중복검사
-        if(userRepository.existsUserEntitiesByNickname(signUpDto.getNickname()) == true){
+        if(userRepository.existsUserEntitiesByNicknameAndStatus(signUpDto.getNickname(), Status.ACTIVE) == true){
             System.out.println("중복된 닉네입입니다");
             return;
         }

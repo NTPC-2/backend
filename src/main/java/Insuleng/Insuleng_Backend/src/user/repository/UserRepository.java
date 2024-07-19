@@ -1,5 +1,6 @@
 package Insuleng.Insuleng_Backend.src.user.repository;
 
+import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -8,6 +9,6 @@ import org.springframework.stereotype.Repository;
 //@Repository 어노테이션이 없어도 JpaRepository를 상속했기 때문에 자동으로 IoC된다.
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    Boolean existsUserEntitiesByEmail(String email);
-    Boolean existsUserEntitiesByNickname(String nickname);
+    Boolean existsUserEntitiesByEmailAndStatus(String email, Status status);
+    Boolean existsUserEntitiesByNicknameAndStatus(String nickname, Status status);
 }
