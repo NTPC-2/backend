@@ -18,10 +18,6 @@ public class SignUpDto {
     @Size
     private String password;
 
-    @NotBlank(message = "이름을 입력해주세요")
-    @Size
-    private String username;
-
     @NotBlank(message = "닉네임을 입력해주세요")
     @Size
     private String nickname;

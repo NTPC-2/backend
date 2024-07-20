@@ -21,3 +21,7 @@ spring:
     show-sql: 'true'
     hibernate:
       ddl-auto: update
+
+  jwt:
+    secret: wodkfknlepsldnfknklllkkkklwidnfkelw2q9d1vsdghsnsd
+    issuer: yahang2008@gmail.com

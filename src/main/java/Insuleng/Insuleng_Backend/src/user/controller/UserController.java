@@ -1,6 +1,7 @@
 package Insuleng.Insuleng_Backend.src.user.controller;
 
 import Insuleng.Insuleng_Backend.src.user.service.AuthService;
+import Insuleng.Insuleng_Backend.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,7 @@ public class UserController {
     }
     @GetMapping("/user")
     public String user(){
-        return "user 페이지 입니다";
+        return SecurityUtil.getCurrentUserId() + " : " + SecurityUtil.getCurrentUserRole() + "입니다.";
     }
     @GetMapping("/admin")
     public String admin(){

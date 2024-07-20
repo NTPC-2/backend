@@ -26,9 +26,6 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String username;
-
     @Column(nullable = false, length = 10)
     private String nickname;
 
@@ -57,13 +54,19 @@ public class UserEntity extends BaseEntity {
     //일반 user 회원가입
     public UserEntity(SignUpDto signUpDto, String encodePwd){
         this.email = signUpDto.getEmail();
-        this.username = signUpDto.getUsername();
         this.nickname = signUpDto.getNickname();
         this.phoneNumber = signUpDto.getPhoneNumber();
         this.gender = signUpDto.getGender();
         this.age = signUpDto.getAge();
         this.role = "ROLE_USER";
         this.password = encodePwd;
+    }
+
+    //토큰 생성 시 임의의 usetEntity를 만들기 위한 메서드
+    public void setEmailAndPwdAndRole(String email, String randomPwd ,String role){
+        this.email = email;
+        this.password = randomPwd;
+        this.role = role;
     }
 
 }
