@@ -12,6 +12,7 @@ public class UserController {
 
     private final AuthService authService;
 
+    // hello, user, admin Controller는 로그인 관련 작동 테스트를 위해 만든 메서드
     @GetMapping("/hello")
     public String hello(){
         return "안녕하세요";
