@@ -1,5 +1,7 @@
 package Insuleng.Insuleng_Backend.src.user.service;
 
+import Insuleng.Insuleng_Backend.config.BaseException;
+import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.user.dto.SignUpDto;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
@@ -14,18 +16,20 @@ public class AuthService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void signUp(SignUpDto signUpDto) {
+    public void signUp(SignUpDto signUpDto) throws BaseException {
         //이메일 중복검사
         if(userRepository.existsUserEntitiesByEmailAndStatus(signUpDto.getEmail(), Status.ACTIVE) == true){
             System.out.println("중복된 이메일 입니다");
-            return;
+            throw new BaseException(BaseResponseStatus.DUPLICATED_EMAIL);
+
         }
         //닉네임 중복검사
         if(userRepository.existsUserEntitiesByNicknameAndStatus(signUpDto.getNickname(), Status.ACTIVE) == true){
             System.out.println("중복된 닉네입입니다");
-            return;
+            throw new BaseException(BaseResponseStatus.DUPLICATED_NICKNAME);
         }
 
+        //비밀번호 암호화
         String encodePwd = bCryptPasswordEncoder.encode(signUpDto.getPassword());
         UserEntity newUser = new UserEntity(signUpDto, encodePwd);
 
