@@ -13,7 +13,7 @@ public enum BaseResponseStatus {
 
     //common
     INVALID_INPUT(false, 2000, "입력한 값이 잘못됐습니다"),
-
+    USER_NO_EXIST(false, 2005, "존재하지 않은 유저입니다"),
 
 
     //회원가입
