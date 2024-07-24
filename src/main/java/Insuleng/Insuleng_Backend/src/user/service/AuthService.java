@@ -35,4 +35,24 @@ public class AuthService {
 
         userRepository.save(newUser);
     }
+
+    public void checkEmailDuplicate(String email) {
+
+        Boolean bool = userRepository.existsUserEntitiesByEmailAndStatus(email, Status.ACTIVE);
+
+        if(bool == true){
+            throw new BaseException(BaseResponseStatus.DUPLICATED_EMAIL);
+        }
+
+    }
+
+    public void checkNicknameDuplicate(String nickname) {
+
+        Boolean bool = userRepository.existsUserEntitiesByNicknameAndStatus(nickname, Status.ACTIVE);
+
+        if(bool == true){
+            throw new BaseException(BaseResponseStatus.DUPLICATED_NICKNAME);
+        }
+
+    }
 }

@@ -1,15 +1,12 @@
 package Insuleng.Insuleng_Backend.src.user.controller;
 
-
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.src.user.dto.SignUpDto;
 import Insuleng.Insuleng_Backend.src.user.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +20,29 @@ public class AuthController {
             authService.signUp(signUpDto);
 
             return new BaseResponse<>("회원가입 성공!");
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @GetMapping("/test-email/{user_email}")
+    public BaseResponse<String> checkEmailDuplicate(@PathVariable("user_email") String email){
+        try{
+            authService.checkEmailDuplicate(email);
+
+            return new BaseResponse<>("이메일 사용 가능");
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @GetMapping("test-nickname/{user_nickname}")
+    public BaseResponse<String> checkNicknameDuplicate(@PathVariable("user_nickname") String nickname){
+        try{
+            authService.checkNicknameDuplicate(nickname);
+
+            return new BaseResponse<>("닉네임 사용 가능");
+
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
