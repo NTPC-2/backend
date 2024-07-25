@@ -15,11 +15,11 @@ public class SignUpDto {
     private String email;
 
     @NotBlank(message = "비밀번호를 입력해주세요")
-    @Size
+    @Size(min = 4, max = 12)
     private String password;
 
     @NotBlank(message = "닉네임을 입력해주세요")
-    @Size
+    @Size(min = 2, max = 6)
     private String nickname;
 
     //NotBlank는 String 타입에만 사용 가능

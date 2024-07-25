@@ -2,6 +2,8 @@ package Insuleng.Insuleng_Backend.src.user.controller;
 
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
+import Insuleng.Insuleng_Backend.src.user.dto.EmailDto;
+import Insuleng.Insuleng_Backend.src.user.dto.FindEmailDto;
 import Insuleng.Insuleng_Backend.src.user.dto.SignUpDto;
 import Insuleng.Insuleng_Backend.src.user.service.AuthService;
 import jakarta.validation.Valid;
@@ -46,6 +48,18 @@ public class AuthController {
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
+    }
+
+    @PostMapping("recovery/email")
+    public BaseResponse<EmailDto> findEmail(@RequestBody @Valid FindEmailDto findEmailDto){
+        try{
+            EmailDto emailDto = authService.findEmail(findEmailDto);
+
+            return new BaseResponse<>(emailDto);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
 
     }
 

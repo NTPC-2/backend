@@ -3,6 +3,8 @@ package Insuleng.Insuleng_Backend.src.user.service;
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
+import Insuleng.Insuleng_Backend.src.user.dto.EmailDto;
+import Insuleng.Insuleng_Backend.src.user.dto.FindEmailDto;
 import Insuleng.Insuleng_Backend.src.user.dto.SignUpDto;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
@@ -53,6 +55,19 @@ public class AuthService {
         if(bool == true){
             throw new BaseException(BaseResponseStatus.DUPLICATED_NICKNAME);
         }
+
+    }
+
+    public EmailDto findEmail(FindEmailDto findEmailDto) {
+
+        String nickname = findEmailDto.getNickname();
+        int phoneNumber = findEmailDto.getPhoneNumber();
+
+        UserEntity userEntity = userRepository.findUserEntityByNicknameAndPhoneNumberAndStatus(
+                nickname, phoneNumber, Status.ACTIVE).
+                orElseThrow(() -> new BaseException(BaseResponseStatus.EMAIL_NO_EXIST));
+
+        return new EmailDto(userEntity.getEmail());
 
     }
 }
