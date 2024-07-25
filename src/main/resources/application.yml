@@ -10,9 +10,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: javauser
+    username: root
     url: jdbc:mysql://127.0.0.1:3306/insuleng?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
-    password: glory510
+    password: password
 
   jpa:
     properties:

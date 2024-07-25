@@ -26,11 +26,15 @@ public enum BaseResponseStatus {
 
 
     DUPLICATED_EMAIL(false, 3100, "이미 존재하는 이메일입니다"),
-    DUPLICATED_NICKNAME(false, 3105, "이미 존재하는 닉네임입니다");
+    DUPLICATED_NICKNAME(false, 3105, "이미 존재하는 닉네임입니다"),
 
+    USER_EMPTY(false, 4001, "유저가 존재하지 않습니다");
 
     private final boolean isSuccess;
     private final int code;
     private final String message;
+
+
+
 
 }
