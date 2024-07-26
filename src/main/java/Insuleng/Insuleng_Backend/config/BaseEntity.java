@@ -13,12 +13,13 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @Getter
 public class BaseEntity {
+
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false, nullable = false)
+    @Column(name = "created_at", updatable = false, columnDefinition = "timestamp default CURRENT_TIMESTAMP not null")
     private LocalDateTime createAt;
 
     @UpdateTimestamp
-    @Column(name = "update_at", nullable = false)
+    @Column(name = "updated_at", columnDefinition = "timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP")
     private LocalDateTime updateAt;
 
     @Enumerated(EnumType.STRING)
