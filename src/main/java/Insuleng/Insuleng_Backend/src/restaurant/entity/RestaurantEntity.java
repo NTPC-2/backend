@@ -18,7 +18,30 @@ public class RestaurantEntity extends BaseEntity {
     @Column(name = "restaurant_id")
     private Long restaurantId;
 
+    @Column(nullable = false, length = 50)
+    private String name;
 
+    @Column
+    private int phoneNumber;
+
+    @Column(length = 500)
+    private String details;
+
+    @Column
+    private String address;
+
+    @Column(nullable = false)
+    private int countHeart;
+
+    @Column(nullable = false)
+    private int countReview;
+
+    @Column(nullable = false)
+    private int sumStar;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private CategoryEntity categoryEntity;
 
 
 
