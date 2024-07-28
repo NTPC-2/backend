@@ -10,10 +10,12 @@ import java.util.Iterator;
 
 public class SecurityUtil {
 
-    public static Long getCurrentUserId(){
+    public static Long getCurrentUserId(){ //userId 가져오기
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        System.out.println(customUserDetails.getUserId().getClass().getName());
         return customUserDetails.getUserId();
     }
 

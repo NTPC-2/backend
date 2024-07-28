@@ -24,15 +24,16 @@ public enum BaseResponseStatus {
     USER_GENDER_EMPTY(false, 3004, "성별을 선택해주세요"),
     USER_AGE_EMPTY(false, 3005, "나이를 입력해주세요"),
 
-    //회원가입 시 중복확인
+
     DUPLICATED_EMAIL(false, 3100, "이미 존재하는 이메일입니다"),
     DUPLICATED_NICKNAME(false, 3105, "이미 존재하는 닉네임입니다"),
 
     //아이디 찾기
     EMAIL_NO_EXIST(false, 3200, "존재하지 않은 이메일입니다."),
     //비밀번호 찾기(임시 비밀번호 발급)
-    FAIL_EMAIL_SEND(false, 3205, "메일로 임시 비밀번호를 보내는데 실패했습니다");
+    FAIL_EMAIL_SEND(false, 3205, "메일로 임시 비밀번호를 보내는데 실패했습니다"),
 
+    POST_EMPTY(false, 4002, "게시글이 존재하지 않습니다");
 
     private final boolean isSuccess;
     private final int code;
