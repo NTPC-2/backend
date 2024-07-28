@@ -14,6 +14,8 @@ public class SecurityUtil {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        System.out.println(customUserDetails.getUserId().getClass().getName());
         return customUserDetails.getUserId();
     }
 

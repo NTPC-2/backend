@@ -51,4 +51,19 @@ public class CommunityRepository {
             return true;
         }
     }
+
+    public void deletePost(Long postId){
+        String sql = "DELETE FROM post WHERE post_id = ?";
+        jdbcTemplate.update(sql, postId);
+    }
+    public boolean findPostById(Long postId){
+        String sql = "SELECT COUNT(*) FROM post WHERE post_id = ?";
+        int rowCount = jdbcTemplate.queryForObject(sql, Integer.class, postId);
+        if(rowCount == 0){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 }
