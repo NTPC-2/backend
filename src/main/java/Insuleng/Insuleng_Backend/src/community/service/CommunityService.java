@@ -21,7 +21,7 @@ public class CommunityService {
         //실제 존재하는 유저인지 검사
         boolean userExist = communityRepository.testUserId(userId);
         if(userExist == false){
-            throw new BaseException(BaseResponseStatus.USER_EMPTY);
+            throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
         }
         else {
             //게시글 작성
@@ -33,7 +33,7 @@ public class CommunityService {
         //실제 존재하는 유저인지 검사
         boolean userExist = communityRepository.testUserId(userId);
         if(userExist == false){
-            throw new BaseException(BaseResponseStatus.USER_EMPTY);
+            throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
         }
         //게시글이 존재하는지 검사
         boolean postExist = communityRepository.findPostById(postId);

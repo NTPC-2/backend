@@ -4,7 +4,6 @@ import Insuleng.Insuleng_Backend.jwt.JWTFilter;
 import Insuleng.Insuleng_Backend.jwt.JWTUtil;
 import Insuleng.Insuleng_Backend.jwt.LoginFilter;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import java.util.Collection;
 import java.util.Collections;
 
 @Configuration
@@ -60,7 +58,7 @@ public class SecurityConfig {
 
                                 CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-                                corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                                corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:5137"));
                                 corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
                                 corsConfiguration.setAllowCredentials(true);
                                 corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));

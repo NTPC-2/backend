@@ -16,16 +16,18 @@ public class BaseResponse<T> {
     private T data;
     private boolean isSuccess;
     private String message;
-
+    int code;
 
     public BaseResponse(T data){
         this.data = data;
+        this.code = BaseResponseStatus.Success.getCode();
         this.isSuccess = BaseResponseStatus.Success.isSuccess();
         this.message = BaseResponseStatus.Success.getMessage();
     }
 
     public BaseResponse(BaseResponseStatus status){
         this.data = null;
+        this.code = status.getCode();
         this.isSuccess = status.isSuccess();
         this.message = status.getMessage();
 

@@ -5,6 +5,10 @@ import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.src.user.dto.*;
 import Insuleng.Insuleng_Backend.src.user.service.AuthService;
 import Insuleng.Insuleng_Backend.src.user.service.EmailService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +22,12 @@ public class AuthController {
 
     //회원가입
     @PostMapping("/signup")
+    @Operation(summary = "회원가입 api", description = "회원가입을 진행합니다.", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "3010", description = "이미 존재하는 이메일 입니다"),
+            @ApiResponse(responseCode = "3011", description = "이미 존재하는 닉네임 입니다")
+    })
     public BaseResponse<String> signUp(@RequestBody @Valid SignUpDto signUpDto){
         try{
             authService.signUp(signUpDto);
@@ -27,9 +37,16 @@ public class AuthController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
     //이메일 중복검사
-    @GetMapping("/test-email/{user_email}")
-    public BaseResponse<String> checkEmailDuplicate(@PathVariable("user_email") String email){
+    @GetMapping("test/email/{user_email}")
+    @Operation(summary = "이메일 중복검사 api", description = "기존에 존재하는 이메일이 있는지 검사합니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "3010", description = "이미 존재하는 이메일입니다")
+    })
+    public BaseResponse<String> checkEmailDuplicate(@Parameter(name = "user_email", description = "user의 email", in = ParameterIn.PATH)
+            @PathVariable("user_email") String email){
         try{
             authService.checkEmailDuplicate(email);
 
@@ -40,8 +57,14 @@ public class AuthController {
     }
 
     //닉네임 중복검사
-    @GetMapping("test-nickname/{user_nickname}")
-    public BaseResponse<String> checkNicknameDuplicate(@PathVariable("user_nickname") String nickname){
+    @GetMapping("test/nickname/{user_nickname}")
+    @Operation(summary = "닉네임 중복검사 api", description = "기존에 존재하는 닉네임이 있는지 검사합니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "3011", description = "이미 존재하는 닉네임입니다")
+    })
+    public BaseResponse<String> checkNicknameDuplicate(@Parameter(name = "user_nickname", description = "user의 nickname", in = ParameterIn.PATH)
+            @PathVariable("user_nickname") String nickname){
         try{
             authService.checkNicknameDuplicate(nickname);
 
@@ -54,6 +77,11 @@ public class AuthController {
 
     //이메일 찾기
     @PostMapping("recovery/email")
+    @Operation(summary = "이메일 찾기 api", description = "닉네임과 전화번호로 이메일을 찾습니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "3200", description = "존재하지 않은 이메일입니다")
+    })
     public BaseResponse<EmailDto> findEmail(@RequestBody @Valid FindEmailDto findEmailDto){
         try{
             EmailDto emailDto = authService.findEmail(findEmailDto);
@@ -66,6 +94,11 @@ public class AuthController {
 
     //임시 비밀번호 발급
     @PostMapping("recovery/password")
+    @Operation(summary = "임시 비밀번호 발급 api", description = "해당 이메일로 임시 비밀번호를 발급합니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다")
+    })
     public BaseResponse<String> setTemporalPwd(@RequestBody @Valid EmailPostDto emailPostDto){
         try{
             EmailMessage emailMessage = EmailMessage.builder()

@@ -15,7 +15,6 @@ public class SecurityUtil {
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        System.out.println(customUserDetails.getUserId().getClass().getName());
         return customUserDetails.getUserId();
     }
 
