@@ -23,7 +23,7 @@ public class EmailService {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
 
-    private final UserService userService;
+    private final AuthService authService;
 
     public String sendMail(EmailMessage emailMessage){
         String temporalPwd = createCode();
@@ -42,7 +42,7 @@ public class EmailService {
             log.info("send Fail..  " + e.getMessage());
             throw new BaseException(BaseResponseStatus.FAIL_EMAIL_SEND);
         }
-        userService.setTemporalPwd(emailMessage.getTo(), temporalPwd);
+        authService.setTemporalPwd(emailMessage.getTo(), temporalPwd);
         return temporalPwd;
     }
 
@@ -56,7 +56,7 @@ public class EmailService {
 
         javaMailSender.send(message);
 
-        userService.setTemporalPwd(emailMessage.getTo(), temporalPwd);
+        authService.setTemporalPwd(emailMessage.getTo(), temporalPwd);
         return temporalPwd;
     }
 

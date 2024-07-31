@@ -45,7 +45,7 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "3010", description = "이미 존재하는 이메일입니다")
     })
-    public BaseResponse<String> checkEmailDuplicate(@Parameter(name = "user_email", description = "user의 email", in = ParameterIn.PATH)
+    public BaseResponse<String> checkEmailDuplicate(@Parameter(name = "user_email", description = "유저의 email", in = ParameterIn.PATH)
             @PathVariable("user_email") String email){
         try{
             authService.checkEmailDuplicate(email);

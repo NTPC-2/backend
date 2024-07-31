@@ -75,6 +75,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/user/**").authenticated()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/mypages/**").authenticated()
                 .anyRequest().permitAll());
 
         // 세션을 안 쓰는 stateless 만들기
