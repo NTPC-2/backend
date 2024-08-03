@@ -39,6 +39,12 @@ public class RestaurantEntity extends BaseEntity {
     @Column(nullable = false)
     private int sumStar;
 
+    @Column(nullable = false)
+    private int countBookmark;
+
+    @Column
+    private String mainImg;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private CategoryEntity categoryEntity;

@@ -12,7 +12,7 @@ import org.hibernate.annotations.DynamicInsert;
 @Table(name = "heart")
 @NoArgsConstructor
 @DynamicInsert
-public class HeartEmtity extends BaseEntity {
+public class HeartEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
