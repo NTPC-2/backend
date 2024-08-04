@@ -11,14 +11,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RestaurantSummaryDto {
+public class RestaurantListDto {
 
-    private String restaurantName;
-    private String mainImg;
-    private int countHeart;
-    private int countBookmark;
-    private int countReview;
-    private List<String> mainMenuList;
-
-
+    private int countRestaurant;
+    private List<RestaurantSummaryDto> restaurantSummaryDtoList;
 }
