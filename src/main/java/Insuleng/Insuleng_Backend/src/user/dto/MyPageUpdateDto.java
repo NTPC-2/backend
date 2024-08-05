@@ -4,20 +4,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
-@Schema(description = "내 정보 Dto")
+@Schema(description = "내 정보 수정 Dto")
 @Builder
-public class MyPageInfoDto {
-
-    @Schema(description = "이메일", nullable = false, example = "cos123@naver.com")
-    @NotBlank
-    @Size
-    private String email;
+@AllArgsConstructor
+@NoArgsConstructor
+public class MyPageUpdateDto {
 
     @Schema(description = "닉네임", nullable = false, example = "눈사람")
     @NotBlank
@@ -40,6 +35,5 @@ public class MyPageInfoDto {
 
     @Schema(description = "프로필 이미지", nullable = true)
     private String profileImg;
-
 
 }

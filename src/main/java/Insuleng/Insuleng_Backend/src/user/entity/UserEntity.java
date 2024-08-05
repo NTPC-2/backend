@@ -1,6 +1,7 @@
 package Insuleng.Insuleng_Backend.src.user.entity;
 
 import Insuleng.Insuleng_Backend.config.BaseEntity;
+import Insuleng.Insuleng_Backend.src.user.dto.MyPageUpdateDto;
 import Insuleng.Insuleng_Backend.src.user.dto.SignUpDto;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -72,6 +73,14 @@ public class UserEntity extends BaseEntity {
     //비밀번호 변경을 위한 메서드
     public void setPassword(String password){
         this.password = password;
+    }
+
+    public void updateMyPage(MyPageUpdateDto myPageUpdateDto){
+        this.nickname = myPageUpdateDto.getNickname();
+        this.phoneNumber = myPageUpdateDto.getPhoneNumber();
+        this.age = myPageUpdateDto.getAge();
+        this.gender = myPageUpdateDto.getGender();
+        this.profileImg = myPageUpdateDto.getProfileImg();
     }
 
 }

@@ -4,6 +4,7 @@ import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.src.user.dto.MyPageDto;
 import Insuleng.Insuleng_Backend.src.user.dto.MyPageInfoDto;
+import Insuleng.Insuleng_Backend.src.user.dto.MyPageUpdateDto;
 import Insuleng.Insuleng_Backend.src.user.service.AuthService;
 import Insuleng.Insuleng_Backend.src.user.service.UserService;
 import Insuleng.Insuleng_Backend.utils.SecurityUtil;
@@ -11,11 +12,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -63,4 +62,22 @@ public class UserController {
         }
     }
 
+    @PutMapping("profiles/update")
+    @Operation(summary = "정보를 실제로 수정하는 api", description = "MyPageUpdateDto(닉네임, 전화번호, 성별, 나이, 프로필 사진)에 담긴 내용으로 내 정보를 수정", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "3011", description = "이미 존재하는 닉네임입니다")
+    })
+    public BaseResponse<String> updateMyPageInfo(@RequestBody @Valid MyPageUpdateDto myPageUpdateDto){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            userService.updateMyPageInfo(userId, myPageUpdateDto);
+
+            return new BaseResponse<>("내 정보를 수정했습니다");
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
 }

@@ -5,11 +5,11 @@ import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.user.dto.MyPageDto;
 import Insuleng.Insuleng_Backend.src.user.dto.MyPageInfoDto;
+import Insuleng.Insuleng_Backend.src.user.dto.MyPageUpdateDto;
 import Insuleng.Insuleng_Backend.src.user.dto.UserStatics;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,4 +51,16 @@ public class UserService {
 
     }
 
+    public void updateMyPageInfo(Long userId, MyPageUpdateDto myPageUpdateDto) {
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        if(userRepository.existsUserEntitiesByNicknameAndStatus(myPageUpdateDto.getNickname(), Status.ACTIVE) == true){
+            System.out.println("중복된 닉네임입니다");
+            throw new BaseException(BaseResponseStatus.DUPLICATED_NICKNAME);
+        }
+
+        user.updateMyPage(myPageUpdateDto);
+        userRepository.save(user);
+    }
 }
