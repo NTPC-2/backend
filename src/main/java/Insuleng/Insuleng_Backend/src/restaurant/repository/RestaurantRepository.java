@@ -8,9 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface RestaurantRepository extends JpaRepository<RestaurantEntity, Long> {
+
+    Optional<RestaurantEntity> findRestaurantEntityByRestaurantIdAndStatus(Long restaurantId, Status status);
 
     @Query("select count(r) from RestaurantEntity as r inner join r.categoryEntity c where c.categoryId = :categoryId")
     Integer countRestaurant(@Param("categoryId")Long categoryId);

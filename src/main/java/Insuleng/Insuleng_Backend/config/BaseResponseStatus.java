@@ -14,6 +14,7 @@ public enum BaseResponseStatus {
     //common
     INVALID_INPUT(false, 2000, "입력한 값이 잘못됐습니다"),
     USER_NO_EXIST(false, 2005, "존재하지 않은 유저입니다"),
+    RESTAURANT_NO_EXIST(false, 2006, "존재하지 않은 음식점입니다"),
     INVALID_PARAMETER(false, 2010, "URl의 parameter 값이 잘못되었습니다"),
 
     //회원가입
@@ -33,7 +34,8 @@ public enum BaseResponseStatus {
     //비밀번호 찾기(임시 비밀번호 발급)
     FAIL_EMAIL_SEND(false, 3205, "메일로 임시 비밀번호를 보내는데 실패했습니다"),
 
-
+    //음식점 좋아요
+    ALREADY_RESTAURANT_HEART(false, 3600, "이미 음식점 좋아요가 되어있습니다"),
 
     POST_EMPTY(false, 4002, "게시글이 존재하지 않습니다");
 

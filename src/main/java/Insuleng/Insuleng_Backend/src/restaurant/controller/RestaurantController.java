@@ -5,12 +5,11 @@ import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantListDto;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryDto;
 import Insuleng.Insuleng_Backend.src.restaurant.service.RestaurantService;
+import Insuleng.Insuleng_Backend.utils.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,6 +31,20 @@ public class RestaurantController {
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
+    }
+
+
+    @PostMapping("restaurant/addheart/{restaurant_id}")
+    public BaseResponse<String> addRestaurantHeart(@PathVariable("restaurant_id") Long restaurantId){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            restaurantService.addRestaurantHeart(userId, restaurantId);
+
+            return new BaseResponse<>("좋아요를 눌렀습니다");
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
     }
 
 

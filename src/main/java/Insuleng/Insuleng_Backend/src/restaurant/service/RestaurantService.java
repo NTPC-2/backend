@@ -5,8 +5,12 @@ import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantListDto;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryDto;
+import Insuleng.Insuleng_Backend.src.restaurant.entity.HeartEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
+import Insuleng.Insuleng_Backend.src.restaurant.repository.HeartRepository;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.RestaurantRepository;
+import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
+import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
+    private final UserRepository userRepository;
+    private final HeartRepository heartRepository;
 
     public RestaurantListDto getRestaurantList(Long categoryId) {
         if(categoryId >7 || categoryId <0){
@@ -54,5 +60,38 @@ public class RestaurantService {
         restaurantListDto.setRestaurantSummaryDtoList(restaurantSummaryDtoList);
 
         return restaurantListDto;
+    }
+
+    public void addRestaurantHeart(Long userId, Long restaurantId) {
+
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        RestaurantEntity restaurant = restaurantRepository.findRestaurantEntityByRestaurantIdAndStatus(restaurantId, Status.ACTIVE)
+                .orElseThrow(()->new BaseException(BaseResponseStatus.RESTAURANT_NO_EXIST));
+
+        HeartEntity heart = heartRepository.findHeartEntityByUserEntityAndAndRestaurantEntity(user,restaurant)
+                .orElse(null);
+
+        if(heart == null){
+            //heart 테이블에 새로 하트 정보 추가
+            HeartEntity newHeart = new HeartEntity(user, restaurant);
+            heartRepository.save(newHeart);
+            //레스토랑 전체 하트 수 증가
+            restaurant.increaseCountHeart();
+            restaurantRepository.save(restaurant); //값을 업데이트 할 때도 save 사용
+        }else{
+            if(heart.getStatus() == Status.ACTIVE){
+                throw new BaseException(BaseResponseStatus.ALREADY_RESTAURANT_HEART);
+            }else if(heart.getStatus() == Status.INACTIVE){
+                //heart 테이블에 status를 active로 변경
+                heart.changeToActive();
+                heartRepository.save(heart);
+                //레스토랑 전체 하트 수 증가
+                restaurant.increaseCountHeart();
+                restaurantRepository.save(restaurant);
+            }
+        }
+
     }
 }

@@ -26,5 +26,12 @@ public class BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private Status status = Status.ACTIVE;
+    protected Status status = Status.ACTIVE;
+
+    public void changeToActive(){
+        this.status = Status.ACTIVE;
+    }
+    public void changeToInActive(){
+        this.status = Status.INACTIVE;
+    }
 }

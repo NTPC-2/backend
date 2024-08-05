@@ -1,6 +1,7 @@
 package Insuleng.Insuleng_Backend.src.restaurant.entity;
 
 import Insuleng.Insuleng_Backend.config.BaseEntity;
+import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -26,5 +27,15 @@ public class HeartEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurantEntity;
+
+    //처음 음식점 좋아요를 누를 때 실행
+    public HeartEntity(UserEntity userEntity, RestaurantEntity restaurantEntity){
+        this.userEntity = userEntity;
+        this.restaurantEntity = restaurantEntity;
+    }
+
+    //해제된 좋아요를 다시 설정하기
+    public void changeToActive(){
+    }
 
 }

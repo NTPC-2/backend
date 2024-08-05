@@ -49,9 +49,15 @@ public class RestaurantEntity extends BaseEntity {
     @JoinColumn(name = "category_id")
     private CategoryEntity categoryEntity;
 
+    //음식점 좋아요를 누르면 실행
+    public void increaseCountHeart(){
+        this.countHeart++;
+    }
 
-
-
+    //음식점 좋아요를 해제하면 실행
+    public void decreaseCountHeart(){
+        this.countHeart--;
+    }
 
 
 
