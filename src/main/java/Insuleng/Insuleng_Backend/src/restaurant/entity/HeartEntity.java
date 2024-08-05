@@ -34,8 +34,4 @@ public class HeartEntity extends BaseEntity {
         this.restaurantEntity = restaurantEntity;
     }
 
-    //해제된 좋아요를 다시 설정하기
-    public void changeToActive(){
-    }
-
 }

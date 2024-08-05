@@ -44,9 +44,19 @@ public class RestaurantController {
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
-
     }
 
+    @PatchMapping("restaurant/removeheart/{restaurant_id}")
+    public BaseResponse<String> removeRestaurantHeart(@PathVariable("restaurant_id") Long restaurantId){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            restaurantService.removeRestaurantHeart(userId, restaurantId);
+
+            return new BaseResponse<>("좋아요를 해제했습니다");
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
 
 }

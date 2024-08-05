@@ -94,4 +94,33 @@ public class RestaurantService {
         }
 
     }
+
+    public void removeRestaurantHeart(Long userId, Long restaurantId) {
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        RestaurantEntity restaurant = restaurantRepository.findRestaurantEntityByRestaurantIdAndStatus(restaurantId, Status.ACTIVE)
+                .orElseThrow(()->new BaseException(BaseResponseStatus.RESTAURANT_NO_EXIST));
+
+        HeartEntity heart = heartRepository.findHeartEntityByUserEntityAndAndRestaurantEntity(user,restaurant)
+                .orElse(null);
+
+        if(heart == null){
+            throw new BaseException(BaseResponseStatus.HEART_NO_EXIST);
+        }else{
+            if(heart.getStatus() == Status.ACTIVE){
+                //heart 테이블에 status를 inactive로 변경
+                heart.changeToInActive();
+                heartRepository.save(heart);
+
+                //레스토랑 전체 하트 수 감소
+                restaurant.decreaseCountHeart();
+                restaurantRepository.save(restaurant);
+
+            }else if(heart.getStatus() == Status.INACTIVE){
+                throw new BaseException(BaseResponseStatus.ALREADY_RESTAURANT_NO_HEART);
+            }
+        }
+
+    }
 }
