@@ -3,18 +3,35 @@ package Insuleng.Insuleng_Backend.src.user.service;
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
+import Insuleng.Insuleng_Backend.src.user.dto.MyPageDto;
 import Insuleng.Insuleng_Backend.src.user.dto.MyPageInfoDto;
+import Insuleng.Insuleng_Backend.src.user.dto.UserStatics;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+
+    public MyPageDto getMyPage(Long userId) {
+
+        UserEntity userEntity = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+
+        UserStatics userStatics = userRepository.findUserStatics(userId);
+        MyPageDto myPageDto = new MyPageDto(userStatics);
+
+        return myPageDto;
+
+    }
 
     public MyPageInfoDto getMyPageInfo(Long userId) {
 
@@ -33,4 +50,5 @@ public class UserService {
         return myPageInfoDto;
 
     }
+
 }
