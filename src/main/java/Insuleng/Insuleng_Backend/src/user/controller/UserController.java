@@ -2,6 +2,7 @@ package Insuleng.Insuleng_Backend.src.user.controller;
 
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
+import Insuleng.Insuleng_Backend.src.user.dto.MyBookmarkDto;
 import Insuleng.Insuleng_Backend.src.user.dto.MyPageDto;
 import Insuleng.Insuleng_Backend.src.user.dto.MyPageInfoDto;
 import Insuleng.Insuleng_Backend.src.user.dto.MyPageUpdateDto;
@@ -15,6 +16,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,7 +43,6 @@ public class UserController {
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
-
     }
 
 
@@ -80,4 +82,18 @@ public class UserController {
         }
 
     }
+
+    /*@GetMapping("profiles/bookmark")
+    public BaseResponse<List<MyBookmarkDto>> getMyBookmarks(){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            userService.getMyBookmarks
+
+        }
+
+
+
+    }*/
+
+
 }

@@ -35,6 +35,13 @@ public class RestaurantController {
 
 
     @PostMapping("restaurant/addheart/{restaurant_id}")
+    @Operation(summary = "음식점 좋아요 api", description = "해당 유저로 음식점 좋아요 설정합니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
+            @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
+            @ApiResponse(responseCode = "3600", description = "이미 음식점 좋아요가 되어있습니다"),
+    })
     public BaseResponse<String> addRestaurantHeart(@PathVariable("restaurant_id") Long restaurantId){
         try{
             Long userId = SecurityUtil.getCurrentUserId();
@@ -47,6 +54,14 @@ public class RestaurantController {
     }
 
     @PatchMapping("restaurant/removeheart/{restaurant_id}")
+    @Operation(summary = "음식점 좋아요 api", description = "해당 유저로 음식점 좋아요 설정합니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
+            @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
+            @ApiResponse(responseCode = "3601", description = "이미 음식점 좋아요가 해제되어있습니다"),
+            @ApiResponse(responseCode = "3610",description = "음식점 좋아요 정보가 없습니다")
+    })
     public BaseResponse<String> removeRestaurantHeart(@PathVariable("restaurant_id") Long restaurantId){
         try{
             Long userId = SecurityUtil.getCurrentUserId();
