@@ -3,15 +3,15 @@ package Insuleng.Insuleng_Backend.src.user.service;
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
-import Insuleng.Insuleng_Backend.src.user.dto.MyPageDto;
-import Insuleng.Insuleng_Backend.src.user.dto.MyPageInfoDto;
-import Insuleng.Insuleng_Backend.src.user.dto.MyPageUpdateDto;
-import Insuleng.Insuleng_Backend.src.user.dto.UserStatics;
+import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
+import Insuleng.Insuleng_Backend.src.restaurant.repository.RestaurantRepository;
+import Insuleng.Insuleng_Backend.src.user.dto.*;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,6 +19,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RestaurantRepository restaurantRepository;
 
     public MyPageDto getMyPage(Long userId) {
 
@@ -62,5 +63,28 @@ public class UserService {
 
         user.updateMyPage(myPageUpdateDto);
         userRepository.save(user);
+    }
+
+    public List<MyBookmarkDto> getMyBookmarks(Long userId) {
+
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        List<RestaurantEntity> restaurantEntityList = userRepository.findMyBookmarks(userId, Status.ACTIVE);
+        List<MyBookmarkDto> myBookmarkDtoList = new ArrayList<>();
+
+        for(int i =0; i<restaurantEntityList.size(); i++){
+            MyBookmarkDto myBookmarkDto = MyBookmarkDto.builder()
+                    .restaurantName(restaurantEntityList.get(i).getName())
+                    .mainImg(restaurantEntityList.get(i).getMainImg())
+                    .countHeart(restaurantEntityList.get(i).getCountHeart())
+                    .countBookmark(restaurantEntityList.get(i).getCountBookmark())
+                    .countReview(restaurantEntityList.get(i).getCountReview())
+                    .build();
+
+            myBookmarkDtoList.add(myBookmarkDto);
+        }
+        return myBookmarkDtoList;
+
     }
 }

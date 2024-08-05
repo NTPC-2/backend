@@ -16,6 +16,7 @@ public class SecurityUtil {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         return customUserDetails.getUserId();
+
     }
 
     public static String getCurrentUserRole(){

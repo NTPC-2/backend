@@ -23,6 +23,7 @@ public interface RestaurantRepository extends JpaRepository<RestaurantEntity, Lo
 
     List<RestaurantEntity> findByStatus(Status status);
 
+    //카테고리에 맞춰 해당 분류의 음식점 출력
     @Query("select distinct r from RestaurantEntity as r inner join r.categoryEntity c where c.categoryId = :categoryId")
     List<RestaurantEntity> findRestaurantByCategoryId(@Param("categoryId") Long categoryId);
 }

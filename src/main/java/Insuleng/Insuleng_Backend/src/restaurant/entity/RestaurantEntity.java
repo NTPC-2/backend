@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Table(name = "restaurant")
@@ -48,6 +51,16 @@ public class RestaurantEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private CategoryEntity categoryEntity;
+
+    @OneToMany(mappedBy = "restaurantEntity", cascade = CascadeType.ALL)
+    List<HeartEntity> heartEntityList;
+
+    @OneToMany(mappedBy = "restaurantEntity", cascade = CascadeType.ALL)
+    List<MenuEntity> menuEntityList;
+
+    @OneToMany(mappedBy = "restaurantEntity", cascade = CascadeType.ALL)
+    List<BookmarkEntity> bookmarkEntityList;
+
 
     //음식점 좋아요를 누르면 실행
     public void increaseCountHeart(){

@@ -83,17 +83,20 @@ public class UserController {
 
     }
 
-    /*@GetMapping("profiles/bookmark")
+    @GetMapping("profiles/bookmark")
     public BaseResponse<List<MyBookmarkDto>> getMyBookmarks(){
         try{
             Long userId = SecurityUtil.getCurrentUserId();
-            userService.getMyBookmarks
+            List<MyBookmarkDto> bookmarkDtoList = userService.getMyBookmarks(userId);
 
+            return new BaseResponse<>(bookmarkDtoList);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
         }
 
 
 
-    }*/
+    }
 
 
 }

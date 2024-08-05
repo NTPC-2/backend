@@ -1,6 +1,7 @@
 package Insuleng.Insuleng_Backend.src.user.repository;
 
 import Insuleng.Insuleng_Backend.config.Status;
+import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
 import Insuleng.Insuleng_Backend.src.user.dto.UserStatics;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,5 +32,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             + "(select count(s) from ScrapEntity s where s.userEntity.userId = :userId)) "
             + "FROM UserEntity u WHERE u.userId = :userId")
     public UserStatics findUserStatics(@Param("userId")Long userId);
+
+    @Query("select r from BookmarkEntity as b inner join b.restaurantEntity r where b.userEntity.userId = :userId and b.userEntity.status = :status")
+    List<RestaurantEntity> findMyBookmarks(@Param("userId")Long userId, @Param("status")Status status);
+
 
 }
