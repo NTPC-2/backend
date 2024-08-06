@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Schema(description = "내 정보 Dto")
 @Builder
-public class MyPageInfoDto {
+public class MyPageFormDto {
 
     @Schema(description = "이메일", nullable = false, example = "cos123@naver.com")
     @NotBlank

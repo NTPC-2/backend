@@ -2,10 +2,7 @@ package Insuleng.Insuleng_Backend.src.restaurant.controller;
 
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
-import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantListDto;
-import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryDto;
-import Insuleng.Insuleng_Backend.src.restaurant.dto.UpdateReviewDto;
-import Insuleng.Insuleng_Backend.src.restaurant.dto.WriteReviewDto;
+import Insuleng.Insuleng_Backend.src.restaurant.dto.*;
 import Insuleng.Insuleng_Backend.src.restaurant.service.RestaurantService;
 import Insuleng.Insuleng_Backend.utils.SecurityUtil;
 import com.fasterxml.jackson.databind.ser.Serializers;
@@ -96,6 +93,20 @@ public class RestaurantController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    @GetMapping("restaurant/review/{review_id}")
+    public BaseResponse<ReviewFormDto> getReviewInfo(@PathVariable("review_id") Long reviewId){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            ReviewFormDto reviewFormDto = restaurantService.getReviewInfo(userId, reviewId);
+
+            return new BaseResponse<>(reviewFormDto);
+        }
+        catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
 
     //JPA의 영속성 컨텍스트, 엔티티 매니저, 1차 캐시 시점, 트랜잭션 커밋 시점 좀 더 공부하기 + 더티 체킹, 벌크연산
     @Transactional

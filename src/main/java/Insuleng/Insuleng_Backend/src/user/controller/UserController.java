@@ -7,8 +7,6 @@ import Insuleng.Insuleng_Backend.src.user.service.AuthService;
 import Insuleng.Insuleng_Backend.src.user.service.UserService;
 import Insuleng.Insuleng_Backend.utils.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,12 +47,12 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다")
     })
-    public BaseResponse<MyPageInfoDto> getMyPageInfo(){
+    public BaseResponse<MyPageFormDto> getMyPageInfo(){
         try{
             Long userId = SecurityUtil.getCurrentUserId();
-            MyPageInfoDto myPageInfoDto = userService.getMyPageInfo(userId);
+            MyPageFormDto myPageFormDto = userService.getMyPageInfo(userId);
 
-            return new BaseResponse<>(myPageInfoDto);
+            return new BaseResponse<>(myPageFormDto);
 
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());

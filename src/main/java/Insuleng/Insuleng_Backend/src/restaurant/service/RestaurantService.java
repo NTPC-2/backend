@@ -3,14 +3,8 @@ package Insuleng.Insuleng_Backend.src.restaurant.service;
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
-import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantListDto;
-import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryDto;
-import Insuleng.Insuleng_Backend.src.restaurant.dto.UpdateReviewDto;
-import Insuleng.Insuleng_Backend.src.restaurant.dto.WriteReviewDto;
-import Insuleng.Insuleng_Backend.src.restaurant.entity.HeartEntity;
-import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
-import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewEntity;
-import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewImgEntity;
+import Insuleng.Insuleng_Backend.src.restaurant.dto.*;
+import Insuleng.Insuleng_Backend.src.restaurant.entity.*;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.HeartRepository;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.RestaurantRepository;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.ReviewImgRepository;
@@ -180,5 +174,31 @@ public class RestaurantService {
 
         review.updateReview(updateReviewDto.getContents(), updateReviewDto.getStar());
         reviewRepository.save(review);
+    }
+
+    public ReviewFormDto getReviewInfo(Long userId, Long reviewId) {
+
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        ReviewEntity review = reviewRepository.findReviewEntityByReviewIdAndStatus(reviewId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.REVIEW_NO_EXIST));
+
+        if(review.getUserEntity() != user){
+            throw new BaseException(BaseResponseStatus.NO_PRIVILEGE);
+        }
+
+        ReviewFormDto reviewFormDto = new ReviewFormDto(review.getContents(), review.getStar());
+        List<ReviewImgEntity> reviewImgEntityList = reviewImgRepository.findReviewImgEntitiesByReviewEntityAndStatus(review, Status.ACTIVE);
+        List<String> imgUrlList = null;
+        if(reviewImgEntityList != null){
+            imgUrlList = new ArrayList<>();
+            for(int i =0; i<reviewImgEntityList.size() ; i++){
+                imgUrlList.add(reviewImgEntityList.get(i).getReviewImgUrl());
+            }
+        }
+        reviewFormDto.setReviewImg(imgUrlList);
+
+        return reviewFormDto;
     }
 }

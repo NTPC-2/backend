@@ -36,12 +36,12 @@ public class UserService {
 
     }
 
-    public MyPageInfoDto getMyPageInfo(Long userId) {
+    public MyPageFormDto getMyPageInfo(Long userId) {
 
         UserEntity userEntity = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
 
-        MyPageInfoDto myPageInfoDto = MyPageInfoDto.builder()
+        MyPageFormDto myPageFormDto = MyPageFormDto.builder()
                 .email(userEntity.getEmail())
                 .nickname(userEntity.getNickname())
                 .phoneNumber(userEntity.getPhoneNumber())
@@ -50,7 +50,7 @@ public class UserService {
                 .profileImg(userEntity.getProfileImg())
                 .build();
 
-        return myPageInfoDto;
+        return myPageFormDto;
 
     }
 
