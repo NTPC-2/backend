@@ -5,10 +5,15 @@ import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantListDto;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryDto;
+import Insuleng.Insuleng_Backend.src.restaurant.dto.WriteReviewDto;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.HeartEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
+import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewEntity;
+import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewImgEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.HeartRepository;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.RestaurantRepository;
+import Insuleng.Insuleng_Backend.src.restaurant.repository.ReviewImgRepository;
+import Insuleng.Insuleng_Backend.src.restaurant.repository.ReviewRepository;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +28,8 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final UserRepository userRepository;
     private final HeartRepository heartRepository;
+    private final ReviewRepository reviewRepository;
+    private final ReviewImgRepository reviewImgRepository;
 
     public RestaurantListDto getRestaurantList(Long categoryId) {
         if(categoryId >7 || categoryId <0){
@@ -119,6 +126,27 @@ public class RestaurantService {
 
             }else if(heart.getStatus() == Status.INACTIVE){
                 throw new BaseException(BaseResponseStatus.ALREADY_RESTAURANT_NO_HEART);
+            }
+        }
+
+    }
+
+    public void writeReview(Long userId, Long restaurantId ,WriteReviewDto writeReviewDto) {
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        RestaurantEntity restaurant = restaurantRepository.findRestaurantEntityByRestaurantIdAndStatus(restaurantId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.RESTAURANT_NO_EXIST));
+
+        ReviewEntity reviewEntity = new ReviewEntity(writeReviewDto.getContents(), writeReviewDto.getStar(), user, restaurant);
+        reviewRepository.save(reviewEntity);
+
+        if(writeReviewDto.getReviewImg() != null){
+            for(int i =0; i<writeReviewDto.getReviewImg().size(); i++){
+                String imgUrl = writeReviewDto.getReviewImg().get(i);
+
+                ReviewImgEntity reviewImgEntity = new ReviewImgEntity(imgUrl, reviewEntity);
+                reviewImgRepository.save(reviewImgEntity);
             }
         }
 

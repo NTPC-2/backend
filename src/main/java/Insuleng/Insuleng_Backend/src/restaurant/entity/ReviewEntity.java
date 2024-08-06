@@ -25,9 +25,6 @@ public class ReviewEntity extends BaseEntity {
     @Column(nullable = false)
     private Double star;
 
-    @Column(name = "review_img")
-    private String reviewImg;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
@@ -36,5 +33,11 @@ public class ReviewEntity extends BaseEntity {
     @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurantEntity;
 
+    public ReviewEntity(String contents, Double star, UserEntity userEntity, RestaurantEntity restaurantEntity){
+        this.contents = contents;
+        this.star = star;
+        this.userEntity = userEntity;
+        this.restaurantEntity = restaurantEntity;
+    }
 
 }

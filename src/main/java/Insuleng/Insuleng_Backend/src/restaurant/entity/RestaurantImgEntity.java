@@ -8,7 +8,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
-@Table(name = "restautant_img")
+@Table(name = "restaurant_img")
 @NoArgsConstructor
 @DynamicInsert
 public class RestaurantImgEntity extends BaseEntity {

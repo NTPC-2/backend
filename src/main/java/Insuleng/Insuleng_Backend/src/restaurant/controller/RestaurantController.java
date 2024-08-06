@@ -4,10 +4,12 @@ import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantListDto;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryDto;
+import Insuleng.Insuleng_Backend.src.restaurant.dto.WriteReviewDto;
 import Insuleng.Insuleng_Backend.src.restaurant.service.RestaurantService;
 import Insuleng.Insuleng_Backend.utils.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,5 +75,24 @@ public class RestaurantController {
         }
     }
 
+    @PostMapping("restaurant/{restaurant_id}/review")
+    @Operation(summary = "리뷰 작성 api", description = "해당 음식점의 리뷰를 작성합니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
+            @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
+    })
+    public BaseResponse<String> writeReview(@PathVariable("restaurant_id") Long restaurantId, @RequestBody @Valid WriteReviewDto writeReviewDto){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            restaurantService.writeReview(userId, restaurantId, writeReviewDto);
+
+            return new BaseResponse<>("리뷰를 작성했습니다");
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+
+    }
 
 }
