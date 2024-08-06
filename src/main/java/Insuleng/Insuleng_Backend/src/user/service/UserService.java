@@ -29,7 +29,7 @@ public class UserService {
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
 
 
-        UserStatics userStatics = userRepository.findUserStatics(userId);
+        UserStatics userStatics = userRepository.findUserStatics(userId, Status.ACTIVE);
         MyPageDto myPageDto = new MyPageDto(userStatics);
 
         return myPageDto;
@@ -94,7 +94,7 @@ public class UserService {
         UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
 
-        List<PostEntity> postEntityList = userRepository.findMyPosts(user);
+        List<PostEntity> postEntityList = userRepository.findMyPosts(user, Status.ACTIVE);
         List<MyPostDto> myPostDtoList = new ArrayList<>();
 
         for(int i =0; i<postEntityList.size(); i++){

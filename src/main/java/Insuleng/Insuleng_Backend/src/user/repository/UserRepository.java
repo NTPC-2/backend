@@ -26,19 +26,19 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     //@Query 문에서 Entity가 아닌 Dto로 반환을 받고 싶다면 (select new Dto 클래스의 경로명) 을 지정해주면 된다.
     @Query("select new Insuleng.Insuleng_Backend.src.user.dto.UserStatics("
-            + "(select count(b) from BookmarkEntity b where b.userEntity.userId = :userId), "
-            + "(select count(r) from ReviewEntity r where r.userEntity.userId = :userId), "
-            + "(select count(h) from HeartEntity h where h.userEntity.userId = :userId), "
-            + "(select count(p) from PostEntity p where p.userEntity.userId = :userId), "
-            + "(select count(s) from ScrapEntity s where s.userEntity.userId = :userId)) "
+            + "(select count(b) from BookmarkEntity b where b.userEntity.userId = :userId and b.status = :status), "
+            + "(select count(r) from ReviewEntity r where r.userEntity.userId = :userId and r.status = :status), "
+            + "(select count(h) from HeartEntity h where h.userEntity.userId = :userId and h.status = :status), "
+            + "(select count(p) from PostEntity p where p.userEntity.userId = :userId and p.status = :status), "
+            + "(select count(s) from ScrapEntity s where s.userEntity.userId = :userId and s.status = :status)) "
             + "FROM UserEntity u WHERE u.userId = :userId")
-    public UserStatics findUserStatics(@Param("userId")Long userId);
+    public UserStatics findUserStatics(@Param("userId")Long userId, @Param("status")Status status);
 
     @Query("select r from BookmarkEntity as b inner join b.restaurantEntity r where b.userEntity.userId = :userId and b.userEntity.status = :status")
     List<RestaurantEntity> findMyBookmarks(@Param("userId")Long userId, @Param("status")Status status);
 
-    @Query("select p from PostEntity as p where p.userEntity = :userEntity")
-    List<PostEntity> findMyPosts(@Param("userEntity")UserEntity userEntity);
+    @Query("select p from PostEntity as p where p.userEntity = :userEntity and p.status =:status")
+    List<PostEntity> findMyPosts(@Param("userEntity")UserEntity userEntity, @Param("status")Status status);
 
 
 }
