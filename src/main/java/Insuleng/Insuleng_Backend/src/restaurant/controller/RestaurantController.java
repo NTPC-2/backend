@@ -4,13 +4,17 @@ import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantListDto;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryDto;
+import Insuleng.Insuleng_Backend.src.restaurant.dto.UpdateReviewDto;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.WriteReviewDto;
 import Insuleng.Insuleng_Backend.src.restaurant.service.RestaurantService;
 import Insuleng.Insuleng_Backend.utils.SecurityUtil;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.sql.Update;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -91,8 +95,20 @@ public class RestaurantController {
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
-
-
     }
 
+    //JPA의 영속성 컨텍스트, 엔티티 매니저, 1차 캐시 시점, 트랜잭션 커밋 시점 좀 더 공부하기 + 더티 체킹, 벌크연산
+    @Transactional
+    @PutMapping("restaurant/review/{review_id}")
+    public BaseResponse<String> updateReview(@PathVariable("review_id") Long reviewId, @RequestBody @Valid UpdateReviewDto updateReviewDto){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            restaurantService.updateReview(userId, reviewId, updateReviewDto);
+
+            return new BaseResponse<>("리뷰를 수정했습니다");
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
 }

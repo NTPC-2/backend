@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Table(name = "review")
@@ -33,11 +35,19 @@ public class ReviewEntity extends BaseEntity {
     @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurantEntity;
 
+   /* @OneToMany(mappedBy = "reviewEntity", cascade = CascadeType.ALL)
+    List<RestaurantImgEntity> restaurantImgEntityList;
+*/
     public ReviewEntity(String contents, Double star, UserEntity userEntity, RestaurantEntity restaurantEntity){
         this.contents = contents;
         this.star = star;
         this.userEntity = userEntity;
         this.restaurantEntity = restaurantEntity;
+    }
+
+    public void updateReview(String contents, Double star){
+        this.contents = contents;
+        this.star = star;
     }
 
 }

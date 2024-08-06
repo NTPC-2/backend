@@ -15,7 +15,9 @@ public enum BaseResponseStatus {
     INVALID_INPUT(false, 2000, "입력한 값이 잘못됐습니다"),
     USER_NO_EXIST(false, 2005, "존재하지 않은 유저입니다"),
     RESTAURANT_NO_EXIST(false, 2006, "존재하지 않은 음식점입니다"),
+    REVIEW_NO_EXIST(false, 2007, "존재하지 않은 리뷰입니다"),
     INVALID_PARAMETER(false, 2010, "URl의 parameter 값이 잘못되었습니다"),
+    NO_PRIVILEGE(false, 2100, "해당 글에 대한 권한이 없습니다"),
 
     //회원가입
     USER_EMAIL_EMPTY(false, 3000, "이메일을 입력해주세요"),

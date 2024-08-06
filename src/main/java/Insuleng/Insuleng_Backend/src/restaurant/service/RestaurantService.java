@@ -5,6 +5,7 @@ import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantListDto;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryDto;
+import Insuleng.Insuleng_Backend.src.restaurant.dto.UpdateReviewDto;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.WriteReviewDto;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.HeartEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
@@ -16,6 +17,9 @@ import Insuleng.Insuleng_Backend.src.restaurant.repository.ReviewImgRepository;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.ReviewRepository;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -150,5 +154,31 @@ public class RestaurantService {
             }
         }
 
+    }
+
+    public void updateReview(Long userId, Long reviewId, UpdateReviewDto updateReviewDto) {
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        ReviewEntity review = reviewRepository.findReviewEntityByReviewIdAndStatus(reviewId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.REVIEW_NO_EXIST));
+
+        if(review.getUserEntity() != user){
+            throw new BaseException(BaseResponseStatus.NO_PRIVILEGE);
+        }
+
+        reviewImgRepository.updateStatusOfRestaurantImgEntities(Status.INACTIVE, review);
+
+        if(updateReviewDto.getReviewImg() != null){
+            for(int i =0; i<updateReviewDto.getReviewImg().size(); i++){
+                String imgUrl = updateReviewDto.getReviewImg().get(i);
+
+                ReviewImgEntity reviewImgEntity = new ReviewImgEntity(imgUrl, review);
+                reviewImgRepository.save(reviewImgEntity);
+            }
+        }
+
+        review.updateReview(updateReviewDto.getContents(), updateReviewDto.getStar());
+        reviewRepository.save(review);
     }
 }
