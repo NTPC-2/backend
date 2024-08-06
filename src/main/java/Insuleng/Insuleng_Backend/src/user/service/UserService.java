@@ -3,11 +3,13 @@ package Insuleng.Insuleng_Backend.src.user.service;
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
+import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.RestaurantRepository;
 import Insuleng.Insuleng_Backend.src.user.dto.*;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
+import Insuleng.Insuleng_Backend.utils.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -86,5 +88,27 @@ public class UserService {
         }
         return myBookmarkDtoList;
 
+    }
+
+    public List<MyPostDto> getMyPosts(Long userId) {
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        List<PostEntity> postEntityList = userRepository.findMyPosts(user);
+        List<MyPostDto> myPostDtoList = new ArrayList<>();
+
+        for(int i =0; i<postEntityList.size(); i++){
+            MyPostDto myPostDto = MyPostDto.builder()
+                    .topic(postEntityList.get(i).getTopic())
+                    .contents(postEntityList.get(i).getContents())
+                    .countLike(postEntityList.get(i).getCountLike())
+                    .countComment(postEntityList.get(i).getCountComment())
+                    .timeLine(TimeUtil.getTimeLine(postEntityList.get(i).getCreateAt()))
+                    .userNickname(postEntityList.get(i).getUserEntity().getNickname())
+                    .build();
+
+            myPostDtoList.add(myPostDto);
+        }
+        return myPostDtoList;
     }
 }

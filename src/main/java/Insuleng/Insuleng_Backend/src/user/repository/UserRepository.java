@@ -1,6 +1,7 @@
 package Insuleng.Insuleng_Backend.src.user.repository;
 
 import Insuleng.Insuleng_Backend.config.Status;
+import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
 import Insuleng.Insuleng_Backend.src.user.dto.UserStatics;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
@@ -35,6 +36,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query("select r from BookmarkEntity as b inner join b.restaurantEntity r where b.userEntity.userId = :userId and b.userEntity.status = :status")
     List<RestaurantEntity> findMyBookmarks(@Param("userId")Long userId, @Param("status")Status status);
+
+    @Query("select p from PostEntity as p where p.userEntity = :userEntity")
+    List<PostEntity> findMyPosts(@Param("userEntity")UserEntity userEntity);
 
 
 }

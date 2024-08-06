@@ -2,10 +2,7 @@ package Insuleng.Insuleng_Backend.src.user.controller;
 
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
-import Insuleng.Insuleng_Backend.src.user.dto.MyBookmarkDto;
-import Insuleng.Insuleng_Backend.src.user.dto.MyPageDto;
-import Insuleng.Insuleng_Backend.src.user.dto.MyPageInfoDto;
-import Insuleng.Insuleng_Backend.src.user.dto.MyPageUpdateDto;
+import Insuleng.Insuleng_Backend.src.user.dto.*;
 import Insuleng.Insuleng_Backend.src.user.service.AuthService;
 import Insuleng.Insuleng_Backend.src.user.service.UserService;
 import Insuleng.Insuleng_Backend.utils.SecurityUtil;
@@ -93,9 +90,18 @@ public class UserController {
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
+    }
 
+    @GetMapping("profiles/post")
+    public BaseResponse<List<MyPostDto>> getMyPosts(){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            List<MyPostDto> postDtoList = userService.getMyPosts(userId);
 
-
+            return new BaseResponse<>(postDtoList);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 
 
