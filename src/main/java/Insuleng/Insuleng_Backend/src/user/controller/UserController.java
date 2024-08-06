@@ -102,5 +102,16 @@ public class UserController {
         }
     }
 
+    @GetMapping("profiles/heart")
+    public BaseResponse<List<MyHeartDto>> getMyHearts(){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            List<MyHeartDto> heartDtoList = userService.getMyHearts(userId);
+
+            return new BaseResponse<>(heartDtoList);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
 }

@@ -111,4 +111,25 @@ public class UserService {
         }
         return myPostDtoList;
     }
+
+    public List<MyHeartDto> getMyHearts(Long userId) {
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        List<RestaurantEntity> restaurantEntityList = userRepository.findMyHearts(user, Status.ACTIVE);
+        List<MyHeartDto> myHeartDtoList = new ArrayList<>();
+
+        for(int i =0; i<restaurantEntityList.size(); i++){
+            MyHeartDto myHeartDto = MyHeartDto.builder()
+                    .restaurantName(restaurantEntityList.get(i).getName())
+                    .mainImg(restaurantEntityList.get(i).getMainImg())
+                    .countHeart(restaurantEntityList.get(i).getCountHeart())
+                    .countBookmark(restaurantEntityList.get(i).getCountBookmark())
+                    .countReview(restaurantEntityList.get(i).getCountReview())
+                    .build();
+
+            myHeartDtoList.add(myHeartDto);
+        }
+        return myHeartDtoList;
+    }
 }
