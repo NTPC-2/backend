@@ -5,10 +5,7 @@ import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.*;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.*;
-import Insuleng.Insuleng_Backend.src.restaurant.repository.HeartRepository;
-import Insuleng.Insuleng_Backend.src.restaurant.repository.RestaurantRepository;
-import Insuleng.Insuleng_Backend.src.restaurant.repository.ReviewImgRepository;
-import Insuleng.Insuleng_Backend.src.restaurant.repository.ReviewRepository;
+import Insuleng.Insuleng_Backend.src.restaurant.repository.*;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
@@ -28,6 +25,7 @@ public class RestaurantService {
     private final HeartRepository heartRepository;
     private final ReviewRepository reviewRepository;
     private final ReviewImgRepository reviewImgRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     public RestaurantListDto getRestaurantList(Long categoryId) {
         if(categoryId >7 || categoryId <0){
@@ -129,6 +127,40 @@ public class RestaurantService {
 
     }
 
+    public void addRestaurantBookmark(Long userId, Long restaurantId) {
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        RestaurantEntity restaurant = restaurantRepository.findRestaurantEntityByRestaurantIdAndStatus(restaurantId, Status.ACTIVE)
+                .orElseThrow(()->new BaseException(BaseResponseStatus.RESTAURANT_NO_EXIST));
+
+        BookmarkEntity bookmark = bookmarkRepository.findBookmarkEntityByUserEntityAndRestaurantEntity(user, restaurant)
+                .orElse(null);
+
+        if(bookmark == null){
+            //bookmark 테이블에 새로 즐겨찾기 정보 추가
+            BookmarkEntity newBookmark = new BookmarkEntity(user, restaurant);
+            bookmarkRepository.save(newBookmark);
+            //레스토랑 전체 즐겨찾기 수 증가
+            restaurant.increaseCountBookmark();
+            restaurantRepository.save(restaurant); //값을 업데이트 할 때도 save 사용
+        }else{
+            if(bookmark.getStatus() == Status.ACTIVE){
+                throw new BaseException(BaseResponseStatus.ALREADY_RESTAURANT_BOOKMARK);
+            }else if(bookmark.getStatus() == Status.INACTIVE){
+                //bookmark 테이블에 status를 active로 변경
+                bookmark.changeToActive();
+                bookmarkRepository.save(bookmark);
+                //레스토랑 전체 즐겨찾기 수 증가
+                restaurant.increaseCountBookmark();
+                restaurantRepository.save(restaurant);
+            }
+        }
+
+
+    }
+
+
     public void writeReview(Long userId, Long restaurantId ,WriteReviewDto writeReviewDto) {
         UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
@@ -137,8 +169,10 @@ public class RestaurantService {
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.RESTAURANT_NO_EXIST));
 
         ReviewEntity reviewEntity = new ReviewEntity(writeReviewDto.getContents(), writeReviewDto.getStar(), user, restaurant);
+        //review table에 작성한 리뷰 저장
         reviewRepository.save(reviewEntity);
 
+        //리뷰 작성시 이미지를 첨부했으면 각 이미지가 review_img table에 저장
         if(writeReviewDto.getReviewImg() != null){
             for(int i =0; i<writeReviewDto.getReviewImg().size(); i++){
                 String imgUrl = writeReviewDto.getReviewImg().get(i);
@@ -147,6 +181,12 @@ public class RestaurantService {
                 reviewImgRepository.save(reviewImgEntity);
             }
         }
+
+        //리뷰 평점과 리뷰 개수가 restaurant table에 업데이트
+        restaurant.addSumStar(writeReviewDto.getStar());
+        restaurant.increaseCountReview();
+
+        restaurantRepository.save(restaurant);
 
     }
 
@@ -201,4 +241,6 @@ public class RestaurantService {
 
         return reviewFormDto;
     }
+
+
 }

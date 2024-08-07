@@ -40,7 +40,7 @@ public class RestaurantEntity extends BaseEntity {
     private int countReview;
 
     @Column(nullable = false)
-    private int sumStar;
+    private Double sumStar;
 
     @Column(nullable = false)
     private int countBookmark;
@@ -72,7 +72,22 @@ public class RestaurantEntity extends BaseEntity {
         this.countHeart--;
     }
 
+    //음식점 즐겨찾기를 누르면 실행
+    public void increaseCountBookmark(){this.countBookmark++;}
 
+    //음식점 즐겨찾기를 해제하면 실행
+    public void decreaseCountBookmark(){this.countBookmark--;}
 
+    //리뷰 작성하면 실행
+    public void increaseCountReview() {this.countReview++;}
+    public void addSumStar(Double star){
+        this.sumStar = this.sumStar + star;
+    }
+
+    //리뷰 삭제하면 실행
+    public void decreaseCountReview(){this.countReview--;}
+    public void minusSumStar(Double star){
+        this.sumStar = this.sumStar - star;
+    }
 
 }

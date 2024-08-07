@@ -39,7 +39,12 @@ public enum BaseResponseStatus {
     //음식점 좋아요
     ALREADY_RESTAURANT_HEART(false, 3600, "이미 음식점 좋아요가 되어있습니다"),
     ALREADY_RESTAURANT_NO_HEART(false, 3601, "이미 음식점 좋아요가 해제되어 있습니다"),
-    HEART_NO_EXIST(false, 3610, "음식점 좋아요 정보가 없습니다"),
+    HEART_NO_EXIST(false, 3605, "음식점 좋아요 정보가 없습니다"),
+    //음식점 즐겨찾기
+    ALREADY_RESTAURANT_BOOKMARK(false, 3610, "이미 음식점 즐겨찾기가 되어있습니다"),
+    ALREADY_RESTAURANT_NO_BOOKMARK(false, 3611, "이미 음식점 좋아요가 해제되어 있습니다"),
+    BOOKMARK_NO_EXIST(false, 3615, "음식점 즐겨찾기 정보가 없습니다"),
+
 
     POST_EMPTY(false, 4002, "게시글이 존재하지 않습니다");
 

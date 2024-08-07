@@ -57,7 +57,7 @@ public class RestaurantController {
     }
 
     @PatchMapping("restaurant/removeheart/{restaurant_id}")
-    @Operation(summary = "음식점 좋아요 api", description = "해당 유저로 음식점 좋아요 설정합니다", responses = {
+    @Operation(summary = "음식점 좋아요 해제 api", description = "해당 유저로 음식점 좋아요 해제합니다", responses = {
             @ApiResponse(responseCode = "200", description = "성공"),
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
@@ -71,6 +71,25 @@ public class RestaurantController {
             restaurantService.removeRestaurantHeart(userId, restaurantId);
 
             return new BaseResponse<>("좋아요를 해제했습니다");
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @PostMapping("restaurant/addbookmark/{restaurant_id}")
+    @Operation(summary = "음식점 즐겨찾기 api", description = "해당 유저로 음식점 즐겨찾기 설정합니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
+            @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
+            @ApiResponse(responseCode = "3610", description = "이미 음식점 즐겨찾기가 되어있습니다"),
+    })
+    public BaseResponse<String> addRestaurantBookmark(@PathVariable("restaurant_id") Long restaurantId){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            restaurantService.addRestaurantBookmark(userId, restaurantId);
+
+            return new BaseResponse<>("즐겨찾기를 눌렀습니다");
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
@@ -94,7 +113,15 @@ public class RestaurantController {
         }
     }
 
+    //리뷰 수정 하는 form을 제공하는 api
     @GetMapping("restaurant/review/{review_id}")
+    @Operation(summary = "리뷰를 수정할 수 있는 form을 제공하는 api", description = "기존 리뷰 정보를 제공합니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
+            @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
+            @ApiResponse(responseCode = "2100", description = "해당 글에 대한 권한이 없습니다")
+    })
     public BaseResponse<ReviewFormDto> getReviewInfo(@PathVariable("review_id") Long reviewId){
         try{
             Long userId = SecurityUtil.getCurrentUserId();
@@ -109,8 +136,16 @@ public class RestaurantController {
 
 
     //JPA의 영속성 컨텍스트, 엔티티 매니저, 1차 캐시 시점, 트랜잭션 커밋 시점 좀 더 공부하기 + 더티 체킹, 벌크연산
+    //실제로 review가 수정되는 api
     @Transactional
     @PutMapping("restaurant/review/{review_id}")
+    @Operation(summary = "리뷰를 실제로 수정하는 api", description = "updateReviewDto 내용으로 리뷰를  수정합니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
+            @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
+            @ApiResponse(responseCode = "2100", description = "해당 글에 대한 권한이 없습니다")
+    })
     public BaseResponse<String> updateReview(@PathVariable("review_id") Long reviewId, @RequestBody @Valid UpdateReviewDto updateReviewDto){
         try{
             Long userId = SecurityUtil.getCurrentUserId();

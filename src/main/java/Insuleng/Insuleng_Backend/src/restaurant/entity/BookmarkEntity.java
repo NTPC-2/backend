@@ -28,4 +28,9 @@ public class BookmarkEntity extends BaseEntity {
     @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurantEntity;
 
+    public BookmarkEntity(UserEntity userEntity, RestaurantEntity restaurantEntity){
+        this.userEntity = userEntity;
+        this.restaurantEntity = restaurantEntity;
+    }
+
 }
