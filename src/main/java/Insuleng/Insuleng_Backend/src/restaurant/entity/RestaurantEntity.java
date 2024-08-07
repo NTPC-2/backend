@@ -48,6 +48,9 @@ public class RestaurantEntity extends BaseEntity {
     @Column
     private String mainImg;
 
+    @Column(nullable = false)
+    private Double averageStar;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private CategoryEntity categoryEntity;
@@ -79,15 +82,24 @@ public class RestaurantEntity extends BaseEntity {
     public void decreaseCountBookmark(){this.countBookmark--;}
 
     //리뷰 작성하면 실행
-    public void increaseCountReview() {this.countReview++;}
-    public void addSumStar(Double star){
+    public void writeReview(Double star){
+        this.countReview++;
         this.sumStar = this.sumStar + star;
+        this.averageStar = this.sumStar/this.countReview;
+    }
+
+    //리뷰 수정하면 실행
+    public void updateReview(Double oldStar, Double newStar){
+        this.sumStar = this.sumStar - oldStar + newStar;
+        this.averageStar = this.sumStar/this.countReview;
     }
 
     //리뷰 삭제하면 실행
-    public void decreaseCountReview(){this.countReview--;}
-    public void minusSumStar(Double star){
+    public void removeReview(Double star){
+        this.countReview--;
         this.sumStar = this.sumStar - star;
+        this.averageStar = this.sumStar/this.countReview;
+
     }
 
 }

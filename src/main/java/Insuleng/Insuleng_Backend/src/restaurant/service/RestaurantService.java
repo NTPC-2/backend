@@ -211,9 +211,8 @@ public class RestaurantService {
             }
         }
 
-        //리뷰 평점과 리뷰 개수가 restaurant table에 업데이트
-        restaurant.addSumStar(writeReviewDto.getStar());
-        restaurant.increaseCountReview();
+        //'전체 평점/평점 개수'와 리뷰 개수를 restaurant table에 업데이트
+        restaurant.writeReview(writeReviewDto.getStar());
 
         restaurantRepository.save(restaurant);
 
@@ -225,6 +224,12 @@ public class RestaurantService {
 
         ReviewEntity review = reviewRepository.findReviewEntityByReviewIdAndStatus(reviewId, Status.ACTIVE)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.REVIEW_NO_EXIST));
+
+        RestaurantEntity restaurant = restaurantRepository.findRestaurantEntityByRestaurantIdAndStatus(review.getRestaurantEntity().getRestaurantId(), Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.RESTAURANT_NO_EXIST));
+
+        //마지막에 restaurant 테이블의 전체 평점, 평균 평점을 바꾸기 위해서 사용
+        double oldStar = review.getStar();
 
         if(review.getUserEntity() != user){
             throw new BaseException(BaseResponseStatus.NO_PRIVILEGE);
@@ -243,6 +248,11 @@ public class RestaurantService {
 
         review.updateReview(updateReviewDto.getContents(), updateReviewDto.getStar());
         reviewRepository.save(review);
+
+        //'전체 평점/ 평균 평점' 업데이트
+        restaurant.updateReview(oldStar, updateReviewDto.getStar());
+        restaurantRepository.save(restaurant);
+
     }
 
     public ReviewFormDto getReviewInfo(Long userId, Long reviewId) {
