@@ -160,6 +160,35 @@ public class RestaurantService {
 
     }
 
+    public void removeRestaurantBookmark(Long userId, Long restaurantId) {
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        RestaurantEntity restaurant = restaurantRepository.findRestaurantEntityByRestaurantIdAndStatus(restaurantId, Status.ACTIVE)
+                .orElseThrow(()->new BaseException(BaseResponseStatus.RESTAURANT_NO_EXIST));
+
+        BookmarkEntity bookmark = bookmarkRepository.findBookmarkEntityByUserEntityAndRestaurantEntity(user, restaurant)
+                .orElse(null);
+
+        if(bookmark == null){
+            throw new BaseException(BaseResponseStatus.BOOKMARK_NO_EXIST);
+        }else{
+            if(bookmark.getStatus() == Status.ACTIVE){
+                //bookmark 테이블에 status를 inactive로 변경
+                bookmark.changeToInActive();
+                bookmarkRepository.save(bookmark);
+
+                //레스토랑 전체 즐겨찾기 수 감소
+                restaurant.decreaseCountBookmark();
+                restaurantRepository.save(restaurant);
+
+            }else if(bookmark.getStatus() == Status.INACTIVE){
+                throw new BaseException(BaseResponseStatus.ALREADY_RESTAURANT_NO_HEART);
+            }
+        }
+
+    }
+
 
     public void writeReview(Long userId, Long restaurantId ,WriteReviewDto writeReviewDto) {
         UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
@@ -241,6 +270,5 @@ public class RestaurantService {
 
         return reviewFormDto;
     }
-
 
 }
