@@ -114,4 +114,17 @@ public class UserController {
         }
     }
 
+    @GetMapping("profiles/review")
+    public BaseResponse<List<MyReviewDto>> getMyReviews(){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            List<MyReviewDto> reviewDtoList = userService.getMyReviews(userId);
+
+            return new BaseResponse<>(reviewDtoList);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+
+    }
 }

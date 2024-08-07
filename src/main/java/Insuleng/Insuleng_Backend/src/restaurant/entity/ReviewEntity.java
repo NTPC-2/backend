@@ -35,9 +35,10 @@ public class ReviewEntity extends BaseEntity {
     @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurantEntity;
 
-   /* @OneToMany(mappedBy = "reviewEntity", cascade = CascadeType.ALL)
-    List<RestaurantImgEntity> restaurantImgEntityList;
-*/
+    @OneToMany(mappedBy = "reviewEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewImgEntity> reviewImgEntityList;
+
+
     public ReviewEntity(String contents, Double star, UserEntity userEntity, RestaurantEntity restaurantEntity){
         this.contents = contents;
         this.star = star;

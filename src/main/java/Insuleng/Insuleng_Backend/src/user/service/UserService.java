@@ -5,6 +5,7 @@ import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
+import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.RestaurantRepository;
 import Insuleng.Insuleng_Backend.src.user.dto.*;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
@@ -131,5 +132,33 @@ public class UserService {
             myHeartDtoList.add(myHeartDto);
         }
         return myHeartDtoList;
+    }
+
+    public List<MyReviewDto> getMyReviews(Long userId) {
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        List<ReviewEntity> reviewEntityList = userRepository.findMyReviews(user, Status.ACTIVE);
+        List<MyReviewDto> myReviewDtoList = new ArrayList<>();
+
+        for(int i = 0; i<reviewEntityList.size() ; i++){
+            MyReviewDto myReviewDto = MyReviewDto.builder()
+                    .restaurantName(reviewEntityList.get(i).getRestaurantEntity().getName())
+                    .star(reviewEntityList.get(i).getStar())
+                    .contents(reviewEntityList.get(i).getContents())
+                    .timeLine(TimeUtil.getTimeLine(reviewEntityList.get(i).getCreateAt()))
+                    .userNickname(user.getNickname())
+                    .build();
+
+            if(reviewEntityList.get(i).getReviewImgEntityList().size() > 0){
+                myReviewDto.setFirstImg(reviewEntityList.get(i).getReviewImgEntityList().get(0).getReviewImgUrl());
+            }else{
+                myReviewDto.setFirstImg(null);
+            }
+            myReviewDtoList.add(myReviewDto);
+        }
+
+        return myReviewDtoList;
+
     }
 }
