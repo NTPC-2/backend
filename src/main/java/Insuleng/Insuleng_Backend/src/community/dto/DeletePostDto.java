@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 
 
-public class DeleteDto {
+public class DeletePostDto {
 
     @NotNull
     private Long postId;

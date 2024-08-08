@@ -5,10 +5,12 @@ import Insuleng.Insuleng_Backend.src.user.dto.SignUpDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "user")
 @NoArgsConstructor
 @DynamicInsert
