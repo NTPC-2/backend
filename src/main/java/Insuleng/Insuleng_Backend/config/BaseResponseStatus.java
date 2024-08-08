@@ -36,6 +36,7 @@ public enum BaseResponseStatus {
     //비밀번호 찾기(임시 비밀번호 발급)
     FAIL_EMAIL_SEND(false, 3205, "메일로 임시 비밀번호를 보내는데 실패했습니다"),
 
+
     //음식점 좋아요
     ALREADY_RESTAURANT_HEART(false, 3600, "이미 음식점 좋아요가 되어있습니다"),
     ALREADY_RESTAURANT_NO_HEART(false, 3601, "이미 음식점 좋아요가 해제되어 있습니다"),
@@ -46,7 +47,8 @@ public enum BaseResponseStatus {
     BOOKMARK_NO_EXIST(false, 3615, "음식점 즐겨찾기 정보가 없습니다"),
 
 
-    POST_EMPTY(false, 4002, "게시글이 존재하지 않습니다");
+    POST_EMPTY(false, 4002, "게시글이 존재하지 않습니다"),
+    INVALID_USER(false, 4003, "유효하지 않은 사용자입니다");
 
     private final boolean isSuccess;
     private final int code;

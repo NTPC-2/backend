@@ -5,10 +5,12 @@ import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "post")
 @NoArgsConstructor
 @DynamicInsert
@@ -36,6 +38,5 @@ public class PostEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
-
 
 }
