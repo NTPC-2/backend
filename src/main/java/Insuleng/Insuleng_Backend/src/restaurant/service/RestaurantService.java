@@ -54,6 +54,7 @@ public class RestaurantService {
                             restaurantEntityList.get(i).getCountHeart(),
                             restaurantEntityList.get(i).getCountBookmark(),
                             restaurantEntityList.get(i).getCountReview(),
+                            restaurantEntityList.get(i).getAverageStar(),
                             new ArrayList<>() // 임시 메인메뉴 리스트
                     );
             restaurantSummaryDtoList.add(restaurantSummaryDto);
@@ -281,4 +282,41 @@ public class RestaurantService {
         return reviewFormDto;
     }
 
+    public RestaurantListDto getRestaurantSearchList(String keyword) {
+
+        RestaurantListDto restaurantListDto = new RestaurantListDto(); //return할 Dto
+
+        int countRestaurant; //restaurantListDto에 들어갈 총 음식점 숫자
+        List<RestaurantSummaryDto> restaurantSummaryDtoList = new ArrayList<>(); //restaurantListDto에 들어갈 음식점 목록
+
+        //List<RestaurantSummaryDto> list1 = restaurantRepository.findSearchListByMenuNameOrRestaurantName(keyword);
+
+
+        /*List<RestaurantSummaryDto> list1 = new ArrayList<>();
+        List<RestaurantEntity> restaurantEntityList = restaurantRepository.findSearchList2ByMenuNameOrRestaurantName(keyword);
+        for(int i =0; i<restaurantEntityList.size() ; i++){
+            RestaurantSummaryDto restaurantSummaryDto = new RestaurantSummaryDto(
+                    restaurantEntityList.get(i).getName(),
+                    restaurantEntityList.get(i).getMainImg(),
+                    restaurantEntityList.get(i).getCountHeart(),
+                    restaurantEntityList.get(i).getCountBookmark(),
+                    restaurantEntityList.get(i).getCountReview(),
+                    restaurantEntityList.get(i).getAverageStar()
+            );
+            list1.add(restaurantSummaryDto);
+        }*/
+
+
+
+        List<RestaurantSummaryDto> searchListByTagNameOrRestaurantName = restaurantRepository.findSearchListByTagNameOrRestaurantName(keyword);
+
+        restaurantSummaryDtoList.addAll(searchListByTagNameOrRestaurantName);
+
+        countRestaurant = restaurantSummaryDtoList.size();
+        restaurantListDto.setCountRestaurant(countRestaurant); // 음식점 숫자 set
+        restaurantListDto.setRestaurantSummaryDtoList(restaurantSummaryDtoList);
+
+        return restaurantListDto;
+
+    }
 }

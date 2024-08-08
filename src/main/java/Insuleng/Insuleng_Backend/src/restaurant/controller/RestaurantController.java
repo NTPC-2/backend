@@ -178,4 +178,19 @@ public class RestaurantController {
         }
 
     }
+    @GetMapping("restaurant/search/list")
+    @Operation(summary = "음식점 검색 결과 api", description = "키워드에 해당하는 음식점 리스트를 보여줍니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2010", description = "URl의 parameter 값이 잘못되었습니다")
+    })
+    public BaseResponse<RestaurantListDto> getRestaurantSearchList(@RequestParam(value = "search") String keyword ){
+        try{
+            return new BaseResponse<>(restaurantService.getRestaurantSearchList(keyword));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
 }

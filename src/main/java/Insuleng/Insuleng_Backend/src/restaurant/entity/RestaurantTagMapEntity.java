@@ -8,24 +8,23 @@ import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
-@Table(name = "menu")
+@Table(name = "restaurant_tag_map")
 @NoArgsConstructor
 @DynamicInsert
-public class MenuEntity extends BaseEntity {
+public class RestaurantTagMapEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "menu_id")
-    private Long menuId;
-
-    @Column(name = "menu_name")
-    private String menuName;
-
     @Column
-    private int cost;
+    private Long restaurantTagMapId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurantEntity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_tag_id")
+    private RestaurantTagEntity restaurantTagEntity;
+
 
 }

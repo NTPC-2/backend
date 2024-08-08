@@ -64,6 +64,8 @@ public class RestaurantEntity extends BaseEntity {
     @OneToMany(mappedBy = "restaurantEntity", cascade = CascadeType.ALL)
     List<BookmarkEntity> bookmarkEntityList;
 
+    @OneToMany(mappedBy = "restaurantEntity", cascade = CascadeType.ALL)
+    List<RestaurantTagMapEntity> restaurantTagMapEntityList;
 
     //음식점 좋아요를 누르면 실행
     public void increaseCountHeart(){

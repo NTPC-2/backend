@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RestaurantSummaryDto {
+public class SearchByMenuNameDto {
 
     private String restaurantName;
     private String mainImg;
@@ -21,15 +21,13 @@ public class RestaurantSummaryDto {
     private double averageStar;
     private List<String> mainMenuList;
 
-    public RestaurantSummaryDto(String restaurantName, String mainImg, int countHeart,int countBookmark, int countReview, double averageStar){
+    public SearchByMenuNameDto(String restaurantName, String mainImg, int countHeart,int countBookmark, int countReview, double averageStar){
         this.restaurantName = restaurantName;
         this.mainImg = mainImg;
         this.countHeart = countHeart;
         this.countBookmark = countBookmark;
         this.countReview = countReview;
         this.averageStar = averageStar;
-        mainMenuList = null;
     }
-
 
 }
