@@ -31,7 +31,7 @@ public class CommunityController {
             return new BaseResponse<>("게시글 작성 성공");
         }
         catch (BaseException e){
-            return new BaseResponse<>(e.getMessage());
+            return new BaseResponse<>(e.getStatus());
         }
     }
     @DeleteMapping("/post/delete")
@@ -43,7 +43,7 @@ public class CommunityController {
 
             return new BaseResponse<>("게시글 삭제 성공");
         } catch (BaseException e) {
-            return new BaseResponse<>(e.getMessage());
+            return new BaseResponse<>(e.getStatus());
         }
     }
 
@@ -55,7 +55,7 @@ public class CommunityController {
             communityService.updatePost(userId, updatePostDto);
             return new BaseResponse<>("게시글 수정 성공");
         } catch (BaseException e) {
-            return new BaseResponse<>(e.getMessage());
+            return new BaseResponse<>(e.getStatus());
         }
     }
 
@@ -63,9 +63,9 @@ public class CommunityController {
     public BaseResponse<List<PostEntity>> searchPosts(@RequestBody @Valid SearchPostDto searchPostDto) {
         try {
             List<PostEntity> posts = communityService.searchPosts(searchPostDto);
-            return new BaseResponse<>(posts,true, "게시글 검색 성공");
+            return new BaseResponse<>(posts);
         } catch (BaseException e) {
-            return new BaseResponse<>(null, false, e.getMessage());
+            return new BaseResponse<>(e.getStatus());
         }
     }
 }

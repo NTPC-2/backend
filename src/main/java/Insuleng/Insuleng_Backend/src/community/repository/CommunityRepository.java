@@ -117,7 +117,7 @@ public class CommunityRepository {
                     return user;
                 }
             });
-            post.setUser(user);  // UserEntity를 PostEntity에 설정
+            //post.setUser(user);  // UserEntity를 PostEntity에 설정
 
             return post;
         };
