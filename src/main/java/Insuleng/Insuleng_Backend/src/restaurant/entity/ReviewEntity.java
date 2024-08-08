@@ -51,4 +51,13 @@ public class ReviewEntity extends BaseEntity {
         this.star = star;
     }
 
+    public void deleteReview() {
+        this.changeToInActive();
+        if (this.reviewImgEntityList != null) {
+            for (ReviewImgEntity imgEntity : reviewImgEntityList) {
+                imgEntity.changeToInActive();
+            }
+        }
+    }
+
 }

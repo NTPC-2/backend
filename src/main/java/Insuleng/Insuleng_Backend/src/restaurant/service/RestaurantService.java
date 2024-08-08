@@ -11,6 +11,7 @@ import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -318,5 +319,21 @@ public class RestaurantService {
 
         return restaurantListDto;
 
+    }
+
+    @Transactional
+    public void deleteReview(Long userId, Long reviewId) {
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        ReviewEntity review = reviewRepository.findReviewEntityByReviewIdAndStatus(reviewId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.REVIEW_NO_EXIST));
+
+        if(review.getUserEntity() != user){
+            throw new BaseException(BaseResponseStatus.NO_PRIVILEGE);
+        }
+
+        review.deleteReview();
+        reviewRepository.save(review);
     }
 }
