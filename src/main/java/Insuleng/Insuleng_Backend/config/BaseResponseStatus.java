@@ -12,12 +12,18 @@ public enum BaseResponseStatus {
 
 
     //common
-    INVALID_INPUT(false, 2000, "입력한 값이 잘못됐습니다"),
+    INVALID_INPUT(false, 2000, "입출력 오류입니다"),
     USER_NO_EXIST(false, 2005, "존재하지 않은 유저입니다"),
     RESTAURANT_NO_EXIST(false, 2006, "존재하지 않은 음식점입니다"),
     REVIEW_NO_EXIST(false, 2007, "존재하지 않은 리뷰입니다"),
     INVALID_PARAMETER(false, 2010, "URl의 parameter 값이 잘못되었습니다"),
     NO_PRIVILEGE(false, 2100, "해당 글에 대한 권한이 없습니다"),
+
+
+    NO_IMAGE_EXIST(false, 2200, "이미지가 존재하지 않습니다"),
+    NO_FILE_EXTENSION(false, 2210,"파일 확장자가 없습니다"),
+    INVALID_FILE_EXTENSION(false, 2211, "이미지 파일이 아닙니다"),
+    PUT_OBJECT_EXCEPTION(false, 2215, "PutObjectRequest 오류입니다"),
 
     //회원가입
     USER_EMAIL_EMPTY(false, 3000, "이메일을 입력해주세요"),
