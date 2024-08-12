@@ -1,6 +1,8 @@
 package Insuleng.Insuleng_Backend.jwt;
 
 import Insuleng.Insuleng_Backend.auth.CustomUserDetails;
+import Insuleng.Insuleng_Backend.config.BaseException;
+import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -22,7 +24,7 @@ public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, BaseException {
 
         //헤더에서 Access 토큰을 꺼냄
         String accessToken = request.getHeader("Authorization");
@@ -38,11 +40,16 @@ public class JWTFilter extends OncePerRequestFilter {
         //헤더에 대한 유효성 검사
         if(!accessToken.startsWith("Bearer")){
             System.out.println("헤더를 다시 검토해주세요.");
-            filterChain.doFilter(request, response);
-            return;
+
+            throw new BaseException(BaseResponseStatus.INVALID_ACCESS_TOKEN);
         }
 
         String token = accessToken.split(" ")[1];
+
+        //서버에서 발급한 토큰이 맞는지 검사
+        if(jwtUtil.validToken(token) == false){
+            throw new BaseException(BaseResponseStatus.INVALID_ACCESS_TOKEN);
+        }
 
         //토큰 만료 여부 확인, 만료시 다음 필터로 넘어가지 않고 ExpiredException 예외를 띄움
         try{
@@ -53,10 +60,8 @@ public class JWTFilter extends OncePerRequestFilter {
             PrintWriter printWriter = response.getWriter();
             printWriter.print("access token is expired");
 
-            //추후 Exception Handler 생성 후 BaseException 으로 바꿔서 예외 던져주기
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            //중요한 건 토큰이 없으면 다음 필터로 넘기는데 토큰이 만료되면 다음 필터로 넘기지 않는다
-            return;
+           throw new BaseException(BaseResponseStatus.EXPIRED_ACCESS_TOKEN);
+            //토큰이 없으면 다음 필터로 넘기는데 토큰이 만료되면 다음 필터로 넘기지 않는다
         }
 
         //토큰이 만료되지 않았으면, 해당 토큰이 access인지 refresh인지 확인하는 작업을 거친다
@@ -68,9 +73,7 @@ public class JWTFilter extends OncePerRequestFilter {
             PrintWriter printWriter = response.getWriter();
             printWriter.print("invalid access token");
 
-            //추후 Exception Handler 생성 후 BaseException 으로 바꿔서 예외 던져주기
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+            throw new BaseException(BaseResponseStatus.INVALID_ACCESS_TOKEN);
         }
 
 

@@ -28,7 +28,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
     }
 
-    private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException{
+    private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException, BaseException{
 
         //uri와 method 방식을 통해 유효성 검사
         String requestUri = request.getRequestURI();
@@ -66,22 +66,19 @@ public class CustomLogoutFilter extends GenericFilterBean {
             jwtUtil.isExpired(refresh);
         }catch (ExpiredJwtException e){
 
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new BaseException(BaseResponseStatus.EXPIRED_REFRESH_TOKEN);
         }
 
         String category = jwtUtil.getCategory(refresh);
         if(!category.equals("refresh")){
 
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new BaseException(BaseResponseStatus.INVALID_REFRESH_TOKEN); // 메인 화면으로 돌려보내기
         }
 
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if(!isExist){
 
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new BaseException(BaseResponseStatus.INVALID_REFRESH_TOKEN); // 메인 화면으로 돌래보내기
         }
 
         refreshRepository.deleteByRefresh(refresh);

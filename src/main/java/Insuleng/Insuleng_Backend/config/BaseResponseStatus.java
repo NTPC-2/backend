@@ -29,9 +29,12 @@ public enum BaseResponseStatus {
     PUT_OBJECT_EXCEPTION(false, 2215, "PutObjectRequest 오류입니다"),
 
     //token관련 오류
-    NO_REFRESH_TOKEN(false, 2300, "refresh token이 존재하지 않습니다"),
-    EXPIRED_REFRESH_TOKEN(false,2305, "refresh token이 만료되었습니다"),
-    INVALID_REFRESH_TOKEN(false, 2310, "refresh token 값이 올바르지 않습니다"),
+    NO_ACCESS_TOEKN(false, 2300, "access token이 존재하지 않습니다"),
+    NO_REFRESH_TOKEN(false, 2301, "refresh token이 존재하지 않습니다"),
+    INVALID_ACCESS_TOKEN(false,2310, "access token 값이 올바르지 않습니다"),
+    INVALID_REFRESH_TOKEN(false, 2311, "refresh token 값이 올바르지 않습니다"),
+    EXPIRED_ACCESS_TOKEN(false, 2350, "access token이 만료되었습니다"),
+    EXPIRED_REFRESH_TOKEN(false,2351, "refresh token이 만료되었습니다"),
 
     ALREADY_LOGOUT(false, 2320, "이미 로그아웃 됐습니다"),
 
