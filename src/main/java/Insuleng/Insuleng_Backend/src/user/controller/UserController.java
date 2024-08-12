@@ -79,6 +79,11 @@ public class UserController {
     }
 
     @GetMapping("profiles/bookmark")
+    @Operation(summary = "내가 즐겨찾기한 음식점을 보여주는 api", description = "List<MyBookmarkDto> 이용", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+    })
     public BaseResponse<List<MyBookmarkDto>> getMyBookmarks(){
         try{
             Long userId = SecurityUtil.getCurrentUserId();
@@ -91,6 +96,11 @@ public class UserController {
     }
 
     @GetMapping("profiles/post")
+    @Operation(summary = "내가 작성한 글을 보여주는 api", description = "List<MyPostDto> 이용", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+    })
     public BaseResponse<List<MyPostDto>> getMyPosts(){
         try{
             Long userId = SecurityUtil.getCurrentUserId();
@@ -103,6 +113,11 @@ public class UserController {
     }
 
     @GetMapping("profiles/heart")
+    @Operation(summary = "내가 즐겨찾기한 음식점을 보여주는 api", description = "List<MyHeartDto> 이용", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+    })
     public BaseResponse<List<MyHeartDto>> getMyHearts(){
         try{
             Long userId = SecurityUtil.getCurrentUserId();
@@ -115,6 +130,11 @@ public class UserController {
     }
 
     @GetMapping("profiles/review")
+    @Operation(summary = "내가 즐겨찾기한 음식점을 보여주는 api", description = "List<MyReviewDto> 이용", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+    })
     public BaseResponse<List<MyReviewDto>> getMyReviews(){
         try{
             Long userId = SecurityUtil.getCurrentUserId();

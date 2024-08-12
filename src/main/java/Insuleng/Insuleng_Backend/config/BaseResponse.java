@@ -18,6 +18,7 @@ public class BaseResponse<T> {
     private String message;
     int code;
 
+
     public BaseResponse(T data){
         this.data = data;
         this.code = BaseResponseStatus.Success.getCode();
@@ -31,6 +32,13 @@ public class BaseResponse<T> {
         this.isSuccess = status.isSuccess();
         this.message = status.getMessage();
 
+    }
+
+    public BaseResponse(BaseResponseStatus status, String errorMessage){
+        this.data = null;
+        this.code = status.getCode();
+        this.isSuccess = status.isSuccess();
+        this.message = errorMessage;
     }
 
     //BaseException 이외의 예외 상황은 ExceptionHandler에서 구현하기

@@ -16,7 +16,7 @@ public class MyPageUpdateDto {
 
     @Schema(description = "닉네임", nullable = false, example = "눈사람")
     @NotBlank
-    @Size(min = 2, max = 6)
+    @Size(min = 2, max = 6, message = "닉네임은 2자에서 6자 사이로 지어주세요")
     private String nickname;
 
     @Schema(description = "전화번호", nullable = false, example = "01011112222")
