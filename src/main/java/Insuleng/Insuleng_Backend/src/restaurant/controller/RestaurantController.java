@@ -4,6 +4,7 @@ import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.*;
 import Insuleng.Insuleng_Backend.src.restaurant.service.RestaurantService;
+import Insuleng.Insuleng_Backend.src.storage.S3Uploader;
 import Insuleng.Insuleng_Backend.utils.SecurityUtil;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.sql.Update;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +22,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RestaurantController {
     private final RestaurantService restaurantService;
+
+    @Autowired
+    private S3Uploader s3Uploader;
 
     @GetMapping("restaurant/list")
     @Operation(summary = "음식점 리스트 보기 api", description = "카테고리에 맞는 음식접 리스트를 보여줍니다", responses = {
@@ -30,6 +35,7 @@ public class RestaurantController {
     public BaseResponse<RestaurantListDto> getRestaurantList(@RequestParam(value = "category") Long categoryId ){
         try{
             //categoryId 값에 1~7 이외의 정수가 들어오면 예외처리
+            //s3Uploader.deleteImageFromS3("ddd");
             return new BaseResponse<>(restaurantService.getRestaurantList(categoryId));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
