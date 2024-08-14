@@ -48,8 +48,8 @@ public enum BaseResponseStatus {
 
 
     POST_EMPTY(false, 4002, "게시글이 존재하지 않습니다"),
-    INVALID_USER(false, 4003, "유효하지 않은 사용자입니다");
-
+    INVALID_USER(false, 4003, "유효하지 않은 사용자입니다"),
+    KEYWORD_EMPTY(false,4004,"검색어가 존재하지 않습니다");
     private final boolean isSuccess;
     private final int code;
     private final String message;

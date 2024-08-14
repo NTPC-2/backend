@@ -1,17 +1,22 @@
 package Insuleng.Insuleng_Backend.src.community.service;
 
 import Insuleng.Insuleng_Backend.config.BaseException;
+import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.src.community.dto.PostDto;
-import Insuleng.Insuleng_Backend.src.community.dto.SearchPostDto;
+import Insuleng.Insuleng_Backend.src.community.dto.PostListDto;
+import Insuleng.Insuleng_Backend.src.community.dto.PostSummaryDto;
 import Insuleng.Insuleng_Backend.src.community.dto.UpdatePostDto;
-import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
 import Insuleng.Insuleng_Backend.src.community.repository.CommunityRepository;
-import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CommunityService {
@@ -79,9 +84,24 @@ public class CommunityService {
 
         communityRepository.deletePost(userId,  updatePostDto.getPostId());
     }
-    public List<PostEntity> searchPosts(SearchPostDto postSearchDto) {
-        return communityRepository.searchPosts(postSearchDto);
-    }
 
+    public PostListDto searchPosts(String keyword) {
+        //검색어가 없는경우
+        if (keyword == null || keyword.trim().isEmpty()) {
+            throw new BaseException(BaseResponseStatus.KEYWORD_EMPTY);
+        }
+        // 키워드 길이 제한
+        if (keyword.length() > 100) {
+            keyword = keyword.substring(0, 100);
+        }
+        List<PostSummaryDto> postSummaryList = communityRepository.searchPosts(keyword);
+
+        //결과가 없는경우
+        if (postSummaryList.isEmpty()) {
+            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+        }
+
+        return new PostListDto(postSummaryList.size(), postSummaryList);
+    }
 
 }

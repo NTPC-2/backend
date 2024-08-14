@@ -1,24 +1,17 @@
 package Insuleng.Insuleng_Backend.src.community.repository;
 
 import Insuleng.Insuleng_Backend.src.community.dto.PostDto;
-import Insuleng.Insuleng_Backend.src.community.dto.SearchPostDto;
+import Insuleng.Insuleng_Backend.src.community.dto.PostSummaryDto;
 import Insuleng.Insuleng_Backend.src.community.dto.UpdatePostDto;
-import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
-import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.temporal.Temporal;
 import java.util.List;
 
 @Repository
@@ -84,42 +77,31 @@ public class CommunityRepository {
                 userId);
 
     }
-    public List<PostEntity> searchPosts(SearchPostDto postSearchDto) {
-        String sql = "SELECT * FROM post WHERE status = 'ACTIVE' AND (topic LIKE ? OR contents LIKE ?)";
-        String searchPattern = "%" + postSearchDto.getKeyword() + "%";
-        return jdbcTemplate.query(sql, new Object[]{searchPattern, searchPattern}, postRowMapper());
+    public List<PostSummaryDto> searchPosts(String keyword) {
+        String sql = "SELECT p.post_id, p.topic, p.contents, p.count_like, p.count_comment, p.img_url, u.nickname " +
+                "FROM post p " +
+                "JOIN user u ON p.user_id = u.user_id " +
+                "WHERE (p.topic LIKE ? OR p.contents LIKE ?) AND p.status = 'ACTIVE'";
+
+
+        return jdbcTemplate.query(sql, new Object[]{"%" + keyword + "%", "%" + keyword + "%"}, (rs, rowNum) -> {
+            Long postId = rs.getLong("post_id");
+            String topic = rs.getString("topic");
+            String contents = rs.getString("contents");
+            int countLike = rs.getInt("count_like");
+            int countComment = rs.getInt("count_comment");
+            String imgUrl = rs.getString("img_url");
+            String authorName = rs.getString("nickname");
+
+            String contentsSnippet = getSnippet(contents);
+
+            return new PostSummaryDto(postId, topic, contentsSnippet, countLike, countComment, imgUrl, authorName);
+        });
+    }
+    private String getSnippet(String content) {
+        int snippetLength = 100; // 내용의 일부만 표시, 예: 100자
+        return content.length() > snippetLength ? content.substring(0, snippetLength) + "..." : content;
     }
 
-    private RowMapper<PostEntity> postRowMapper() {
-        return (rs, rowNum) -> {
 
-            PostEntity post = new PostEntity();
-            post.setPostId(rs.getLong("post_id"));
-            //post.setUserId(rs.getLong("user_id"));
-            post.setContents(rs.getString("contents"));
-            post.setImgUrl(rs.getString("img_url"));
-            post.setTopic(rs.getString("topic"));
-            post.setCountComment(rs.getInt("count_comment"));
-            post.setCountLike(rs.getInt("count_like"));
-            post.setCountParentComment(rs.getInt("count_parent_comment"));
-
-
-            // user_id를 사용하여 UserEntity 조회
-            Long userId = rs.getLong("user_id");
-            String userSql = "SELECT * FROM user WHERE user_id = ?";
-            UserEntity user = jdbcTemplate.queryForObject(userSql, new Object[]{userId}, new RowMapper<UserEntity>() {
-                @Override
-                public UserEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    UserEntity user = new UserEntity();
-                    user.setUserId(rs.getLong("user_id"));
-                    user.setNickname(rs.getString("nickname"));
-                    // 추가적인 UserEntity 필드 매핑
-                    return user;
-                }
-            });
-            //post.setUser(user);  // UserEntity를 PostEntity에 설정
-
-            return post;
-        };
-    }
 }

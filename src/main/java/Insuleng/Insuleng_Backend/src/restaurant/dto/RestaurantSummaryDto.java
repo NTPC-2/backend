@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class RestaurantSummaryDto {
 
     private String restaurantName;
@@ -30,6 +31,4 @@ public class RestaurantSummaryDto {
         this.averageStar = averageStar;
         mainMenuList = null;
     }
-
-
 }

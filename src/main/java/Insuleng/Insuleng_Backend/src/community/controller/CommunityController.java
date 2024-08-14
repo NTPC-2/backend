@@ -1,24 +1,26 @@
 package Insuleng.Insuleng_Backend.src.community.controller;
 
-import Insuleng.Insuleng_Backend.auth.CustomUserDetails;
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
-import Insuleng.Insuleng_Backend.src.community.dto.DeletePostDto;
-import Insuleng.Insuleng_Backend.src.community.dto.PostDto;
-import Insuleng.Insuleng_Backend.src.community.dto.SearchPostDto;
-import Insuleng.Insuleng_Backend.src.community.dto.UpdatePostDto;
-import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
+import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
+import Insuleng.Insuleng_Backend.src.community.dto.*;
 import Insuleng.Insuleng_Backend.src.community.service.CommunityService;
 import Insuleng.Insuleng_Backend.utils.SecurityUtil;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-import java.util.List;
+import java.util.Map;
 
 @RestController
 public class CommunityController {
     private final CommunityService communityService;
+    private final Logger logger = LoggerFactory.getLogger(CommunityService.class);
+
+
     public CommunityController(CommunityService communityService) {
         this.communityService = communityService;
     }
@@ -60,12 +62,15 @@ public class CommunityController {
     }
 
     @GetMapping("/post/search")
-    public BaseResponse<List<PostEntity>> searchPosts(@RequestBody @Valid SearchPostDto searchPostDto) {
+    public BaseResponse<PostListDto> searchPosts(@RequestBody(required = false) SearchRequestDto searchRequestDto) {
+        String keyword = (searchRequestDto != null) ? searchRequestDto.getKeyword() : null;
+
         try {
-            List<PostEntity> posts = communityService.searchPosts(searchPostDto);
-            return new BaseResponse<>(posts);
+            PostListDto result = communityService.searchPosts(keyword);
+            return new BaseResponse<>(result);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
 }
