@@ -133,4 +133,36 @@ public class CommunityRepository {
         jdbcTemplate.update(sql, postId);
     }
 
+
+    public boolean isCommentByIdAndStatusActive(Long commentId) {
+        String sql = "SELECT COUNT(*) FROM comment WHERE comment_id = ? AND status = 'ACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{commentId}, Integer.class);
+        return count != null && count > 0;
+    }
+    public boolean checkCommentLike(Long userId, Long commentId) {
+        String sql = "SELECT COUNT(*) FROM comment_like WHERE user_id = ? AND comment_id = ? AND status = 'ACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{userId, commentId}, Integer.class);
+        return count != null && count > 0;
+    }
+    public boolean checkCommentLikeInactive(Long userId, Long commentId) {
+        String sql = "SELECT COUNT(*) FROM comment_like WHERE user_id = ? AND comment_id = ? AND status = 'INACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{userId, commentId}, Integer.class);
+        return count != null && count > 0;
+    }
+    public void updateCommentLikeStatus(Long userId, Long commentId, Status status) {
+        String sql = "UPDATE comment_like SET status = ? WHERE user_id = ? AND comment_id = ?";
+        jdbcTemplate.update(sql, status.toString(), userId, commentId);
+    }
+    public void addCommentLike(Long userId, Long commentId) {
+        String sql = "INSERT INTO comment_like (user_id, comment_id, status) VALUES (?, ?, 'ACTIVE')";
+        jdbcTemplate.update(sql, userId, commentId);
+    }
+    public void increaseCommentLikeCount(Long commentId) {
+        String sql = "UPDATE comment SET count_like = count_like + 1 WHERE comment_id = ?";
+        jdbcTemplate.update(sql, commentId);
+    }
+    public void decreaseCommentLikeCount(Long commentId) {
+        String sql = "UPDATE comment SET count_like = count_like - 1 WHERE comment_id = ?";
+        jdbcTemplate.update(sql, commentId);
+    }
 }

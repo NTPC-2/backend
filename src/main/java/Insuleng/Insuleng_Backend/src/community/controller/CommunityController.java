@@ -96,5 +96,26 @@ public class CommunityController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+    @PostMapping("comment/addcommentlike/{comment_id}")
+    public BaseResponse<String> addCommentLike(@PathVariable("comment_id") Long commentId){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            communityService.addCommentLike(userId, commentId);
+            return new BaseResponse<>("좋아요를 눌렀습니다");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @PatchMapping("comment/removecommentlike/{comment_id}")
+    public BaseResponse<String> removeCommentLike(@PathVariable("comment_id") Long commentId){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            communityService.removeCommentLike(userId, commentId);
+            return new BaseResponse<>("좋아요를 해제했습니다");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
 }
