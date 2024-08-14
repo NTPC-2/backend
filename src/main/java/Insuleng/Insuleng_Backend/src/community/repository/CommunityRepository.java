@@ -77,7 +77,7 @@ public class CommunityRepository {
                 userId);
 
     }
-    public List<PostSummaryDto> searchPosts(String keyword) {
+    public List<PostSummaryDto> searchPosts(Long userId, String keyword) {
         String sql = "SELECT p.post_id, p.topic, p.contents, p.count_like, p.count_comment, p.img_url, u.nickname " +
                 "FROM post p " +
                 "JOIN user u ON p.user_id = u.user_id " +

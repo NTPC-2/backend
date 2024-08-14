@@ -85,7 +85,7 @@ public class CommunityService {
         communityRepository.deletePost(userId,  updatePostDto.getPostId());
     }
 
-    public PostListDto searchPosts(String keyword) {
+    public PostListDto searchPosts(Long userId, String keyword) {
         //검색어가 없는경우
         if (keyword == null || keyword.trim().isEmpty()) {
             throw new BaseException(BaseResponseStatus.KEYWORD_EMPTY);
@@ -94,7 +94,7 @@ public class CommunityService {
         if (keyword.length() > 100) {
             keyword = keyword.substring(0, 100);
         }
-        List<PostSummaryDto> postSummaryList = communityRepository.searchPosts(keyword);
+        List<PostSummaryDto> postSummaryList = communityRepository.searchPosts(userId, keyword);
 
         //결과가 없는경우
         if (postSummaryList.isEmpty()) {

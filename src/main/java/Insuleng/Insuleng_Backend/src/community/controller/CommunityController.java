@@ -63,14 +63,18 @@ public class CommunityController {
 
     @GetMapping("/post/search")
     public BaseResponse<PostListDto> searchPosts(@RequestBody(required = false) SearchRequestDto searchRequestDto) {
+        Long userId = SecurityUtil.getCurrentUserId();
+
         String keyword = (searchRequestDto != null) ? searchRequestDto.getKeyword() : null;
 
         try {
-            PostListDto result = communityService.searchPosts(keyword);
+            PostListDto result = communityService.searchPosts(userId, keyword);
             return new BaseResponse<>(result);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+//    @PostMapping("post/addheart")
 
 }
