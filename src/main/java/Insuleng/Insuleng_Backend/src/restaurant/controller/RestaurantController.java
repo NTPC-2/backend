@@ -2,6 +2,7 @@ package Insuleng.Insuleng_Backend.src.restaurant.controller;
 
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
+import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.*;
 import Insuleng.Insuleng_Backend.src.restaurant.service.RestaurantService;
 import Insuleng.Insuleng_Backend.src.storage.S3Uploader;
@@ -49,11 +50,13 @@ public class RestaurantController {
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
             @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
-            @ApiResponse(responseCode = "3600", description = "이미 음식점 좋아요가 되어있습니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "3600", description = "이미 음식점 좋아요가 되어있습니다")
     })
     public BaseResponse<String> addRestaurantHeart(@PathVariable("restaurant_id") Long restaurantId){
         try{
-            Long userId = SecurityUtil.getCurrentUserId();
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
             restaurantService.addRestaurantHeart(userId, restaurantId);
 
             return new BaseResponse<>("좋아요를 눌렀습니다");
@@ -68,12 +71,14 @@ public class RestaurantController {
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
             @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
             @ApiResponse(responseCode = "3601", description = "이미 음식점 좋아요가 해제되어있습니다"),
             @ApiResponse(responseCode = "3605",description = "음식점 좋아요 정보가 없습니다")
     })
     public BaseResponse<String> removeRestaurantHeart(@PathVariable("restaurant_id") Long restaurantId){
         try{
-            Long userId = SecurityUtil.getCurrentUserId();
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
             restaurantService.removeRestaurantHeart(userId, restaurantId);
 
             return new BaseResponse<>("좋아요를 해제했습니다");
@@ -88,11 +93,13 @@ public class RestaurantController {
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
             @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
             @ApiResponse(responseCode = "3610", description = "이미 음식점 즐겨찾기가 되어있습니다"),
     })
     public BaseResponse<String> addRestaurantBookmark(@PathVariable("restaurant_id") Long restaurantId){
         try{
-            Long userId = SecurityUtil.getCurrentUserId();
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
             restaurantService.addRestaurantBookmark(userId, restaurantId);
 
             return new BaseResponse<>("즐겨찾기를 눌렀습니다");
@@ -107,12 +114,14 @@ public class RestaurantController {
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
             @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
             @ApiResponse(responseCode = "3611", description = "이미 음식점 즐겨찾기가 해제되어있습니다"),
             @ApiResponse(responseCode = "3615",description = "음식점 즐겨찾기 정보가 없습니다")
     })
     public BaseResponse<String> removeRestaurantBookmark(@PathVariable("restaurant_id") Long restaurantId){
         try{
-            Long userId = SecurityUtil.getCurrentUserId();
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
             restaurantService.removeRestaurantBookmark(userId, restaurantId);
 
             return new BaseResponse<>("즐겨찾기를 해제했습니다");
@@ -128,10 +137,12 @@ public class RestaurantController {
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
             @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다")
     })
     public BaseResponse<String> writeReview(@PathVariable("restaurant_id") Long restaurantId, @RequestBody @Valid WriteReviewDto writeReviewDto){
         try{
-            Long userId = SecurityUtil.getCurrentUserId();
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
             restaurantService.writeReview(userId, restaurantId, writeReviewDto);
 
             return new BaseResponse<>("리뷰를 작성했습니다");
@@ -147,11 +158,13 @@ public class RestaurantController {
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
             @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
-            @ApiResponse(responseCode = "2100", description = "해당 글에 대한 권한이 없습니다")
+            @ApiResponse(responseCode = "2100", description = "해당 글에 대한 권한이 없습니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다")
     })
     public BaseResponse<ReviewFormDto> getReviewInfo(@PathVariable("review_id") Long reviewId){
         try{
-            Long userId = SecurityUtil.getCurrentUserId();
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
             ReviewFormDto reviewFormDto = restaurantService.getReviewInfo(userId, reviewId);
 
             return new BaseResponse<>(reviewFormDto);
@@ -171,11 +184,13 @@ public class RestaurantController {
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
             @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
-            @ApiResponse(responseCode = "2100", description = "해당 글에 대한 권한이 없습니다")
+            @ApiResponse(responseCode = "2100", description = "해당 글에 대한 권한이 없습니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다")
     })
     public BaseResponse<String> updateReview(@PathVariable("review_id") Long reviewId, @RequestBody @Valid UpdateReviewDto updateReviewDto){
         try{
-            Long userId = SecurityUtil.getCurrentUserId();
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
             restaurantService.updateReview(userId, reviewId, updateReviewDto);
 
             return new BaseResponse<>("리뷰를 수정했습니다");
@@ -191,10 +206,12 @@ public class RestaurantController {
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
             @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다")
     })
     public BaseResponse<String> deleteReview(@PathVariable("review_id") Long reviewId){
         try{
-            Long userId = SecurityUtil.getCurrentUserId();
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
             restaurantService.deleteReview(userId, reviewId);
 
             return new BaseResponse<>("리뷰를 삭제했습니다");

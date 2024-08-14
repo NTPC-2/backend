@@ -20,6 +20,7 @@ public enum BaseResponseStatus {
     RESTAURANT_NO_EXIST(false, 2006, "존재하지 않은 음식점입니다"),
     REVIEW_NO_EXIST(false, 2007, "존재하지 않은 리뷰입니다"),
     INVALID_PARAMETER(false, 2010, "URl의 parameter 값이 잘못되었습니다"),
+
     NO_PRIVILEGE(false, 2100, "해당 글에 대한 권한이 없습니다"),
 
 
@@ -35,6 +36,7 @@ public enum BaseResponseStatus {
     INVALID_REFRESH_TOKEN(false, 2311, "refresh token 값이 올바르지 않습니다"),
     EXPIRED_ACCESS_TOKEN(false, 2350, "access token이 만료되었습니다"),
     EXPIRED_REFRESH_TOKEN(false,2351, "refresh token이 만료되었습니다"),
+    REQUIRED_LOGIN(false, 2360, "로그인이 필요한 서비스입니다"),
 
     ALREADY_LOGOUT(false, 2320, "이미 로그아웃 됐습니다"),
 

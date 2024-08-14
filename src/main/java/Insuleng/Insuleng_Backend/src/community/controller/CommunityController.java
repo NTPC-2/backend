@@ -3,6 +3,7 @@ package Insuleng.Insuleng_Backend.src.community.controller;
 import Insuleng.Insuleng_Backend.auth.CustomUserDetails;
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
+import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.src.community.dto.DeletePostDto;
 import Insuleng.Insuleng_Backend.src.community.dto.PostDto;
 import Insuleng.Insuleng_Backend.src.community.dto.SearchPostDto;
@@ -26,7 +27,10 @@ public class CommunityController {
     @PostMapping ("/post")
     public BaseResponse<String> createPost (@RequestBody @Valid PostDto postDto){
         try {
-            Long userId = SecurityUtil.getCurrentUserId();
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
+
+            System.out.println("error 건너뜀");
             communityService.createPost(userId,postDto);
             return new BaseResponse<>("게시글 작성 성공");
         }
@@ -37,7 +41,8 @@ public class CommunityController {
     @DeleteMapping("/post/delete")
     public BaseResponse<String> deletePost (@RequestBody @Valid DeletePostDto deletePostDto){
         try {
-            Long userId = SecurityUtil.getCurrentUserId();
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
 
             communityService.deletePost(userId, deletePostDto.getPostId());
 
@@ -51,7 +56,10 @@ public class CommunityController {
     @PutMapping("/post/update")
     public BaseResponse<String> updatePost (@RequestBody @Valid UpdatePostDto updatePostDto){
         try{
-            Long userId = SecurityUtil.getCurrentUserId();
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
+
+
             communityService.updatePost(userId, updatePostDto);
             return new BaseResponse<>("게시글 수정 성공");
         } catch (BaseException e) {
