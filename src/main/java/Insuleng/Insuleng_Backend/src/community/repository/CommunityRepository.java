@@ -1,5 +1,6 @@
 package Insuleng.Insuleng_Backend.src.community.repository;
 
+import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.community.dto.PostDto;
 import Insuleng.Insuleng_Backend.src.community.dto.PostSummaryDto;
 import Insuleng.Insuleng_Backend.src.community.dto.UpdatePostDto;
@@ -103,5 +104,33 @@ public class CommunityRepository {
         return content.length() > snippetLength ? content.substring(0, snippetLength) + "..." : content;
     }
 
+    public boolean checkPostLike(Long userId, Long postId) {
+        String sql = "SELECT COUNT(*) FROM post_like WHERE user_id = ? AND post_id = ? AND status = 'ACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{userId, postId}, Integer.class);
+        return count != null && count > 0;
+    }
+    public void addPostLike(Long userId, Long postId) {
+        String sql = "INSERT INTO post_like (user_id, post_id, status) VALUES (?, ?, 'ACTIVE')";
+        jdbcTemplate.update(sql, userId, postId);
+    }
+
+    public boolean checkPostLikeInactive(Long userId, Long postId) {
+        String sql = "SELECT COUNT(*) FROM post_like WHERE user_id = ? AND post_id = ? AND status = 'INACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{userId, postId}, Integer.class);
+        return count != null && count > 0;
+    }
+
+    public void updatePostLikeStatus(Long userId, Long postId, Status status) {
+        String sql = "UPDATE post_like SET status = ? WHERE user_id = ? AND post_id = ?";
+        jdbcTemplate.update(sql, status.toString(), userId, postId);
+    }
+    public void increasePostLikeCount(Long postId) {
+        String sql = "UPDATE post SET count_like = count_like + 1 WHERE post_id = ?";
+        jdbcTemplate.update(sql, postId);
+    }
+    public void decreasePostLikeCount(Long postId) {
+        String sql = "UPDATE post SET count_like = count_like - 1 WHERE post_id = ?";
+        jdbcTemplate.update(sql, postId);
+    }
 
 }

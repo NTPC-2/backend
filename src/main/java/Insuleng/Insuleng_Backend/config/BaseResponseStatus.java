@@ -49,7 +49,13 @@ public enum BaseResponseStatus {
 
     POST_EMPTY(false, 4002, "게시글이 존재하지 않습니다"),
     INVALID_USER(false, 4003, "유효하지 않은 사용자입니다"),
-    KEYWORD_EMPTY(false,4004,"검색어가 존재하지 않습니다");
+    KEYWORD_EMPTY(false,4004,"검색어가 존재하지 않습니다"),
+
+    ALREADY_POST_LIKE(false, 4005, "이미 게시글 좋아요가 되어있습니다"),
+    ALREADY_POST_NO_LIKE(false, 4006, "이미 게시글 좋아요가 해제되어 있습니다"),
+    LIKE_NO_EXIST(false, 3605, "좋아요 정보가 없습니다");
+
+
     private final boolean isSuccess;
     private final int code;
     private final String message;

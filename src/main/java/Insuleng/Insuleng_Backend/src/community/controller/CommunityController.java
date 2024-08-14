@@ -75,6 +75,26 @@ public class CommunityController {
         }
     }
 
-//    @PostMapping("post/addheart")
+    @PostMapping("post/addpostlike/{post_id}")
+    public BaseResponse<String> addPostLike(@PathVariable("post_id") Long postId){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            communityService.addPostLike(userId, postId);
+            return new BaseResponse<>("좋아요를 눌렀습니다");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @PatchMapping("post/removepostlike/{post_id}")
+    public BaseResponse<String> removePostLike(@PathVariable("post_id") Long postId){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            communityService.removePostLike(userId, postId);
+            return new BaseResponse<>("좋아요를 해제했습니다");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
 }
