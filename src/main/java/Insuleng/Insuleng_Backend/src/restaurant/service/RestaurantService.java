@@ -8,9 +8,6 @@ import Insuleng.Insuleng_Backend.src.restaurant.entity.*;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.*;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,13 +47,14 @@ public class RestaurantService {
         for(int i =0; i< restaurantEntityList.size(); i++){
             RestaurantSummaryDto restaurantSummaryDto = new RestaurantSummaryDto
                     (
+                            null,
                             restaurantEntityList.get(i).getName(),
                             restaurantEntityList.get(i).getMainImg(),
                             restaurantEntityList.get(i).getCountHeart(),
                             restaurantEntityList.get(i).getCountBookmark(),
                             restaurantEntityList.get(i).getCountReview(),
                             restaurantEntityList.get(i).getAverageStar(),
-                            new ArrayList<>() // 임시 메인메뉴 리스트
+                            null // 임시 메인메뉴 리스트
                     );
             restaurantSummaryDtoList.add(restaurantSummaryDto);
         }
@@ -320,6 +318,21 @@ public class RestaurantService {
         return restaurantListDto;
 
     }
+
+    public RestaurantSearchListDto getRestaurantSearchList2(String keyword){
+
+        RestaurantSearchListDto restaurantSearchListDto = new RestaurantSearchListDto(); //return할 Dto
+
+        //native 쿼리에서는 일반 dto로 값을 받으면 No converter found capable of converting from type 오류가 뜨므로
+        //Interface 생성 후 이름을 맞추면 자동으로 alias에서 변수와 연결시켜준다.
+        List<RestaurantSummaryInterface> restaurantSummaryDtoList = restaurantRepository.findSearchList(keyword);
+
+        restaurantSearchListDto.setCountRestaurant(restaurantSummaryDtoList.size());
+        restaurantSearchListDto.setRestaurantSummaryDtoList(restaurantSummaryDtoList);
+
+        return restaurantSearchListDto;
+    }
+
 
     @Transactional
     public void deleteReview(Long userId, Long reviewId) {

@@ -13,15 +13,18 @@ import java.util.List;
 @NoArgsConstructor
 public class RestaurantSummaryDto {
 
+    private Long restaurantId;
     private String restaurantName;
     private String mainImg;
     private int countHeart;
     private int countBookmark;
     private int countReview;
     private double averageStar;
+    private String menuNames;
     private List<String> mainMenuList;
 
     public RestaurantSummaryDto(String restaurantName, String mainImg, int countHeart,int countBookmark, int countReview, double averageStar){
+        this.restaurantId = null;
         this.restaurantName = restaurantName;
         this.mainImg = mainImg;
         this.countHeart = countHeart;
@@ -31,5 +34,16 @@ public class RestaurantSummaryDto {
         mainMenuList = null;
     }
 
+    public RestaurantSummaryDto(Long restaurantId, String restaurantName, String mainImg, int countHeart,int countBookmark, int countReview, double averageStar, String menuNames){
+        this.restaurantId = restaurantId;
+        this.restaurantName = restaurantName;
+        this.mainImg = mainImg;
+        this.countHeart = countHeart;
+        this.countBookmark = countBookmark;
+        this.countReview = countReview;
+        this.averageStar = averageStar;
+        this.mainMenuList = null;
+        this.menuNames = menuNames;
+    }
 
 }

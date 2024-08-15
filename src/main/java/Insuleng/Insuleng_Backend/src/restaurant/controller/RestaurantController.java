@@ -7,17 +7,13 @@ import Insuleng.Insuleng_Backend.src.restaurant.dto.*;
 import Insuleng.Insuleng_Backend.src.restaurant.service.RestaurantService;
 import Insuleng.Insuleng_Backend.src.storage.S3Uploader;
 import Insuleng.Insuleng_Backend.utils.SecurityUtil;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -227,9 +223,9 @@ public class RestaurantController {
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "2010", description = "URl의 parameter 값이 잘못되었습니다")
     })
-    public BaseResponse<RestaurantListDto> getRestaurantSearchList(@RequestParam(value = "search") String keyword ){
+    public BaseResponse<RestaurantSearchListDto> getRestaurantSearchList(@RequestParam(value = "search") String keyword ){
         try{
-            return new BaseResponse<>(restaurantService.getRestaurantSearchList(keyword));
+            return new BaseResponse<>(restaurantService.getRestaurantSearchList2(keyword));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }

@@ -1,5 +1,6 @@
 package Insuleng.Insuleng_Backend.src.community.entity;
 
+import Insuleng.Insuleng_Backend.config.BaseEntity;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import org.hibernate.annotations.DynamicInsert;
 @Table(name = "comment_like")
 @NoArgsConstructor
 @DynamicInsert
-public class CommentLikeEntity {
+public class CommentLikeEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

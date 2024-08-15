@@ -2,6 +2,7 @@ package Insuleng.Insuleng_Backend.src.restaurant.repository;
 
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryDto;
+import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryInterface;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -55,4 +56,27 @@ public interface RestaurantRepository extends JpaRepository<RestaurantEntity, Lo
                     "order by r.averageStar desc "
     )
     public List<RestaurantSummaryDto> findSearchListByTagNameOrRestaurantName(@Param("keyword")String keyword);
+
+    @Query(
+            value = "SELECT r.restaurant_id as restaurantId, " +
+                    "       r.name as restaurantName," +
+                    "       r.main_img as mainImg, " +
+                    "       r.count_heart as countHeart, " +
+                    "       r.count_bookmark as countBookmark, " +
+                    "       r.count_review as countReview, " +
+                    "       r.average_star as averageStar, " +
+                    "       GROUP_CONCAT(DISTINCT m.menu_name SEPARATOR ', ') AS menuNames " +
+                    "FROM restaurant as r " +
+                    "LEFT JOIN menu as m ON r.restaurant_id = m.restaurant_id " +
+                    "LEFT JOIN restaurant_tag_map as rtm ON r.restaurant_id = rtm.restaurant_id " +
+                    "LEFT JOIN restaurant_tag as rt ON rtm.restaurant_tag_id = rt.restaurant_tag_id " +
+                    "WHERE r.name LIKE %:keyword% " +
+                    "   OR m.menu_name LIKE %:keyword% " +
+                    "   OR rt.tag_name LIKE %:keyword% " +
+                    "GROUP BY r.restaurant_id, r.name, r.main_img, r.count_heart, r.count_bookmark, r.count_review, r.average_star " +
+                    "ORDER BY r.average_star desc",
+            nativeQuery = true
+    )
+    public List<RestaurantSummaryInterface> findSearchList(@Param("keyword")String keyword);
+
 }
