@@ -2,7 +2,6 @@ package Insuleng.Insuleng_Backend.src.restaurant.repository;
 
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryDto;
-import Insuleng.Insuleng_Backend.src.restaurant.dto.SearchByMenuNameDto;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface RestaurantRepository extends JpaRepository<RestaurantEntity, Long> {
+public interface RestaurantRepository extends JpaRepository<RestaurantEntity, Long>, RestaurantQueryDslRepositoryCustom {
 
     Optional<RestaurantEntity> findRestaurantEntityByRestaurantIdAndStatus(Long restaurantId, Status status);
 

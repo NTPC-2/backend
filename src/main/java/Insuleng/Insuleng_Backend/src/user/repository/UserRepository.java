@@ -4,6 +4,7 @@ import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewEntity;
+import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewImgEntity;
 import Insuleng.Insuleng_Backend.src.user.dto.UserStatics;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -44,6 +45,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("select r from HeartEntity as h inner join h.restaurantEntity r where h.userEntity = :userEntity and h.userEntity.status =:status and h.status =:status")
     List<RestaurantEntity> findMyHearts(@Param("userEntity")UserEntity userEntity, @Param("status")Status status);
 
+    @Query("SELECT img.reviewImgUrl from ReviewImgEntity as img where img.status =:status and img.reviewEntity =:reviewEntity and img.reviewEntity.status =:status and img.reviewEntity.userEntity =:userEntity")
+    List<String> findMyReviewImg(@Param("status")Status status, @Param("reviewEntity")ReviewEntity reviewEntity, @Param("userEntity")UserEntity userEntity);
   /*  @Query("select r from ReviewEntity as r where r.userEntity = :userEntity and r.status =:status")
     List<ReviewEntity> findMyReviews(@Param("userEntity")UserEntity userEntity, @Param("status")Status status);*/
     //fetch join으로 연관된 이미지까지 한번에 가져오기

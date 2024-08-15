@@ -150,12 +150,8 @@ public class UserService {
                     .userNickname(user.getNickname())
                     .build();
 
-            if(reviewEntityList.get(i).getReviewImgEntityList().size() > 0){
-                myReviewDto.setFirstImg(reviewEntityList.get(i).getReviewImgEntityList().get(0).getReviewImgUrl());
-            }else{
-                myReviewDto.setFirstImg(null);
-            }
-            myReviewDtoList.add(myReviewDto);
+           myReviewDto.setImgList(userRepository.findMyReviewImg(Status.ACTIVE, reviewEntityList.get(i), user));
+           myReviewDtoList.add(myReviewDto);
         }
 
         return myReviewDtoList;
