@@ -79,4 +79,5 @@ public interface RestaurantRepository extends JpaRepository<RestaurantEntity, Lo
     )
     public List<RestaurantSummaryInterface> findSearchList(@Param("keyword")String keyword);
 
+
 }

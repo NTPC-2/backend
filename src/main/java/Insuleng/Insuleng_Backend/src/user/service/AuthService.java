@@ -61,7 +61,7 @@ public class AuthService {
     public EmailDto findEmail(FindEmailDto findEmailDto) {
 
         String nickname = findEmailDto.getNickname();
-        int phoneNumber = findEmailDto.getPhoneNumber();
+        String phoneNumber = findEmailDto.getPhoneNumber();
 
         UserEntity userEntity = userRepository.findUserEntityByNicknameAndPhoneNumberAndStatus(
                 nickname, phoneNumber, Status.ACTIVE).

@@ -33,7 +33,7 @@ public class UserEntity extends BaseEntity {
     private String nickname;
 
     @Column(nullable = false, length = 11)
-    private Integer phoneNumber;
+    private String phoneNumber;
 
     //enum 처리
     @Column(nullable = false)

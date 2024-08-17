@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Boolean existsUserEntitiesByNicknameAndStatus(String nickname, Status status);
 
     Optional<UserEntity> findUserEntityByEmailAndStatus(String email, Status status);
-    Optional<UserEntity> findUserEntityByNicknameAndPhoneNumberAndStatus(String nickname, int phoneNumber, Status status);
+    Optional<UserEntity> findUserEntityByNicknameAndPhoneNumberAndStatus(String nickname, String phoneNumber, Status status);
     Optional<UserEntity> findUserEntityByUserIdAndStatus(Long userId, Status status);
 
     //@Query 문에서 Entity가 아닌 Dto로 반환을 받고 싶다면 (select new Dto 클래스의 경로명) 을 지정해주면 된다.

@@ -24,6 +24,7 @@ public class RestaurantService {
     private final ReviewRepository reviewRepository;
     private final ReviewImgRepository reviewImgRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final MenuRepository menuRepository;
 
     public RestaurantListDto getRestaurantList(Long categoryId) {
         if(categoryId >7 || categoryId <0){
@@ -349,4 +350,54 @@ public class RestaurantService {
         review.deleteReview();
         reviewRepository.save(review);
     }
+
+    /*public RestaurantDetailsDto getRestaurantDetails(Long restaurantId) {
+
+        RestaurantDetailsDto restaurantDetailsDto = new RestaurantDetailsDto();
+        restaurantDetailsDto.setIsLogin(false);
+
+        RestaurantEntity restaurant = restaurantRepository.findRestaurantEntityByRestaurantIdAndStatus(restaurantId, Status.ACTIVE)
+                .orElseThrow(()->new BaseException(BaseResponseStatus.RESTAURANT_NO_EXIST));
+
+        restaurantDetailsDto.updateInfo(
+                restaurant.getName(),
+                restaurant.getDetails(),
+                restaurant.getCountBookmark(),
+                restaurant.getCountHeart(),
+                restaurant.getCountReview(),
+                restaurant.getAverageStar(),
+                restaurant.getAddress(),
+                restaurant.getPhoneNumber()
+                );
+
+        List<MenuEntity> menuEntityList = menuRepository.findMenuEntitiesByRestaurantEntityAndStatus(restaurant, Status.ACTIVE);
+
+        if(menuEntityList.size() == 0){
+            restaurantDetailsDto.setMenuMap(null);
+        }
+        else{
+            Map<>
+            for(int i = 0; i<menuEntityList.size(); i++){
+
+
+
+            }
+
+
+        }
+
+
+    }*/
+
+    /*public RestaurantDetailsDto getRestaurantDetails(Long userId, Long restaurantId) {
+
+        RestaurantDetailsDto restaurantDetailsDto = new RestaurantDetailsDto();
+        restaurantDetailsDto.setIsLogin(true);
+
+
+
+
+
+
+    }*/
 }

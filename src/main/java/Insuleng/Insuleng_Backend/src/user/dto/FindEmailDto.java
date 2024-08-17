@@ -19,5 +19,5 @@ public class FindEmailDto {
 
     @Schema(description = "전화번호", nullable = false, example = "01011112222")
     @NotNull(message = "전화번호를 입력해주세요")
-    private Integer phoneNumber;
+    private String phoneNumber;
 }

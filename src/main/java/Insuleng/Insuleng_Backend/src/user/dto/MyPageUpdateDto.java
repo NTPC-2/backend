@@ -22,7 +22,7 @@ public class MyPageUpdateDto {
     @Schema(description = "전화번호", nullable = false, example = "01011112222")
     //NotBlank는 String 타입에만 사용 가능
     @NotNull
-    private Integer phoneNumber;
+    private String phoneNumber;
 
     @Schema(description = "성별", nullable = false, example = "M", allowableValues = {"M", "W"})
     @NotNull

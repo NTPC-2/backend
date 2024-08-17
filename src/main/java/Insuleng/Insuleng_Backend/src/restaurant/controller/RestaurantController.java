@@ -231,5 +231,23 @@ public class RestaurantController {
         }
     }
 
+   /* @GetMapping("restaurant/{restaurant_id}")
+    public BaseResponse<RestaurantDetailsDto> getRestaurantDetails(@PathVariable("restaurant_id")Long restaurantId){
+        try {
+            Long userId = SecurityUtil.getCurrentUserId().orElse(null);
+
+            //로그인이 안 된 사용자 -> 즐겨찾기/좋아요 불가, 리뷰 보기 불가
+            if(userId == null){
+                return new BaseResponse<>(restaurantService.getRestaurantDetails(restaurantId));
+            }
+
+            //로그인된 사용자 -> 즐겨찾기/좋아요 가능, 리뷰 시청 가능
+            return new BaseResponse<>(restaurantService.getRestaurantDetails(userId, restaurantId));
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }*/
+
 
 }

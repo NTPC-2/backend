@@ -25,7 +25,7 @@ public class RestaurantEntity extends BaseEntity {
     private String name;
 
     @Column
-    private int phoneNumber;
+    private String phoneNumber;
 
     @Column(length = 500)
     private String details;
