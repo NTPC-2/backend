@@ -1,24 +1,18 @@
 package Insuleng.Insuleng_Backend.src.community.repository;
 
+import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.community.dto.PostDto;
-import Insuleng.Insuleng_Backend.src.community.dto.SearchPostDto;
+import Insuleng.Insuleng_Backend.src.community.dto.PostSummaryDto;
 import Insuleng.Insuleng_Backend.src.community.dto.UpdatePostDto;
-import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
-import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.temporal.Temporal;
 import java.util.List;
 
 @Repository
@@ -84,42 +78,118 @@ public class CommunityRepository {
                 userId);
 
     }
-    public List<PostEntity> searchPosts(SearchPostDto postSearchDto) {
-        String sql = "SELECT * FROM post WHERE status = 'ACTIVE' AND (topic LIKE ? OR contents LIKE ?)";
-        String searchPattern = "%" + postSearchDto.getKeyword() + "%";
-        return jdbcTemplate.query(sql, new Object[]{searchPattern, searchPattern}, postRowMapper());
+    public List<PostSummaryDto> searchPosts(Long userId, String keyword) {
+        String sql = "SELECT p.post_id, p.topic, p.contents, p.count_like, p.count_comment, p.img_url, u.nickname " +
+                "FROM post p " +
+                "JOIN user u ON p.user_id = u.user_id " +
+                "WHERE (p.topic LIKE ? OR p.contents LIKE ?) AND p.status = 'ACTIVE'";
+
+
+        return jdbcTemplate.query(sql, new Object[]{"%" + keyword + "%", "%" + keyword + "%"}, (rs, rowNum) -> {
+            Long postId = rs.getLong("post_id");
+            String topic = rs.getString("topic");
+            String contents = rs.getString("contents");
+            int countLike = rs.getInt("count_like");
+            int countComment = rs.getInt("count_comment");
+            String imgUrl = rs.getString("img_url");
+            String authorName = rs.getString("nickname");
+
+            String contentsSnippet = getSnippet(contents);
+
+            return new PostSummaryDto(postId, topic, contentsSnippet, countLike, countComment, imgUrl, authorName);
+        });
+    }
+    private String getSnippet(String content) {
+        int snippetLength = 100; // 내용의 일부만 표시, 예: 100자
+        return content.length() > snippetLength ? content.substring(0, snippetLength) + "..." : content;
     }
 
-    private RowMapper<PostEntity> postRowMapper() {
-        return (rs, rowNum) -> {
+    public boolean checkPostLike(Long userId, Long postId) {
+        String sql = "SELECT COUNT(*) FROM post_like WHERE user_id = ? AND post_id = ? AND status = 'ACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{userId, postId}, Integer.class);
+        return count != null && count > 0;
+    }
+    public void addPostLike(Long userId, Long postId) {
+        String sql = "INSERT INTO post_like (user_id, post_id, status) VALUES (?, ?, 'ACTIVE')";
+        jdbcTemplate.update(sql, userId, postId);
+    }
 
-            PostEntity post = new PostEntity();
-            post.setPostId(rs.getLong("post_id"));
-            //post.setUserId(rs.getLong("user_id"));
-            post.setContents(rs.getString("contents"));
-            post.setImgUrl(rs.getString("img_url"));
-            post.setTopic(rs.getString("topic"));
-            post.setCountComment(rs.getInt("count_comment"));
-            post.setCountLike(rs.getInt("count_like"));
-            post.setCountParentComment(rs.getInt("count_parent_comment"));
+    public boolean checkPostLikeInactive(Long userId, Long postId) {
+        String sql = "SELECT COUNT(*) FROM post_like WHERE user_id = ? AND post_id = ? AND status = 'INACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{userId, postId}, Integer.class);
+        return count != null && count > 0;
+    }
+
+    public void updatePostLikeStatus(Long userId, Long postId, Status status) {
+        String sql = "UPDATE post_like SET status = ? WHERE user_id = ? AND post_id = ?";
+        jdbcTemplate.update(sql, status.toString(), userId, postId);
+    }
+    public void increasePostLikeCount(Long postId) {
+        String sql = "UPDATE post SET count_like = count_like + 1 WHERE post_id = ?";
+        jdbcTemplate.update(sql, postId);
+    }
+    public void decreasePostLikeCount(Long postId) {
+        String sql = "UPDATE post SET count_like = count_like - 1 WHERE post_id = ?";
+        jdbcTemplate.update(sql, postId);
+    }
 
 
-            // user_id를 사용하여 UserEntity 조회
-            Long userId = rs.getLong("user_id");
-            String userSql = "SELECT * FROM user WHERE user_id = ?";
-            UserEntity user = jdbcTemplate.queryForObject(userSql, new Object[]{userId}, new RowMapper<UserEntity>() {
-                @Override
-                public UserEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    UserEntity user = new UserEntity();
-                    user.setUserId(rs.getLong("user_id"));
-                    user.setNickname(rs.getString("nickname"));
-                    // 추가적인 UserEntity 필드 매핑
-                    return user;
-                }
-            });
-            //post.setUser(user);  // UserEntity를 PostEntity에 설정
+    public boolean isCommentByIdAndStatusActive(Long commentId) {
+        String sql = "SELECT COUNT(*) FROM comment WHERE comment_id = ? AND status = 'ACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{commentId}, Integer.class);
+        return count != null && count > 0;
+    }
+    public boolean checkCommentLike(Long userId, Long commentId) {
+        String sql = "SELECT COUNT(*) FROM comment_like WHERE user_id = ? AND comment_id = ? AND status = 'ACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{userId, commentId}, Integer.class);
+        return count != null && count > 0;
+    }
+    public boolean checkCommentLikeInactive(Long userId, Long commentId) {
+        String sql = "SELECT COUNT(*) FROM comment_like WHERE user_id = ? AND comment_id = ? AND status = 'INACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{userId, commentId}, Integer.class);
+        return count != null && count > 0;
+    }
+    public void updateCommentLikeStatus(Long userId, Long commentId, Status status) {
+        String sql = "UPDATE comment_like SET status = ? WHERE user_id = ? AND comment_id = ?";
+        jdbcTemplate.update(sql, status.toString(), userId, commentId);
+    }
+    public void addCommentLike(Long userId, Long commentId) {
+        String sql = "INSERT INTO comment_like (user_id, comment_id, status) VALUES (?, ?, 'ACTIVE')";
+        jdbcTemplate.update(sql, userId, commentId);
+    }
+    public void increaseCommentLikeCount(Long commentId) {
+        String sql = "UPDATE comment SET count_like = count_like + 1 WHERE comment_id = ?";
+        jdbcTemplate.update(sql, commentId);
+    }
+    public void decreaseCommentLikeCount(Long commentId) {
+        String sql = "UPDATE comment SET count_like = count_like - 1 WHERE comment_id = ?";
+        jdbcTemplate.update(sql, commentId);
+    }
 
-            return post;
-        };
+    public boolean checkPostScrap(Long userId, Long postId) {
+        String sql = "SELECT COUNT(*) FROM scrap WHERE user_id = ? AND post_id = ? AND status = 'ACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{userId, postId}, Integer.class);
+        return count != null && count > 0;
+    }
+    public boolean checkPostScrapInactive(Long userId, Long postId) {
+        String sql = "SELECT COUNT(*) FROM scrap WHERE user_id = ? AND post_id = ? AND status = 'INACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{userId, postId}, Integer.class);
+        return count != null && count > 0;
+    }
+    public void updatePostScrapStatus(Long userId, Long postId, Status status) {
+        String sql = "UPDATE scrap SET status = ? WHERE user_id = ? AND post_id = ?";
+        jdbcTemplate.update(sql, status.toString(), userId, postId);
+    }
+    public void addPostScrap(Long userId, Long postId) {
+        String sql = "INSERT INTO scrap (user_id, post_id, status) VALUES (?, ?, 'ACTIVE')";
+        jdbcTemplate.update(sql, userId, postId);
+    }
+    public void increasePostScrapCount(Long postId) {
+        String sql = "UPDATE post SET count_scrap = count_scrap + 1 WHERE post_id = ?";
+        jdbcTemplate.update(sql, postId);
+    }
+    public void decreasePostScrapCount(Long postId) {
+        String sql = "UPDATE post SET count_scrap = count_scrap - 1 WHERE post_id = ?";
+        jdbcTemplate.update(sql, postId);
     }
 }

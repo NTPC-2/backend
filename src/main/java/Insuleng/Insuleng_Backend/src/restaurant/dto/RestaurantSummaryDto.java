@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class RestaurantSummaryDto {
 
     private Long restaurantId;

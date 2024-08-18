@@ -1,17 +1,23 @@
 package Insuleng.Insuleng_Backend.src.community.service;
 
 import Insuleng.Insuleng_Backend.config.BaseException;
+import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
+import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.community.dto.PostDto;
-import Insuleng.Insuleng_Backend.src.community.dto.SearchPostDto;
+import Insuleng.Insuleng_Backend.src.community.dto.PostListDto;
+import Insuleng.Insuleng_Backend.src.community.dto.PostSummaryDto;
 import Insuleng.Insuleng_Backend.src.community.dto.UpdatePostDto;
-import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
 import Insuleng.Insuleng_Backend.src.community.repository.CommunityRepository;
-import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CommunityService {
@@ -79,9 +85,183 @@ public class CommunityService {
 
         communityRepository.deletePost(userId,  updatePostDto.getPostId());
     }
-    public List<PostEntity> searchPosts(SearchPostDto postSearchDto) {
-        return communityRepository.searchPosts(postSearchDto);
+
+    public PostListDto searchPosts(Long userId, String keyword) {
+        //검색어가 없는경우
+        if (keyword == null || keyword.trim().isEmpty()) {
+            throw new BaseException(BaseResponseStatus.KEYWORD_EMPTY);
+        }
+        // 키워드 길이 제한
+        if (keyword.length() > 100) {
+            keyword = keyword.substring(0, 100);
+        }
+        List<PostSummaryDto> postSummaryList = communityRepository.searchPosts(userId, keyword);
+
+        //결과가 없는경우
+        if (postSummaryList.isEmpty()) {
+            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+        }
+        return new PostListDto(postSummaryList.size(), postSummaryList);
     }
 
+    public void addPostLike(Long userId, Long postId) {
+        // 존재하는 유저인지
+        boolean userExist = communityRepository.testUserId(userId);
+        if (!userExist) {
+            throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
+        }
 
+        //postid존재 + status ACTIVE 검사
+        boolean postExist = communityRepository.isPostByIdAndStatusActive(postId);
+        if (!postExist) {
+            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+        }
+
+        //like 이미 되어있는지
+        boolean alreadyLiked = communityRepository.checkPostLike(userId, postId);
+        if (alreadyLiked) {
+            throw new BaseException(BaseResponseStatus.ALREADY_POST_LIKE);
+        }
+
+        // 이전에 like가 해제된 기록 확인
+        boolean previouslyLiked = communityRepository.checkPostLikeInactive(userId, postId);
+        if (previouslyLiked) {
+            // 이전 기록이 있으면 다시 활성화 (새 레코드 추가하지 않음)
+            communityRepository.updatePostLikeStatus(userId, postId, Status.ACTIVE);
+        } else {
+            // 이전 기록이 없으면 새로운 like
+            communityRepository.addPostLike(userId, postId);
+        }
+
+        // 좋아요 수 증가
+        communityRepository.increasePostLikeCount(postId);
+    }
+
+    public void removePostLike(Long userId, Long postId) {
+        //존재하는 유저인지
+        boolean userExist = communityRepository.testUserId(userId);
+        if(userExist == false){
+            throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
+        }
+        //postid존재 + status ACTIVE 검사
+        boolean postExist = communityRepository.isPostByIdAndStatusActive(postId);
+        if (!postExist) {
+            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+        }
+        //like 이미 해제되어있는지
+        boolean alreadyLiked = communityRepository.checkPostLike(userId, postId);
+        if (!alreadyLiked) {
+            throw new BaseException(BaseResponseStatus.ALREADY_POST_NO_LIKE);
+        }
+
+        communityRepository.updatePostLikeStatus(userId, postId, Status.INACTIVE);
+        communityRepository.decreasePostLikeCount(postId);
+    }
+
+    public void addCommentLike(Long userId, Long commentId) {
+        // 존재하는 유저인지
+        boolean userExist = communityRepository.testUserId(userId);
+        if (!userExist) {
+            throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
+        }
+
+        //commentid존재 + status ACTIVE 검사
+        boolean commentExist = communityRepository.isCommentByIdAndStatusActive(commentId);
+        if (!commentExist) {
+            throw new BaseException(BaseResponseStatus.COMMENT_EMPTY);
+        }
+
+        //like 이미 되어있는지
+        boolean alreadyLiked = communityRepository.checkCommentLike(userId, commentId);
+        if (alreadyLiked) {
+            throw new BaseException(BaseResponseStatus.ALREADY_COMMENT_LIKE);
+        }
+
+        // 이전에 like가 해제된 기록 확인
+        boolean previouslyLiked = communityRepository.checkCommentLikeInactive(userId, commentId);
+        if (previouslyLiked) {
+            // 이전 기록이 있으면 다시 활성화 (새 레코드 추가하지 않음)
+            communityRepository.updateCommentLikeStatus(userId, commentId, Status.ACTIVE);
+        } else {
+            // 이전 기록이 없으면 새로운 like
+            communityRepository.addCommentLike(userId, commentId);
+        }
+
+        // 좋아요 수 증가
+        communityRepository.increaseCommentLikeCount(commentId);
+    }
+
+    public void removeCommentLike(Long userId, Long commentId) {
+        //존재하는 유저인지
+        boolean userExist = communityRepository.testUserId(userId);
+        if(userExist == false){
+            throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
+        }
+        //commentid존재 + status ACTIVE 검사
+        boolean commentExist = communityRepository.isCommentByIdAndStatusActive(commentId);
+        if (!commentExist) {
+            throw new BaseException(BaseResponseStatus.COMMENT_EMPTY);
+        }
+        //like 이미 해제되어있는지
+        boolean alreadyLiked = communityRepository.checkCommentLike(userId, commentId);
+        if (!alreadyLiked) {
+            throw new BaseException(BaseResponseStatus.ALREADY_COMMENT_NO_LIKE);
+        }
+
+        communityRepository.updateCommentLikeStatus(userId, commentId, Status.INACTIVE);
+        communityRepository.decreaseCommentLikeCount(commentId);
+    }
+
+    public void addPostScrap(Long userId, Long postId) {
+        // 존재하는 유저인지
+        boolean userExist = communityRepository.testUserId(userId);
+        if (!userExist) {
+            throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
+        }
+
+        //postid존재 + status ACTIVE 검사
+        boolean postExist = communityRepository.isPostByIdAndStatusActive(postId);
+        if (!postExist) {
+            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+        }
+
+        //like 이미 되어있는지
+        boolean alreadyScrap = communityRepository.checkPostScrap(userId, postId);
+        if (alreadyScrap) {
+            throw new BaseException(BaseResponseStatus.ALREADY_POST_SCRAP);
+        }
+
+        // 이전에 like가 해제된 기록 확인
+        boolean previouslyScrap = communityRepository.checkPostScrapInactive(userId, postId);
+        if (previouslyScrap) {
+            // 이전 기록이 있으면 다시 활성화 (새 레코드 추가하지 않음)
+            communityRepository.updatePostScrapStatus(userId, postId, Status.ACTIVE);
+        } else {
+            // 이전 기록이 없으면 새로운 like
+            communityRepository.addPostScrap(userId, postId);
+        }
+
+        // 좋아요 수 증가
+        communityRepository.increasePostScrapCount(postId);
+    }
+    public void removePostScrap(Long userId, Long postId) {
+        //존재하는 유저인지
+        boolean userExist = communityRepository.testUserId(userId);
+        if(userExist == false){
+            throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
+        }
+        //postid존재 + status ACTIVE 검사
+        boolean postExist = communityRepository.isPostByIdAndStatusActive(postId);
+        if (!postExist) {
+            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+        }
+        //scrap 이미 해제되어있는지
+        boolean alreadyScrap = communityRepository.checkPostScrap(userId, postId);
+        if (!alreadyScrap) {
+            throw new BaseException(BaseResponseStatus.ALREADY_POST_NO_SCRAP);
+        }
+
+        communityRepository.updatePostScrapStatus(userId, postId, Status.INACTIVE);
+        communityRepository.decreasePostScrapCount(postId);
+    }
 }
