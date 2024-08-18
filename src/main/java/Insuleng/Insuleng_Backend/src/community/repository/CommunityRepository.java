@@ -165,4 +165,31 @@ public class CommunityRepository {
         String sql = "UPDATE comment SET count_like = count_like - 1 WHERE comment_id = ?";
         jdbcTemplate.update(sql, commentId);
     }
+
+    public boolean checkPostScrap(Long userId, Long postId) {
+        String sql = "SELECT COUNT(*) FROM scrap WHERE user_id = ? AND post_id = ? AND status = 'ACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{userId, postId}, Integer.class);
+        return count != null && count > 0;
+    }
+    public boolean checkPostScrapInactive(Long userId, Long postId) {
+        String sql = "SELECT COUNT(*) FROM scrap WHERE user_id = ? AND post_id = ? AND status = 'INACTIVE'";
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{userId, postId}, Integer.class);
+        return count != null && count > 0;
+    }
+    public void updatePostScrapStatus(Long userId, Long postId, Status status) {
+        String sql = "UPDATE scrap SET status = ? WHERE user_id = ? AND post_id = ?";
+        jdbcTemplate.update(sql, status.toString(), userId, postId);
+    }
+    public void addPostScrap(Long userId, Long postId) {
+        String sql = "INSERT INTO scrap (user_id, post_id, status) VALUES (?, ?, 'ACTIVE')";
+        jdbcTemplate.update(sql, userId, postId);
+    }
+//    public void increasePostScrapCount(Long postId) {
+//        String sql = "UPDATE post SET count_scrap = count_scrap + 1 WHERE post_id = ?";
+//        jdbcTemplate.update(sql, postId);
+//    }
+//    public void decreasePostScrapCount(Long postId) {
+//        String sql = "UPDATE post SET count_scrap = count_scrap - 1 WHERE post_id = ?";
+//        jdbcTemplate.update(sql, postId);
+//    }
 }

@@ -54,9 +54,11 @@ public enum BaseResponseStatus {
 
     ALREADY_POST_LIKE(false, 4005, "이미 게시글 좋아요가 되어있습니다"),
     ALREADY_POST_NO_LIKE(false, 4006, "이미 게시글 좋아요가 해제되어 있습니다"),
-    ALREADY_COMMENT_LIKE(false, 4005, "이미 댓글 좋아요가 되어있습니다"),
-    ALREADY_COMMENT_NO_LIKE(false, 4006, "이미 댓글 좋아요가 해제되어 있습니다"),
-    LIKE_NO_EXIST(false, 3605, "좋아요 정보가 없습니다");
+    ALREADY_COMMENT_LIKE(false, 4007, "이미 댓글 좋아요가 되어있습니다"),
+    ALREADY_COMMENT_NO_LIKE(false, 4008, "이미 댓글 좋아요가 해제되어 있습니다"),
+    LIKE_NO_EXIST(false, 4009, "좋아요 정보가 없습니다"),
+    ALREADY_POST_SCRAP(false, 4010, "이미 게시글 스크랩이 되어있습니다"),
+    ALREADY_POST_NO_SCRAP(false, 4011, "이미 게시글 스크랩이 해제되어 있습니다");
 
 
     private final boolean isSuccess;

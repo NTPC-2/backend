@@ -118,4 +118,25 @@ public class CommunityController {
         }
     }
 
+    @PostMapping("post/addpostscrap/{post_id}")
+    public BaseResponse<String> addPostScrap(@PathVariable("post_id") Long postId){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            communityService.addPostScrap(userId, postId);
+            return new BaseResponse<>("게시글을 스크랩 했습니다");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+    @PatchMapping("post/removepostscrap/{post_id}")
+    public BaseResponse<String> removePostScrap(@PathVariable("post_id") Long postId){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId();
+            communityService.removePostScrap(userId, postId);
+            return new BaseResponse<>("스크랩을 해제했습니다");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
 }

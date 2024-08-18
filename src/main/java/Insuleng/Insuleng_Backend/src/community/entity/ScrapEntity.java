@@ -27,5 +27,4 @@ public class ScrapEntity extends BaseEntity {
     @JoinColumn(name = "post_id")
     private PostEntity postEntity;
 
-
 }

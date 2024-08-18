@@ -211,4 +211,57 @@ public class CommunityService {
         communityRepository.updateCommentLikeStatus(userId, commentId, Status.INACTIVE);
         communityRepository.decreaseCommentLikeCount(commentId);
     }
+
+    public void addPostScrap(Long userId, Long postId) {
+        // 존재하는 유저인지
+        boolean userExist = communityRepository.testUserId(userId);
+        if (!userExist) {
+            throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
+        }
+
+        //postid존재 + status ACTIVE 검사
+        boolean postExist = communityRepository.isPostByIdAndStatusActive(postId);
+        if (!postExist) {
+            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+        }
+
+        //like 이미 되어있는지
+        boolean alreadyScrap = communityRepository.checkPostScrap(userId, postId);
+        if (alreadyScrap) {
+            throw new BaseException(BaseResponseStatus.ALREADY_POST_SCRAP);
+        }
+
+        // 이전에 like가 해제된 기록 확인
+        boolean previouslyScrap = communityRepository.checkPostScrapInactive(userId, postId);
+        if (previouslyScrap) {
+            // 이전 기록이 있으면 다시 활성화 (새 레코드 추가하지 않음)
+            communityRepository.updatePostScrapStatus(userId, postId, Status.ACTIVE);
+        } else {
+            // 이전 기록이 없으면 새로운 like
+            communityRepository.addPostScrap(userId, postId);
+        }
+
+        // 좋아요 수 증가
+//        communityRepository.increasePostScrapCount(postId);
+    }
+    public void removePostScrap(Long userId, Long postId) {
+        //존재하는 유저인지
+        boolean userExist = communityRepository.testUserId(userId);
+        if(userExist == false){
+            throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
+        }
+        //postid존재 + status ACTIVE 검사
+        boolean postExist = communityRepository.isPostByIdAndStatusActive(postId);
+        if (!postExist) {
+            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+        }
+        //scrap 이미 해제되어있는지
+        boolean alreadyScrap = communityRepository.checkPostScrap(userId, postId);
+        if (!alreadyScrap) {
+            throw new BaseException(BaseResponseStatus.ALREADY_POST_NO_SCRAP);
+        }
+
+        communityRepository.updatePostScrapStatus(userId, postId, Status.INACTIVE);
+//        communityRepository.decreasePostScrapCount(postId);
+    }
 }
