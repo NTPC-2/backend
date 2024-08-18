@@ -242,7 +242,7 @@ public class CommunityService {
         }
 
         // 좋아요 수 증가
-//        communityRepository.increasePostScrapCount(postId);
+        communityRepository.increasePostScrapCount(postId);
     }
     public void removePostScrap(Long userId, Long postId) {
         //존재하는 유저인지
@@ -262,6 +262,6 @@ public class CommunityService {
         }
 
         communityRepository.updatePostScrapStatus(userId, postId, Status.INACTIVE);
-//        communityRepository.decreasePostScrapCount(postId);
+        communityRepository.decreasePostScrapCount(postId);
     }
 }

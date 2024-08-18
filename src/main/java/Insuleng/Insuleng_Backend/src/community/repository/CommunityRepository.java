@@ -184,12 +184,12 @@ public class CommunityRepository {
         String sql = "INSERT INTO scrap (user_id, post_id, status) VALUES (?, ?, 'ACTIVE')";
         jdbcTemplate.update(sql, userId, postId);
     }
-//    public void increasePostScrapCount(Long postId) {
-//        String sql = "UPDATE post SET count_scrap = count_scrap + 1 WHERE post_id = ?";
-//        jdbcTemplate.update(sql, postId);
-//    }
-//    public void decreasePostScrapCount(Long postId) {
-//        String sql = "UPDATE post SET count_scrap = count_scrap - 1 WHERE post_id = ?";
-//        jdbcTemplate.update(sql, postId);
-//    }
+    public void increasePostScrapCount(Long postId) {
+        String sql = "UPDATE post SET count_scrap = count_scrap + 1 WHERE post_id = ?";
+        jdbcTemplate.update(sql, postId);
+    }
+    public void decreasePostScrapCount(Long postId) {
+        String sql = "UPDATE post SET count_scrap = count_scrap - 1 WHERE post_id = ?";
+        jdbcTemplate.update(sql, postId);
+    }
 }

@@ -32,6 +32,8 @@ public class PostEntity extends BaseEntity {
     private int countComment;
     @Column(name = "count_parent_comment", nullable = false)
     private int countParentComment;
+    @Column(name = "count_scrap", nullable = false)
+    private int countScrap;
 
     private String imgUrl;
 
