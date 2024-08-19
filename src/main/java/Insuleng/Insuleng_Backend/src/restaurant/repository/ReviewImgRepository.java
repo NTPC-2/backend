@@ -3,6 +3,7 @@ package Insuleng.Insuleng_Backend.src.restaurant.repository;
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewImgEntity;
+import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,5 +26,6 @@ public interface ReviewImgRepository extends JpaRepository<ReviewImgEntity, Long
 
     List<ReviewImgEntity> findReviewImgEntitiesByReviewEntityAndStatus(ReviewEntity reviewEntity, Status status);
 
-
+    @Query("SELECT img.reviewImgUrl from ReviewImgEntity as img where img.status =:status and img.reviewEntity =:reviewEntity and img.reviewEntity.status =:status")
+    List<String> findReviewImg(@Param("status")Status status, @Param("reviewEntity")ReviewEntity reviewEntity);
 }

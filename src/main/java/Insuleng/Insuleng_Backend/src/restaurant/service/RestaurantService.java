@@ -6,14 +6,18 @@ import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.*;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.*;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.*;
+import Insuleng.Insuleng_Backend.src.user.dto.MyReviewDto;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
+import Insuleng.Insuleng_Backend.utils.TimeUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -338,10 +342,13 @@ public class RestaurantService {
         reviewRepository.save(review);
     }
 
-    /*public RestaurantDetailsDto getRestaurantDetails(Long restaurantId) {
+
+    public RestaurantDetailsDto getRestaurantDetails(Long restaurantId) {
 
         RestaurantDetailsDto restaurantDetailsDto = new RestaurantDetailsDto();
         restaurantDetailsDto.setIsLogin(false);
+        restaurantDetailsDto.setIsHeart(false);
+        restaurantDetailsDto.setIsBookmark(false);
 
         RestaurantEntity restaurant = restaurantRepository.findRestaurantEntityByRestaurantIdAndStatus(restaurantId, Status.ACTIVE)
                 .orElseThrow(()->new BaseException(BaseResponseStatus.RESTAURANT_NO_EXIST));
@@ -363,28 +370,72 @@ public class RestaurantService {
             restaurantDetailsDto.setMenuMap(null);
         }
         else{
-            Map<>
+            Map<String, Integer> menuMap = new HashMap<>();
             for(int i = 0; i<menuEntityList.size(); i++){
-
-
-
+                menuMap.put(menuEntityList.get(i).getMenuName(), menuEntityList.get(i).getCost());
             }
-
-
+            restaurantDetailsDto.setMenuMap(menuMap);
         }
 
+        return restaurantDetailsDto;
+    }
 
-    }*/
+    public RestaurantDetailsDto getRestaurantDetails(Long userId, Long restaurantId) {
 
-    /*public RestaurantDetailsDto getRestaurantDetails(Long userId, Long restaurantId) {
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
 
         RestaurantDetailsDto restaurantDetailsDto = new RestaurantDetailsDto();
         restaurantDetailsDto.setIsLogin(true);
+        restaurantDetailsDto.setIsHeart(heartRepository.existsByUserEntityAndStatus(user, Status.ACTIVE));
+        restaurantDetailsDto.setIsBookmark(bookmarkRepository.existsByUserEntityAndStatus(user, Status.ACTIVE));
 
+        RestaurantEntity restaurant = restaurantRepository.findRestaurantEntityByRestaurantIdAndStatus(restaurantId, Status.ACTIVE)
+                .orElseThrow(()->new BaseException(BaseResponseStatus.RESTAURANT_NO_EXIST));
 
+        restaurantDetailsDto.updateInfo(
+                restaurant.getName(),
+                restaurant.getDetails(),
+                restaurant.getCountBookmark(),
+                restaurant.getCountHeart(),
+                restaurant.getCountReview(),
+                restaurant.getAverageStar(),
+                restaurant.getAddress(),
+                restaurant.getPhoneNumber()
+        );
 
+        List<MenuEntity> menuEntityList = menuRepository.findMenuEntitiesByRestaurantEntityAndStatus(restaurant, Status.ACTIVE);
 
+        if(menuEntityList.size() == 0){
+            restaurantDetailsDto.setMenuMap(null);
+        }
+        else{
+            Map<String, Integer> menuMap = new HashMap<>();
+            for(int i = 0; i<menuEntityList.size(); i++){
+                menuMap.put(menuEntityList.get(i).getMenuName(), menuEntityList.get(i).getCost());
+            }
+            restaurantDetailsDto.setMenuMap(menuMap);
+        }
 
+        List<ReviewEntity> reviewEntityList = reviewRepository.findReviewEntitiesByUserEntityAndStatus(user, Status.ACTIVE);
+        List<ReviewDetailsDto> reviewDetailsDtoList = new ArrayList<>();
 
-    }*/
+        for(int i = 0; i<reviewEntityList.size() ; i++){
+            ReviewDetailsDto reviewDetailsDto = ReviewDetailsDto.builder()
+                    .restaurantName(reviewEntityList.get(i).getRestaurantEntity().getName())
+                    .star(reviewEntityList.get(i).getStar())
+                    .contents(reviewEntityList.get(i).getContents())
+                    .timeLine(TimeUtil.getTimeLine(reviewEntityList.get(i).getCreateAt()))
+                    .userNickname(user.getNickname())
+                    .build();
+
+            reviewDetailsDto.setReviewImgList(reviewImgRepository.findReviewImg(Status.ACTIVE, reviewEntityList.get(i)));
+            reviewDetailsDtoList.add(reviewDetailsDto);
+        }
+
+        if(reviewDetailsDtoList.size() > 0){
+            restaurantDetailsDto.setReviewDetailsDtoList(reviewDetailsDtoList);
+        }
+        return restaurantDetailsDto;
+    }
 }

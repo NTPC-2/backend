@@ -1,20 +1,20 @@
 package Insuleng.Insuleng_Backend.src.restaurant.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewDetailsDto {
 
     private String userNickname;
+    private String restaurantName;
     private String contents;
+    private String timeLine;
     private double star;
     private List<String> reviewImgList;
 

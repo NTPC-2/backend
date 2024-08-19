@@ -12,4 +12,5 @@ public interface HeartRepository extends JpaRepository<HeartEntity, Long> {
 
     Optional<HeartEntity> findHeartEntityByUserEntityAndAndRestaurantEntity(UserEntity user, RestaurantEntity restaurant);
 
+    Boolean existsByUserEntityAndStatus(UserEntity user, Status status);
 }

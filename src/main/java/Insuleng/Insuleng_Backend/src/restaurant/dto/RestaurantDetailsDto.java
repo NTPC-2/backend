@@ -15,6 +15,8 @@ import java.util.Map;
 public class RestaurantDetailsDto {
 
     private Boolean isLogin;
+    private Boolean isHeart;
+    private Boolean isBookmark;
     private String restaurantName;
     private String details;
     private int count_bookmark;

@@ -231,7 +231,13 @@ public class RestaurantController {
         }
     }
 
-   /* @GetMapping("restaurant/{restaurant_id}")
+    @GetMapping("restaurant/{restaurant_id}")
+    @Operation(summary = "음식점 자세히 보기 api", description = "로그인 된 사용자는 좋아요/즐겨찾기 가능, 리뷰 시청 가능하고 로그인이 안 된 사용자는 좋아요/즐겨찾기 불가, 리뷰도 시청 불가", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않는 유저입니다"),
+            @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다")
+    })
     public BaseResponse<RestaurantDetailsDto> getRestaurantDetails(@PathVariable("restaurant_id")Long restaurantId){
         try {
             Long userId = SecurityUtil.getCurrentUserId().orElse(null);
@@ -247,7 +253,7 @@ public class RestaurantController {
             return new BaseResponse<>(e.getStatus());
         }
 
-    }*/
+    }
 
 
 }
