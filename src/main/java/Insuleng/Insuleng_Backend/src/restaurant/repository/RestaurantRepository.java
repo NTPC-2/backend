@@ -68,6 +68,42 @@ public interface RestaurantRepository extends JpaRepository<RestaurantEntity, Lo
                     "       GROUP_CONCAT(DISTINCT m.menu_name SEPARATOR ', ') AS menuNames " +
                     "FROM restaurant as r " +
                     "LEFT JOIN menu as m ON r.restaurant_id = m.restaurant_id " +
+                    "WHERE r.category_id = :categoryId " +
+                    "GROUP BY r.restaurant_id, r.name, r.main_img, r.count_heart, r.count_bookmark, r.count_review, r.average_star " +
+                    "ORDER BY r.average_star desc",
+            nativeQuery = true
+    )
+    public List<RestaurantSummaryInterface> findRestaurantListOrderByAverageStar(@Param("categoryId")Long categoryId);
+
+    @Query(
+            value = "SELECT r.restaurant_id as restaurantId, " +
+                    "       r.name as restaurantName," +
+                    "       r.main_img as mainImg, " +
+                    "       r.count_heart as countHeart, " +
+                    "       r.count_bookmark as countBookmark, " +
+                    "       r.count_review as countReview, " +
+                    "       r.average_star as averageStar, " +
+                    "       GROUP_CONCAT(DISTINCT m.menu_name SEPARATOR ', ') AS menuNames " +
+                    "FROM restaurant as r " +
+                    "LEFT JOIN menu as m ON r.restaurant_id = m.restaurant_id " +
+                    "GROUP BY r.restaurant_id, r.name, r.main_img, r.count_heart, r.count_bookmark, r.count_review, r.average_star " +
+                    "ORDER BY r.average_star desc",
+            nativeQuery = true
+    )
+    public List<RestaurantSummaryInterface> findRestaurantListOrderByAverageStar();
+
+
+    @Query(
+            value = "SELECT r.restaurant_id as restaurantId, " +
+                    "       r.name as restaurantName," +
+                    "       r.main_img as mainImg, " +
+                    "       r.count_heart as countHeart, " +
+                    "       r.count_bookmark as countBookmark, " +
+                    "       r.count_review as countReview, " +
+                    "       r.average_star as averageStar, " +
+                    "       GROUP_CONCAT(DISTINCT m.menu_name SEPARATOR ', ') AS menuNames " +
+                    "FROM restaurant as r " +
+                    "LEFT JOIN menu as m ON r.restaurant_id = m.restaurant_id " +
                     "LEFT JOIN restaurant_tag_map as rtm ON r.restaurant_id = rtm.restaurant_id " +
                     "LEFT JOIN restaurant_tag as rt ON rtm.restaurant_tag_id = rt.restaurant_tag_id " +
                     "WHERE r.name LIKE %:keyword% " +
@@ -78,6 +114,7 @@ public interface RestaurantRepository extends JpaRepository<RestaurantEntity, Lo
             nativeQuery = true
     )
     public List<RestaurantSummaryInterface> findSearchList(@Param("keyword")String keyword);
+
 
 
 }

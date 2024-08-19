@@ -33,7 +33,7 @@ public class RestaurantController {
         try{
             //categoryId 값에 1~7 이외의 정수가 들어오면 예외처리
             //s3Uploader.deleteImageFromS3("ddd");
-            return new BaseResponse<>(restaurantService.getRestaurantList(categoryId));
+            return new BaseResponse<>(restaurantService.getRestaurantList2(categoryId));
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }

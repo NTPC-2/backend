@@ -26,7 +26,7 @@ public class RestaurantService {
     private final BookmarkRepository bookmarkRepository;
     private final MenuRepository menuRepository;
 
-    public RestaurantListDto getRestaurantList(Long categoryId) {
+    /*public RestaurantListDto getRestaurantList(Long categoryId) {
         if(categoryId >7 || categoryId <0){
             throw new BaseException(BaseResponseStatus.INVALID_PARAMETER);
         }
@@ -34,7 +34,7 @@ public class RestaurantService {
         RestaurantListDto restaurantListDto = new RestaurantListDto();
         int countRestaurant; //restaurantListDto에 들어갈 총 음식점 숫자
         List<RestaurantSummaryDto> restaurantSummaryDtoList = new ArrayList<>(); //restaurantListDto에 들어갈 음식점 목록
-        List<RestaurantEntity> restaurantEntityList = new ArrayList<>(); // repository에서 가져올 entity 목록
+        List<RestaurantEntity> restaurantEntityList; // repository에서 가져올 entity 목록
 
         if(categoryId == 0){
             countRestaurant = restaurantRepository.countTotal();
@@ -48,7 +48,7 @@ public class RestaurantService {
         for(int i =0; i< restaurantEntityList.size(); i++){
             RestaurantSummaryDto restaurantSummaryDto = new RestaurantSummaryDto
                     (
-                            null,
+                            restaurantEntityList.get(i).getRestaurantId(),
                             restaurantEntityList.get(i).getName(),
                             restaurantEntityList.get(i).getMainImg(),
                             restaurantEntityList.get(i).getCountHeart(),
@@ -64,7 +64,32 @@ public class RestaurantService {
         restaurantListDto.setRestaurantSummaryDtoList(restaurantSummaryDtoList);
 
         return restaurantListDto;
+    }*/
+
+    public RestaurantListDto getRestaurantList2(Long categoryId) {
+        if(categoryId >7 || categoryId <0){
+            throw new BaseException(BaseResponseStatus.INVALID_PARAMETER);
+        }
+
+        RestaurantListDto restaurantListDto = new RestaurantListDto();
+        List<RestaurantSummaryInterface> restaurantSummaryDtoList = new ArrayList<>(); //restaurantListDto에 들어갈 음식점 목록
+
+        if(categoryId == 0){
+            restaurantSummaryDtoList = restaurantRepository.findRestaurantListOrderByAverageStar();
+
+            restaurantListDto.setCountRestaurant(restaurantSummaryDtoList.size()); // 목록에 뜨는 총 음식점 숫자
+            restaurantListDto.setRestaurantSummaryDtoList(restaurantSummaryDtoList);
+        }
+        else{
+            restaurantSummaryDtoList = restaurantRepository.findRestaurantListOrderByAverageStar(categoryId);
+
+            restaurantListDto.setCountRestaurant(restaurantSummaryDtoList.size()); // 목록에 뜨는 총 음식점 숫자
+            restaurantListDto.setRestaurantSummaryDtoList(restaurantSummaryDtoList);
+        }
+
+        return restaurantListDto;
     }
+
 
     public void addRestaurantHeart(Long userId, Long restaurantId) {
 
@@ -280,44 +305,6 @@ public class RestaurantService {
         reviewFormDto.setReviewImg(imgUrlList);
 
         return reviewFormDto;
-    }
-
-    public RestaurantListDto getRestaurantSearchList(String keyword) {
-
-        RestaurantListDto restaurantListDto = new RestaurantListDto(); //return할 Dto
-
-        int countRestaurant; //restaurantListDto에 들어갈 총 음식점 숫자
-        List<RestaurantSummaryDto> restaurantSummaryDtoList = new ArrayList<>(); //restaurantListDto에 들어갈 음식점 목록
-
-        //List<RestaurantSummaryDto> list1 = restaurantRepository.findSearchListByMenuNameOrRestaurantName(keyword);
-
-
-        /*List<RestaurantSummaryDto> list1 = new ArrayList<>();
-        List<RestaurantEntity> restaurantEntityList = restaurantRepository.findSearchList2ByMenuNameOrRestaurantName(keyword);
-        for(int i =0; i<restaurantEntityList.size() ; i++){
-            RestaurantSummaryDto restaurantSummaryDto = new RestaurantSummaryDto(
-                    restaurantEntityList.get(i).getName(),
-                    restaurantEntityList.get(i).getMainImg(),
-                    restaurantEntityList.get(i).getCountHeart(),
-                    restaurantEntityList.get(i).getCountBookmark(),
-                    restaurantEntityList.get(i).getCountReview(),
-                    restaurantEntityList.get(i).getAverageStar()
-            );
-            list1.add(restaurantSummaryDto);
-        }*/
-
-
-
-        List<RestaurantSummaryDto> searchListByTagNameOrRestaurantName = restaurantRepository.findSearchListByTagNameOrRestaurantName(keyword);
-
-        restaurantSummaryDtoList.addAll(searchListByTagNameOrRestaurantName);
-
-        countRestaurant = restaurantSummaryDtoList.size();
-        restaurantListDto.setCountRestaurant(countRestaurant); // 음식점 숫자 set
-        restaurantListDto.setRestaurantSummaryDtoList(restaurantSummaryDtoList);
-
-        return restaurantListDto;
-
     }
 
     public RestaurantSearchListDto getRestaurantSearchList2(String keyword){

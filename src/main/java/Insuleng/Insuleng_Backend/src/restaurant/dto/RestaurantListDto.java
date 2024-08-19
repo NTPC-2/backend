@@ -14,5 +14,5 @@ import java.util.List;
 public class RestaurantListDto {
 
     private int countRestaurant;
-    private List<RestaurantSummaryDto> restaurantSummaryDtoList;
+    private List<RestaurantSummaryInterface> restaurantSummaryDtoList;
 }
