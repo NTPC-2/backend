@@ -417,16 +417,23 @@ public class RestaurantService {
             restaurantDetailsDto.setMenuMap(menuMap);
         }
 
-        List<ReviewEntity> reviewEntityList = reviewRepository.findReviewEntitiesByUserEntityAndStatus(user, Status.ACTIVE);
+        List<ReviewEntity> reviewEntityList = reviewRepository.findReviewEntitiesByStatusJPQL(Status.ACTIVE, restaurant);
         List<ReviewDetailsDto> reviewDetailsDtoList = new ArrayList<>();
 
         for(int i = 0; i<reviewEntityList.size() ; i++){
+            String userNickname;
+            if(reviewEntityList.get(i).getUserEntity().getStatus() == Status.ACTIVE){
+                userNickname = reviewEntityList.get(i).getUserEntity().getNickname();
+            }else{
+                userNickname = "삭제된 이용자";
+            }
+
             ReviewDetailsDto reviewDetailsDto = ReviewDetailsDto.builder()
                     .restaurantName(reviewEntityList.get(i).getRestaurantEntity().getName())
                     .star(reviewEntityList.get(i).getStar())
                     .contents(reviewEntityList.get(i).getContents())
                     .timeLine(TimeUtil.getTimeLine(reviewEntityList.get(i).getCreateAt()))
-                    .userNickname(user.getNickname())
+                    .userNickname(userNickname)
                     .build();
 
             reviewDetailsDto.setReviewImgList(reviewImgRepository.findReviewImg(Status.ACTIVE, reviewEntityList.get(i)));

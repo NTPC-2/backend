@@ -169,6 +169,27 @@ public class UserController {
 
     }
 
+    @PatchMapping("profiles/delete")
+    @Operation(summary = "회원 탈퇴 api", description = "user의 stauts를 INACTIVE로 변경", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+    })
+    public BaseResponse<String> deleteUser(){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
+
+            userService.deleteUser(userId);
+            return new BaseResponse<>("유저를 삭제했습니다");
+
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
+
     @PatchMapping(value = "{user_id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "s3 업로드를 위해 만든 연습용 api", description = "이미지 업로드 용", responses = {
             @ApiResponse(responseCode = "200", description = "성공"),

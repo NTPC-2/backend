@@ -20,6 +20,7 @@ public interface ReviewImgRepository extends JpaRepository<ReviewImgEntity, Long
     //또한 1차 캐시를 사용하지 않고 DB에 직접 쿼리를 날리기 때문에 1차 캐시를 비워줘야 한다 -> 1차 캐시와 DB 동기화
     @Transactional
     @Modifying/*(clearAutomatically = true)*/ // 해당 코드가 영속성 컨텍스트를 초기화해주는 건데, 이 앞에 save가 있을 경우 영속성 컨텍스트의 내용이 초기화 되기 때문에
+    //flushAutomatically: 쿼리 실행 전 쓰기 지연 저장소의 쿼리를 flush하는 옵션
     //앞의 코드와의 관계로 이번엔 해당코드를 주석처리한다.
     @Query("update ReviewImgEntity  as r set r.status = :status where r.reviewEntity = :review")
     void updateStatusOfRestaurantImgEntities(@Param("status")Status status, @Param("review") ReviewEntity reviewEntity);

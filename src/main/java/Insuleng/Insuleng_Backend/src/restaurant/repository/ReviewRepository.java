@@ -2,6 +2,7 @@ package Insuleng.Insuleng_Backend.src.restaurant.repository;
 
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.ReviewDetailsDto;
+import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewEntity;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,5 +21,6 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
     List<ReviewEntity> findReviewEntitiesByUserEntityAndStatus(UserEntity user, Status status);
 
-    //@Query(("select new Insuleng.Insuleng_Backend.src.restaurant.dto.ReviewDetailsDto()"))
+    @Query("select r from ReviewEntity as r inner join fetch r.userEntity as u where r.status =:status and r.restaurantEntity =:restaurant")
+    List<ReviewEntity> findReviewEntitiesByStatusJPQL(@Param("status")Status status, @Param("restaurant")RestaurantEntity restaurant);
 }

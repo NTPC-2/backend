@@ -184,4 +184,14 @@ public class UserService {
         userRepository.save(user);
 
     }
+
+    public void deleteUser(Long userId) {
+
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        user.changeToInActive();
+        userRepository.save(user);
+
+    }
 }

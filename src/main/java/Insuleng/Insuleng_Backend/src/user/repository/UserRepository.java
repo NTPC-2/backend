@@ -7,7 +7,9 @@ import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewImgEntity;
 import Insuleng.Insuleng_Backend.src.user.dto.UserStatics;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -55,5 +57,37 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     //일단 firstImg 없이 구현하고, 나중에 querydsl을 통해 구현하기
     @Query("select r from ReviewEntity r left join fetch r.reviewImgEntityList as img where r.userEntity =:user and r.status = :status")
     List<ReviewEntity> findMyReviews(@Param("user")UserEntity userEntity, @Param("status")Status status);
+
+
+    //회원 삭제 시 관련 bookmark의 status를 수정
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query("update BookmarkEntity  as b set b.status = :status where b.userEntity = :user")
+    void updateStatusOfBookmarkEntities(@Param("status")Status status, @Param("user") UserEntity user);
+
+    //회원 삭제 시 관련 review의 status를 수정
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query("update ReviewEntity  as r set r.status = :status where r.userEntity = :user")
+    void updateStatusOfReviewEntities(@Param("status")Status status, @Param("user") UserEntity user);
+
+    //회원 삭제 시 관련 heart의 status를 수정
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query("update HeartEntity  as h set h.status = :status where h.userEntity = :user")
+    void updateStatusOfHeartEntities(@Param("status")Status status, @Param("user") UserEntity user);
+
+    //회원 삭제 시 관련 post의 status를 수정
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query("update PostEntity  as p set p.status = :status where p.userEntity = :user")
+    void updateStatusOfPostEntities(@Param("status")Status status, @Param("user") UserEntity user);
+
+    //회원 삭제 시 관련 scrap의 status를 수정
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query("update ScrapEntity  as s set s.status = :status where s.userEntity = :user")
+    void updateStatusOfScrapEntities(@Param("status")Status status, @Param("user") UserEntity user);
+
 
 }
