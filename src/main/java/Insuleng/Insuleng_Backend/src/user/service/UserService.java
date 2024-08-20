@@ -7,15 +7,18 @@ import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.RestaurantRepository;
+import Insuleng.Insuleng_Backend.src.storage.S3Uploader;
 import Insuleng.Insuleng_Backend.src.user.dto.*;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
 import Insuleng.Insuleng_Backend.utils.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
+    private final S3Uploader s3Uploader;
 
     public MyPageDto getMyPage(Long userId) {
 
@@ -64,7 +68,16 @@ public class UserService {
             throw new BaseException(BaseResponseStatus.DUPLICATED_NICKNAME);
         }
 
-        user.updateMyPage(myPageUpdateDto);
+        String profileImg;
+
+        if(myPageUpdateDto.getProfileImg().isEmpty() || Objects.isNull(myPageUpdateDto.getProfileImg().getOriginalFilename())){
+            profileImg = null;
+        }
+        else{
+            profileImg = s3Uploader.upload(myPageUpdateDto.getProfileImg());
+        }
+
+        user.updateMyPage(myPageUpdateDto, profileImg);
         userRepository.save(user);
     }
 
@@ -155,6 +168,20 @@ public class UserService {
         }
 
         return myReviewDtoList;
+
+    }
+
+    public void imageUpload(Long userId, MultipartFile file) {
+
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        //s3에 이미지 저장 후 url 주소를 return
+        String profileImg = s3Uploader.upload(file);
+
+        //user 테이블에 프로필 이미지의 url 저장
+        user.updateProfileImg(profileImg);
+        userRepository.save(user);
 
     }
 }

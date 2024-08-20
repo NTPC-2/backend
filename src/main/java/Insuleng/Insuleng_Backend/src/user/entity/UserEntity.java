@@ -77,12 +77,17 @@ public class UserEntity extends BaseEntity {
         this.password = password;
     }
 
-    public void updateMyPage(MyPageUpdateDto myPageUpdateDto){
+    public void updateMyPage(MyPageUpdateDto myPageUpdateDto, String profileImg){
         this.nickname = myPageUpdateDto.getNickname();
         this.phoneNumber = myPageUpdateDto.getPhoneNumber();
         this.age = myPageUpdateDto.getAge();
         this.gender = myPageUpdateDto.getGender();
-        this.profileImg = myPageUpdateDto.getProfileImg();
+        this.profileImg = profileImg;
     }
+
+    public void updateProfileImg(String profileImg){
+        this.profileImg = profileImg;
+    }
+
 
 }

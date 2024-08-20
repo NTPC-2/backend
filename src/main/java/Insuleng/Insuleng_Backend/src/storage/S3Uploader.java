@@ -87,6 +87,7 @@ public class S3Uploader {
                             .withCannedAcl(CannedAccessControlList.PublicRead);
             amazonS3.putObject(putObjectRequest); // put image to S3
         }catch (Exception e){
+            System.out.println(e.getMessage());
             throw new BaseException(BaseResponseStatus.PUT_OBJECT_EXCEPTION);
         }finally {
             byteArrayInputStream.close();

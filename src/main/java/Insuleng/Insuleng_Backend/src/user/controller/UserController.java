@@ -3,16 +3,21 @@ package Insuleng.Insuleng_Backend.src.user.controller;
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
+import Insuleng.Insuleng_Backend.src.storage.S3Uploader;
 import Insuleng.Insuleng_Backend.src.user.dto.*;
 import Insuleng.Insuleng_Backend.src.user.service.AuthService;
 import Insuleng.Insuleng_Backend.src.user.service.UserService;
 import Insuleng.Insuleng_Backend.utils.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
 import java.util.List;
 
 @RestController
@@ -21,6 +26,7 @@ public class UserController {
 
     private final AuthService authService;
     private final UserService userService;
+    private final S3Uploader s3Uploader;
 
     @GetMapping("profiles")
     @Operation(summary = "마이페이지 api", description = "즐겨찾기한 음식점, 내가 쓴 리뷰, 좋아요 누른 음식점, 내가 쓴 글, 스크랩한 글의 개수가 출력", responses = {
@@ -64,7 +70,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("profiles/update")
+    @PutMapping(value = "profiles/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "정보를 실제로 수정하는 api", description = "MyPageUpdateDto(닉네임, 전화번호, 성별, 나이, 프로필 사진)에 담긴 내용으로 내 정보를 수정", responses = {
             @ApiResponse(responseCode = "200", description = "성공"),
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
@@ -72,7 +78,7 @@ public class UserController {
             @ApiResponse(responseCode = "3011", description = "이미 존재하는 닉네임입니다"),
             @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다")
     })
-    public BaseResponse<String> updateMyPageInfo(@RequestBody @Valid MyPageUpdateDto myPageUpdateDto){
+    public BaseResponse<String> updateMyPageInfo(@Valid MyPageUpdateDto myPageUpdateDto){
         try{
             Long userId = SecurityUtil.getCurrentUserId()
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
@@ -162,4 +168,24 @@ public class UserController {
 
 
     }
+
+    @PatchMapping(value = "{user_id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "s3 업로드를 위해 만든 연습용 api", description = "이미지 업로드 용", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+    })
+    public BaseResponse<String> updateMyImage(@PathVariable("user_id")Long userId, @RequestBody MultipartFile file){
+        try{
+            userService.imageUpload(userId, file);
+
+            return new BaseResponse<>("이미지가 저장 되었습니다");
+
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
+
 }
