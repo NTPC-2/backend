@@ -19,9 +19,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class RestaurantController {
     private final RestaurantService restaurantService;
+    private final S3Uploader s3Uploader;
 
-    @Autowired
-    private S3Uploader s3Uploader;
 
     @GetMapping("restaurant/list")
     @Operation(summary = "음식점 리스트 보기 api", description = "카테고리에 맞는 음식접 리스트를 보여줍니다", responses = {
