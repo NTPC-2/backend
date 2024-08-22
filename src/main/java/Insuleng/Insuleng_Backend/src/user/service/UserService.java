@@ -35,7 +35,7 @@ public class UserService {
 
 
         UserStatics userStatics = userRepository.findUserStatics(userId, Status.ACTIVE);
-        MyPageDto myPageDto = new MyPageDto(userStatics);
+        MyPageDto myPageDto = new MyPageDto(userStatics, userEntity.getNickname());
 
         return myPageDto;
 
