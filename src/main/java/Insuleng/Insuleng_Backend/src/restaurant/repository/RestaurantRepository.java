@@ -1,6 +1,7 @@
 package Insuleng.Insuleng_Backend.src.restaurant.repository;
 
 import Insuleng.Insuleng_Backend.config.Status;
+import Insuleng.Insuleng_Backend.src.home.dto.PopularRestaurantInterface;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryDto;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryInterface;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
@@ -115,6 +116,22 @@ public interface RestaurantRepository extends JpaRepository<RestaurantEntity, Lo
     )
     public List<RestaurantSummaryInterface> findSearchList(@Param("keyword")String keyword);
 
+    @Query(
+            value = "SELECT r.restaurant_id as restaurantId, " +
+                    "       r.name as restaurantName," +
+                    "       r.main_img as mainImg, " +
+                    "       r.count_heart as countHeart, " +
+                    "       r.count_bookmark as countBookmark, " +
+                    "       r.count_review as countReview, " +
+                    "       r.average_star as averageStar, " +
+                    "       GROUP_CONCAT(DISTINCT m.menu_name SEPARATOR ', ') AS menuNames " +
+                    "FROM restaurant as r " +
+                    "LEFT JOIN menu as m ON r.restaurant_id = m.restaurant_id " +
+                    "GROUP BY r.restaurant_id, r.name, r.main_img, r.count_heart, r.count_bookmark, r.count_review, r.average_star " +
+                    "ORDER BY r.countHeart desc",
+            nativeQuery = true
+    )
+    public List<PopularRestaurantInterface> findPopularRestaurants();
 
 
 }

@@ -7,7 +7,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.expression.spel.ast.Projection;
 
-import static Insuleng.Insuleng_Backend.src.restaurant.entity.QRestaurantEntity.restaurantEntity;
 
 import java.util.List;
 
