@@ -10,6 +10,7 @@ import org.springframework.expression.spel.ast.Projection;
 
 import java.util.List;
 
+
 @RequiredArgsConstructor
 public class RestaurantRepositoryImpl implements RestaurantQueryDslRepositoryCustom {
 
@@ -32,7 +33,7 @@ public class RestaurantRepositoryImpl implements RestaurantQueryDslRepositoryCus
                 null))
                 .from(restaurantEntity)
                 .fetchOne();*/
-        null;
+                null;
 
 
     }

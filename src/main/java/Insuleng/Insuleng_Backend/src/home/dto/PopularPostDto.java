@@ -33,5 +33,16 @@ public class PopularPostDto {
         this.authorName = authorName;
         this.timeLine = TimeUtil.getTimeLine(localDateTime);
     }
+    public PopularPostDto(Long postId, String topic, String contents, Integer countLike, Integer countScrap, Integer countComment, String imgUrl, String authorName){
+        this.postId = postId;
+        this.topic = topic;
+        this.contents = contents;
+        this.countLike = countLike;
+        this.countScrap = countScrap;
+        this.countComment = countComment;
+        this.imgUrl = imgUrl;
+        this.authorName = authorName;
+        this.timeLine = null;
+    }
 
 }

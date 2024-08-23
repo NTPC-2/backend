@@ -128,7 +128,7 @@ public interface RestaurantRepository extends JpaRepository<RestaurantEntity, Lo
                     "FROM restaurant as r " +
                     "LEFT JOIN menu as m ON r.restaurant_id = m.restaurant_id " +
                     "GROUP BY r.restaurant_id, r.name, r.main_img, r.count_heart, r.count_bookmark, r.count_review, r.average_star " +
-                    "ORDER BY r.countHeart desc",
+                    "ORDER BY r.count_heart desc",
             nativeQuery = true
     )
     public List<PopularRestaurantInterface> findPopularRestaurants();

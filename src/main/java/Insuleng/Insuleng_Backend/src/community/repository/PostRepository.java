@@ -9,7 +9,11 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<PostEntity, Long> {
 
-    @Query("select new Insuleng.Insuleng_Backend.src.home.dto.PopularPostDto(" +
+    @Query("select p from PostEntity as p inner join fetch p.userEntity order by p.countLike desc")
+    public List<PostEntity> findPopularPosts();
+
+
+    /*@Query("select new Insuleng.Insuleng_Backend.src.home.dto.PopularPostDto(" +
             "p.postId, " +
             "p.topic, " +
             "p.contents, " +
@@ -22,6 +26,6 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
             "from PostEntity p " +
             "inner join fetch p.userEntity " +
             "order by p.countLike desc")
-    public List<PopularPostDto> findPopularPosts();
+    public PopularPostDto findPopularPosts();*/
 
 }
