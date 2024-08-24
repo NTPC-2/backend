@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MyScrapDto {
 
+    private Long postId;
     private String topic;
     private String contents;
     private int countLike;

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MyPostDto {
-
+    private Long postId;
     private String topic;
     private String contents;
     private int countLike;

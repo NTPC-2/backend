@@ -130,7 +130,7 @@ public class UserController {
     }
 
     @GetMapping("profiles/heart")
-    @Operation(summary = "내가 즐겨찾기한 음식점을 보여주는 api", description = "List<MyHeartDto> 이용", responses = {
+    @Operation(summary = "내가 좋아요한 음식점을 보여주는 api", description = "List<MyHeartDto> 이용", responses = {
             @ApiResponse(responseCode = "200", description = "성공"),
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),

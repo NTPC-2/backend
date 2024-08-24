@@ -10,7 +10,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MyReviewDto {
-
+    private Long reviewId;
+    private Long restaurantId;
     private String restaurantName;
     private Double star;
     private String contents;

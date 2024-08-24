@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MyBookmarkDto {
+    private Long restaurantId;
     private String restaurantName;
     private String mainImg;
     private int countHeart;

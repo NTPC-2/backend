@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MyHeartDto {
-
+    private Long restaurantId;
     private String restaurantName;
     private String mainImg;
     private int countHeart;

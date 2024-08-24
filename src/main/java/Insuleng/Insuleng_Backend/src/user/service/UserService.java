@@ -92,6 +92,7 @@ public class UserService {
 
         for(int i =0; i<restaurantEntityList.size(); i++){
             MyBookmarkDto myBookmarkDto = MyBookmarkDto.builder()
+                    .restaurantId(restaurantEntityList.get(i).getRestaurantId())
                     .restaurantName(restaurantEntityList.get(i).getName())
                     .mainImg(restaurantEntityList.get(i).getMainImg())
                     .countHeart(restaurantEntityList.get(i).getCountHeart())
@@ -114,6 +115,7 @@ public class UserService {
 
         for(int i =0; i<postEntityList.size(); i++){
             MyPostDto myPostDto = MyPostDto.builder()
+                    .postId(postEntityList.get(i).getPostId())
                     .topic(postEntityList.get(i).getTopic())
                     .contents(postEntityList.get(i).getContents())
                     .countLike(postEntityList.get(i).getCountLike())
@@ -136,6 +138,7 @@ public class UserService {
 
         for(int i =0; i<restaurantEntityList.size(); i++){
             MyHeartDto myHeartDto = MyHeartDto.builder()
+                    .restaurantId(restaurantEntityList.get(i).getRestaurantId())
                     .restaurantName(restaurantEntityList.get(i).getName())
                     .mainImg(restaurantEntityList.get(i).getMainImg())
                     .countHeart(restaurantEntityList.get(i).getCountHeart())
@@ -157,6 +160,8 @@ public class UserService {
 
         for(int i = 0; i<reviewEntityList.size() ; i++){
             MyReviewDto myReviewDto = MyReviewDto.builder()
+                    .reviewId(reviewEntityList.get(i).getReviewId())
+                    .restaurantId(reviewEntityList.get(i).getRestaurantEntity().getRestaurantId())
                     .restaurantName(reviewEntityList.get(i).getRestaurantEntity().getName())
                     .star(reviewEntityList.get(i).getStar())
                     .contents(reviewEntityList.get(i).getContents())
@@ -207,6 +212,7 @@ public class UserService {
         for(int i =0; i<scrapEntityList.size(); i++){
 
             MyScrapDto myScrapDto = MyScrapDto.builder()
+                    .postId(scrapEntityList.get(i).getPostEntity().getPostId())
                     .topic(scrapEntityList.get(i).getPostEntity().getTopic())
                     .contents(scrapEntityList.get(i).getPostEntity().getContents())
                     .countLike(scrapEntityList.get(i).getPostEntity().getCountLike())
