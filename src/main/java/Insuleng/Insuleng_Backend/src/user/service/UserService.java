@@ -4,6 +4,7 @@ import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
+import Insuleng.Insuleng_Backend.src.community.entity.ScrapEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.RestaurantRepository;
@@ -192,6 +193,31 @@ public class UserService {
 
         user.changeToInActive();
         userRepository.save(user);
+
+    }
+
+    public List<MyScrapDto> getMyScraps(Long userId) {
+
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        List<ScrapEntity> scrapEntityList = userRepository.findMyScraps(user, Status.ACTIVE);
+        List<MyScrapDto> myScrapDtoList = new ArrayList<>();
+
+        for(int i =0; i<scrapEntityList.size(); i++){
+
+            MyScrapDto myScrapDto = MyScrapDto.builder()
+                    .topic(scrapEntityList.get(i).getPostEntity().getTopic())
+                    .contents(scrapEntityList.get(i).getPostEntity().getContents())
+                    .countLike(scrapEntityList.get(i).getPostEntity().getCountLike())
+                    .countComment(scrapEntityList.get(i).getPostEntity().getCountComment())
+                    .timeLine(TimeUtil.getTimeLine(scrapEntityList.get(i).getPostEntity().getCreateAt()))
+                    .userNickname(scrapEntityList.get(i).getPostEntity().getUserEntity().getNickname())
+                    .build();
+
+            myScrapDtoList.add(myScrapDto);
+        }
+        return myScrapDtoList;
 
     }
 }

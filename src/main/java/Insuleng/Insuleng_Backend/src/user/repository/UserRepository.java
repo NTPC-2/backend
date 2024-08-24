@@ -2,6 +2,7 @@ package Insuleng.Insuleng_Backend.src.user.repository;
 
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
+import Insuleng.Insuleng_Backend.src.community.entity.ScrapEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewEntity;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.ReviewImgEntity;
@@ -89,5 +90,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("update ScrapEntity  as s set s.status = :status where s.userEntity = :user")
     void updateStatusOfScrapEntities(@Param("status")Status status, @Param("user") UserEntity user);
 
-
+    @Query("select s from ScrapEntity s join fetch s.postEntity where s.userEntity =:user and s.status =:status")
+    List<ScrapEntity> findMyScraps(@Param("user")UserEntity user, @Param("status") Status active);
 }

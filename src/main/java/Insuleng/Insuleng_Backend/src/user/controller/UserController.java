@@ -169,6 +169,26 @@ public class UserController {
 
     }
 
+    @GetMapping("profiles/scrap")
+    @Operation(summary = "내가 스크랩한 글을 보여주는 api", description = "List<MyScrapDto> 이용", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다")
+    })
+    public BaseResponse<List<MyScrapDto>> getMyScraps(){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
+
+            List<MyScrapDto> scrapDtoList = userService.getMyScraps(userId);
+            return new BaseResponse<>(scrapDtoList);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
     @PatchMapping("profiles/delete")
     @Operation(summary = "회원 탈퇴 api", description = "user의 stauts를 INACTIVE로 변경", responses = {
             @ApiResponse(responseCode = "200", description = "성공"),
