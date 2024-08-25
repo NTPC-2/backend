@@ -1,18 +1,18 @@
 package Insuleng.Insuleng_Backend.src.community.repository;
 
 import Insuleng.Insuleng_Backend.config.Status;
-import Insuleng.Insuleng_Backend.src.community.dto.PostDto;
-import Insuleng.Insuleng_Backend.src.community.dto.PostSummaryDto;
-import Insuleng.Insuleng_Backend.src.community.dto.UpdatePostDto;
+import Insuleng.Insuleng_Backend.src.community.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -24,8 +24,8 @@ public class CommunityRepository {
     }
 
     public void createPost(Long userId, PostDto postDto){
-        String sql = "INSERT INTO post(count_comment, count_like, count_parent_comment, user_id, contents, img_url, topic, status)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO post(count_comment, count_like, count_parent_comment, user_id, contents, img_url, topic, status,count_scrap)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"post_id"});
@@ -37,6 +37,7 @@ public class CommunityRepository {
             ps.setString(6, postDto.getImgUrl());
             ps.setString(7, postDto.getTopic());
             ps.setString(8, "ACTIVE");
+            ps.setInt(9, 0);
             return ps;
         }, keyHolder);
     }
@@ -79,7 +80,7 @@ public class CommunityRepository {
 
     }
     public List<PostSummaryDto> searchPosts(Long userId, String keyword) {
-        String sql = "SELECT p.post_id, p.topic, p.contents, p.count_like, p.count_comment, p.img_url, u.nickname " +
+        String sql = "SELECT p.post_id, p.topic, p.contents, p.count_like, p.count_comment, p.count_scrap, p.img_url, u.nickname " +
                 "FROM post p " +
                 "JOIN user u ON p.user_id = u.user_id " +
                 "WHERE (p.topic LIKE ? OR p.contents LIKE ?) AND p.status = 'ACTIVE'";
@@ -91,12 +92,13 @@ public class CommunityRepository {
             String contents = rs.getString("contents");
             int countLike = rs.getInt("count_like");
             int countComment = rs.getInt("count_comment");
+            int countScrap = rs.getInt("count_scrap");
             String imgUrl = rs.getString("img_url");
             String authorName = rs.getString("nickname");
 
             String contentsSnippet = getSnippet(contents);
 
-            return new PostSummaryDto(postId, topic, contentsSnippet, countLike, countComment, imgUrl, authorName);
+            return new PostSummaryDto(postId, topic, contentsSnippet, countLike, countComment, imgUrl, authorName, countScrap);
         });
     }
     private String getSnippet(String content) {
@@ -192,4 +194,124 @@ public class CommunityRepository {
         String sql = "UPDATE post SET count_scrap = count_scrap - 1 WHERE post_id = ?";
         jdbcTemplate.update(sql, postId);
     }
+
+    public List<PostSummaryDto> findAllPosts() {
+        String sql = "SELECT p.post_id AS postId, p.topic, p.contents AS contentsSnippet, " +
+                "p.count_like AS countLike, p.count_comment AS countComment, p.img_url AS imgUrl, " +
+                "u.nickname AS authorName, p.count_scrap AS countScrap " +
+                "FROM post p " +
+                "JOIN user u ON p.user_id = u.user_id " +
+                "WHERE p.status = 'ACTIVE'";
+
+        List<PostSummaryDto> postSummaryList = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Long postId = rs.getLong("postId");
+            String topic = rs.getString("topic");
+            String contentsSnippet = rs.getString("contentsSnippet");
+            int countLike = rs.getInt("countLike");
+            int countComment = rs.getInt("countComment");
+            String imgUrl = rs.getString("imgUrl");
+            String authorName = rs.getString("authorName");
+            int countScrap = rs.getInt("countScrap");
+
+            return new PostSummaryDto(postId, topic, contentsSnippet, countLike, countComment, imgUrl, authorName, countScrap);
+        });
+
+        return postSummaryList;
+    }
+
+    public PostDetailsDto getPostDetails(Long postId) {
+        String sql = "SELECT p.post_id AS postId, p.topic, p.contents, p.count_like AS countLike, " +
+                "p.count_comment AS countComment, p.count_scrap AS countScrap, p.img_url AS imgUrl, " +
+                "u.nickname AS authorName, p.created_at AS createdAt " +
+                "FROM post p " +
+                "JOIN user u ON p.user_id = u.user_id " +
+                "WHERE p.post_id = ? AND p.status = 'ACTIVE'";
+
+        // 직접 매핑 처리
+        return jdbcTemplate.queryForObject(sql, new Object[]{postId}, (rs, rowNum) -> {
+            Long postIdResult = rs.getLong("postId");
+            String topic = rs.getString("topic");
+            String contents = rs.getString("contents");
+            int countLike = rs.getInt("countLike");
+            int countComment = rs.getInt("countComment");
+            int countScrap = rs.getInt("countScrap");
+            String imgUrl = rs.getString("imgUrl");
+            String authorName = rs.getString("authorName");
+            LocalDateTime createdAt = rs.getObject("createdAt", LocalDateTime.class);
+
+            return new PostDetailsDto(postIdResult, topic, contents, countLike, countComment, countScrap, imgUrl, authorName, createdAt);
+        });
+    }
+
+//    // 최대 groupNumber 가져오기
+//    public int getMaxGroupNumber(Long postId) {
+//        String sql = "SELECT COALESCE(MAX(group_number), 0) FROM comment WHERE post_id = ?";
+//        return jdbcTemplate.queryForObject(sql, Integer.class, postId);
+//    }
+//
+//    // 부모 댓글의 commentLevel 가져오기
+//    public int getCommentLevel(Long parentCommentId) {
+//        String sql = "SELECT comment_level FROM comment WHERE comment_id = ?";
+//        return jdbcTemplate.queryForObject(sql, Integer.class, parentCommentId);
+//    }
+//
+//    // 부모 댓글의 groupNumber 가져오기
+//    public int getGroupNumber(Long parentCommentId) {
+//        String sql = "SELECT group_number FROM comment WHERE comment_id = ?";
+//        return jdbcTemplate.queryForObject(sql, Integer.class, parentCommentId);
+//    }
+//
+//    // 댓글 삽입
+//    public void insertComment(Long userId, Long postId, CommentRequestDto commentRequestDto, int groupNumber, int commentLevel, Long parentCommentId) {
+//        String sql = "INSERT INTO comment (contents, parent_comment_id, comment_level, group_number, count_like, user_id, post_id, status) " +
+//                "VALUES (?, ?, ?, ?, 0, ?, ?, 'ACTIVE')";
+//        jdbcTemplate.update(sql, commentRequestDto.getContents(), parentCommentId, commentLevel, groupNumber, userId, postId);
+//    }
+
+//    public Long createComment(Long userId, Long postId, CommentRequestDto commentRequestDto) {
+//        String sql = "INSERT INTO comment (contents, parent_comment_id, comment_level, group_number, count_like, user_id, post_id, status) " +
+//                "VALUES (?, NULL, 1, 1, 0, ?, ?, 'ACTIVE')";
+//        KeyHolder keyHolder = new GeneratedKeyHolder();
+//
+//        jdbcTemplate.update(
+//                con -> {
+//                    PreparedStatement ps = con.prepareStatement(sql, new String[] {"comment_id"});
+//                    ps.setString(1, commentRequestDto.getContents());
+//                    ps.setLong(2, userId);
+//                    ps.setLong(3, postId);
+//                    return ps;
+//                },
+//                keyHolder
+//        );
+//
+//        return keyHolder.getKey() != null ? keyHolder.getKey().longValue() : null;
+//    }
+//
+//    public Long createReplyComment(Long userId, Long postId, Long parentId, CommentRequestDto commentRequestDto) {
+//        String sql = "INSERT INTO comment (contents, parent_comment_id, comment_level, group_number, count_like, user_id, post_id, status) " +
+//                "VALUES (?, ?, 2, (SELECT group_number FROM comment WHERE comment_id = ?), 0, ?, ?, 'ACTIVE')";
+//        KeyHolder keyHolder = new GeneratedKeyHolder();
+//
+//        jdbcTemplate.update(
+//                con -> {
+//                    PreparedStatement ps = con.prepareStatement(sql, new String[] {"comment_id"});
+//                    ps.setString(1, commentRequestDto.getContents());
+//                    ps.setLong(2, parentId); // Set parent comment ID for reply
+//                    ps.setLong(3, parentId); // Use parent comment ID to get group number
+//                    ps.setLong(4, userId);
+//                    ps.setLong(5, postId);
+//                    return ps;
+//                },
+//                keyHolder
+//        );
+//
+//        return keyHolder.getKey() != null ? keyHolder.getKey().longValue() : null;
+//    }
+//
+//
+//    public boolean isCommentById(Long commentId) {
+//        String sql = "SELECT COUNT(*) FROM comment WHERE comment_id = ? AND status = 'ACTIVE'";
+//        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{commentId}, Integer.class);
+//        return count != null && count > 0;
+//    }
 }

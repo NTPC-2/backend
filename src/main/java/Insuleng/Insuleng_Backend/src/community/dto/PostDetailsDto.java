@@ -5,20 +5,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
-//검색 결과로 반환할 게시글의 정보
-public class PostSummaryDto {
+public class PostDetailsDto {
     private Long postId;
     private String topic;
-    private String contentsSnippet;
+    private String contents;
     private int countLike;
     private int countComment;
+    private int countScrap;
     private String imgUrl;
     private String authorName;
-    private int countScrap;
-
+    private LocalDateTime createdAt;
 }

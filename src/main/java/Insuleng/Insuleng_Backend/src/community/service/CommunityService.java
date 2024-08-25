@@ -4,10 +4,7 @@ import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
-import Insuleng.Insuleng_Backend.src.community.dto.PostDto;
-import Insuleng.Insuleng_Backend.src.community.dto.PostListDto;
-import Insuleng.Insuleng_Backend.src.community.dto.PostSummaryDto;
-import Insuleng.Insuleng_Backend.src.community.dto.UpdatePostDto;
+import Insuleng.Insuleng_Backend.src.community.dto.*;
 import Insuleng.Insuleng_Backend.src.community.repository.CommunityRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -15,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 
 import java.util.List;
 import java.util.Map;
@@ -72,7 +70,6 @@ public class CommunityService {
         }
         //작성한 유저id랑 수정하려는 유저id 같은지 검사
         boolean isUserOwner = communityRepository.isUserOwnerOfPost(userId, updatePostDto.getPostId());
-        System.out.println("isUserOwner: " + isUserOwner);  // 로그 추가
 
         if (!isUserOwner) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
@@ -264,4 +261,80 @@ public class CommunityService {
         communityRepository.updatePostScrapStatus(userId, postId, Status.INACTIVE);
         communityRepository.decreasePostScrapCount(postId);
     }
+
+    public PostListDto getPostslist(){
+        List<PostSummaryDto> postSummaryList = communityRepository.findAllPosts();
+        //결과가 없는경우
+        if (postSummaryList.isEmpty()) {
+            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+        }
+        return new PostListDto(postSummaryList.size(), postSummaryList);
+    }
+    public PostDetailsDto getPostDetails(Long userId, Long postId) {
+        //존재하는 유저인지
+        boolean userExist = communityRepository.testUserId(userId);
+        if (userExist == false) {
+            throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
+        }
+        // 게시글 세부정보를 가져오기
+        PostDetailsDto postDetailsDto = communityRepository.getPostDetails(postId);
+        if (postDetailsDto == null) {
+            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+        }
+        return postDetailsDto;
+    }
+//    @Transactional
+//    public void createComment(Long userId, Long postId, CommentRequestDto commentRequestDto) {
+//        // groupNumber 설정: 새로운 댓글인 경우
+//        int groupNumber = communityRepository.getMaxGroupNumber(postId) + 1;
+//
+//        // 기본적으로 댓글은 commentLevel이 0 (루트 댓글)
+//        int commentLevel = 0;
+//        Long parentCommentId = null;
+//
+//        // 대댓글인 경우 처리
+//        if (commentRequestDto.getParentCommentId() != null) {
+//            parentCommentId = commentRequestDto.getParentCommentId();
+//            commentLevel = communityRepository.getCommentLevel(parentCommentId) + 1;
+//            groupNumber = communityRepository.getGroupNumber(parentCommentId); // 부모 댓글의 groupNumber 사용
+//        }
+//
+//        communityRepository.insertComment(userId, postId, commentRequestDto, groupNumber, commentLevel, parentCommentId);
+//    }
+
+//    @Transactional
+//    public Long createComment(Long userId, Long postId, CommentRequestDto commentRequestDto) {
+//        boolean userExist = communityRepository.testUserId(userId);
+//        if(userExist == false){
+//            throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
+//        }
+//        //postid존재 + status ACTIVE 검사
+//        boolean postExist = communityRepository.isPostByIdAndStatusActive(postId);
+//        if (!postExist) {
+//            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+//        }
+//        //게시글 작성
+//        return communityRepository.createComment(userId, postId, commentRequestDto);
+//    }
+//
+//
+//    @Transactional
+//    public Long createReplyComment(Long userId, Long postId, Long parentId, CommentRequestDto commentRequestDto) {
+//        boolean userExist = communityRepository.testUserId(userId);
+//        if (userExist == false) {
+//            throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
+//        }
+//        //postid존재 + status ACTIVE 검사
+//        boolean postExist = communityRepository.isPostByIdAndStatusActive(postId);
+//        if (!postExist) {
+//            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+//        }
+//        boolean parentCommentExists = communityRepository.isCommentById(parentId);
+//        if (!parentCommentExists) {
+//            throw new BaseException(BaseResponseStatus.COMMENT_EMPTY);
+//        }
+//        return communityRepository.createReplyComment(userId, postId, parentId, commentRequestDto);
+//
+//    }
+
 }
