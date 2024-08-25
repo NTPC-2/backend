@@ -40,3 +40,7 @@ public class CommentEntity extends BaseEntity {
     private PostEntity post;
 
 }
+
+
+
+

@@ -68,7 +68,7 @@ public enum BaseResponseStatus {
     BOOKMARK_NO_EXIST(false, 3615, "음식점 즐겨찾기 정보가 없습니다"),
 
 
-    POST_EMPTY(false, 4002, "게시글이 존재하지 않습니다"),
+    POST_EMPTY(false, 4001, "게시글이 존재하지 않습니다"),
     COMMENT_EMPTY(false, 4002, "댓글이 존재하지 않습니다"),
     INVALID_USER(false, 4003, "유효하지 않은 사용자입니다"),
     KEYWORD_EMPTY(false,4004,"검색어가 존재하지 않습니다"),

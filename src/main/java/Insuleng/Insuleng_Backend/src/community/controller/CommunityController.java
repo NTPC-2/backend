@@ -6,13 +6,18 @@ import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.src.community.dto.*;
 import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
+import Insuleng.Insuleng_Backend.src.community.repository.CommunityRepository;
 import Insuleng.Insuleng_Backend.src.community.service.CommunityService;
 import Insuleng.Insuleng_Backend.utils.SecurityUtil;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,9 +25,9 @@ import java.util.Map;
 
 @RestController
 public class CommunityController {
+
     private final CommunityService communityService;
     private final Logger logger = LoggerFactory.getLogger(CommunityService.class);
-
 
     public CommunityController(CommunityService communityService) {
         this.communityService = communityService;
@@ -56,13 +61,11 @@ public class CommunityController {
         }
     }
 
-
     @PutMapping("/post/update")
     public BaseResponse<String> updatePost (@RequestBody @Valid UpdatePostDto updatePostDto){
         try{
             Long userId = SecurityUtil.getCurrentUserId()
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
-
 
             communityService.updatePost(userId, updatePostDto);
             return new BaseResponse<>("게시글 수정 성공");
@@ -157,4 +160,102 @@ public class CommunityController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+    @GetMapping("post/list")
+    public BaseResponse<PostListDto> getPostsList(){
+        try {
+            PostListDto postsList = communityService.getPostslist();
+            return new BaseResponse<>(postsList);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+    @GetMapping("post/details/{postId}")
+    public BaseResponse<PostDetailsDto> getPostDetails(@PathVariable("postId") Long postId){
+        try {
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
+
+            PostDetailsDto postDetails = communityService.getPostDetails(userId, postId);
+            return new BaseResponse<>(postDetails);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+//    @PostMapping("comment/create/{postId}")
+//    public BaseResponse<String> createComment(@PathVariable Long postId, @RequestBody CommentRequestDto commentRequestDto) {
+//        try {
+//            Long userId = SecurityUtil.getCurrentUserId()
+//                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
+//            communityService.createComment(userId, postId, commentRequestDto);
+//            return new BaseResponse<>("댓글을 작성했습니다");
+//        } catch (BaseException e) {
+//            return new BaseResponse<>(e.getStatus());
+//        }
+//    }
+
+//
+//    @ApiOperation(value = "댓글,대댓글 작성 API")
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "요청에 성공하였습니다."),
+//            @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다."),
+//            @ApiResponse(code = 400, message = "Bad Request"),
+//            @ApiResponse(code = 401, message = "잘못된 JWT 토큰입니다."),
+//            @ApiResponse(code = 403, message = "접근에 권한이 없습니다.")
+//    })
+//    @PostMapping(value = {"/{post_id}/details/comment" , "/{post_id}/details/comment/{parent_id}"})
+//    @PreAuthorize("hasAnyRole('USER')")
+//    public BaseResponse<GetCommentIdDto> createComment(@PathVariable("post_id")Long post_id, @PathVariable(value = "parent_id", required = false) Long parent_id, @RequestBody @Valid CommentDto commentDto){
+//
+//        if(parent_id == null){
+//            try{
+//                String currentUserId = SecurityUtil.getCurrentUserId()
+//                        .orElseThrow(() -> new BaseException(NOT_ACTIVATED_USER));
+//                Long userId = Long.parseLong(currentUserId);
+//
+//                return new BaseResponse<>(new GetCommentIdDto(communityService.createComment(userId, post_id, commentDto)));
+//            } catch(BaseException e){
+//                return new BaseResponse<>(e.getStatus());
+//            }
+//
+//        }
+//        else{
+//            try{
+//                String currentUserId = SecurityUtil.getCurrentUserId()
+//                        .orElseThrow(() -> new BaseException(NOT_ACTIVATED_USER));
+//                Long userId = Long.parseLong(currentUserId);
+//
+//                return new BaseResponse<>(new GetCommentIdDto(communityService.createReplyComment(userId, post_id, parent_id, commentDto)));
+//            }
+//            catch (BaseException e){
+//                return new BaseResponse<>(e.getStatus());
+//            }
+//        }
+//    }
+
+//    @PostMapping(value = {"/{post_id}/comment", "/{post_id}/comment/{parent_id}"})
+//    public BaseResponse<GetCommentIdDto> createComment(
+//            @PathVariable("post_id") Long postId,
+//            @PathVariable(value = "parent_id", required = false) Long parentId,
+//            @RequestBody @Valid CommentRequestDto commentRequestDto) {
+//
+//        try {
+//            Long userId = SecurityUtil.getCurrentUserId()
+//                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
+//
+//            Long commentId;
+//            if (parentId == null) {
+//                // 새 댓글 작성
+//                commentId = communityService.createComment(userId, postId, commentRequestDto);
+//            } else {
+//                // 대댓글 작성
+//                commentId = communityService.createReplyComment(userId, postId, parentId, commentRequestDto);
+//            }
+//
+//            return new BaseResponse<>(new GetCommentIdDto(commentId));
+//        } catch (BaseException e) {
+//            return new BaseResponse<>(e.getStatus());
+//        }
+//    }
+//
 }
