@@ -3,6 +3,7 @@ package Insuleng.Insuleng_Backend.src.user.service;
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
+import Insuleng.Insuleng_Backend.src.storage.S3Uploader;
 import Insuleng.Insuleng_Backend.src.user.dto.EmailDto;
 import Insuleng.Insuleng_Backend.src.user.dto.FindEmailDto;
 import Insuleng.Insuleng_Backend.src.user.dto.SignUpDto;
@@ -12,10 +13,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
+    private final S3Uploader s3Uploader;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void signUp(SignUpDto signUpDto) throws BaseException {
@@ -31,9 +35,20 @@ public class AuthService {
             throw new BaseException(BaseResponseStatus.DUPLICATED_NICKNAME);
         }
 
+        String profileImg;
+
+        if(signUpDto.getProfileImg().isEmpty() || Objects.isNull(signUpDto.getProfileImg().getOriginalFilename()) || signUpDto.getProfileImg() == null){
+            profileImg = null;
+        }
+        else{
+            profileImg = s3Uploader.upload(signUpDto.getProfileImg());
+        }
+
         //비밀번호 암호화
         String encodePwd = bCryptPasswordEncoder.encode(signUpDto.getPassword());
-        UserEntity newUser = new UserEntity(signUpDto, encodePwd);
+
+        //유저 생성
+        UserEntity newUser = new UserEntity(signUpDto, encodePwd, profileImg);
 
         userRepository.save(newUser);
     }

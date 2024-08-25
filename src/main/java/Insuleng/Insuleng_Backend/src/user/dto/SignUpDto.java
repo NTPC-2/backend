@@ -4,12 +4,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
 @Schema(description = "회원가입 요청 DTO")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class SignUpDto {
 
     @Schema(description = "이메일", nullable = false, example = "cos123@naver.com")
@@ -41,7 +44,7 @@ public class SignUpDto {
     @NotNull(message = "나이를 입력해주세요")
     private Integer age;
 
-    @Schema(description = "프로필 이미지", nullable = true)
-    private String profileImg;
+    @Schema(description = "프로필 이미지, 프로필을 안 넣고 싶다면 null로 처리하기", nullable = true)
+    private MultipartFile profileImg;
 
 }

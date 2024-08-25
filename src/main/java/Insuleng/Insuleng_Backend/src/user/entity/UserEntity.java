@@ -55,7 +55,7 @@ public class UserEntity extends BaseEntity {
 //    private Integer loginType;
 
     //일반 user 회원가입
-    public UserEntity(SignUpDto signUpDto, String encodePwd){
+    public UserEntity(SignUpDto signUpDto, String encodePwd, String profileImg){
         this.email = signUpDto.getEmail();
         this.nickname = signUpDto.getNickname();
         this.phoneNumber = signUpDto.getPhoneNumber();
@@ -63,6 +63,7 @@ public class UserEntity extends BaseEntity {
         this.age = signUpDto.getAge();
         this.role = "ROLE_USER";
         this.password = encodePwd;
+        this.profileImg = profileImg;
     }
 
     //토큰 생성 시 임의의 usetEntity를 만들기 위한 메서드

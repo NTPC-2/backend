@@ -2,6 +2,7 @@ package Insuleng.Insuleng_Backend.src.user.controller;
 
 import Insuleng.Insuleng_Backend.config.BaseException;
 import Insuleng.Insuleng_Backend.config.BaseResponse;
+import Insuleng.Insuleng_Backend.src.storage.S3Uploader;
 import Insuleng.Insuleng_Backend.src.user.dto.*;
 import Insuleng.Insuleng_Backend.src.user.service.AuthService;
 import Insuleng.Insuleng_Backend.src.user.service.EmailService;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,14 +23,14 @@ public class AuthController {
     private final EmailService emailService;
 
     //회원가입
-    @PostMapping("/signup")
-    @Operation(summary = "회원가입 api", description = "회원가입을 진행합니다.", responses = {
+    @PostMapping(value ="/signup", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Operation(summary = "회원가입 api", description = "SignUpDto에 담긴 정보를 토대로 회원가입", responses = {
             @ApiResponse(responseCode = "200", description = "성공"),
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
             @ApiResponse(responseCode = "3010", description = "이미 존재하는 이메일 입니다"),
             @ApiResponse(responseCode = "3011", description = "이미 존재하는 닉네임 입니다")
     })
-    public BaseResponse<String> signUp(@RequestBody @Valid SignUpDto signUpDto){
+    public BaseResponse<String> signUp(@Valid SignUpDto signUpDto){ //Dto에 multi-media 타입이 들어있을 때는 @RequestBody를 빼자
         try{
             authService.signUp(signUpDto);
 
