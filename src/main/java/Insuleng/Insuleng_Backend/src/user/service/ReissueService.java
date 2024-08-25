@@ -27,6 +27,11 @@ public class ReissueService {
         String refresh = null;
 
         Cookie[] cookies = request.getCookies();
+
+        if(cookies == null){
+            throw new BaseException(BaseResponseStatus.NO_REFRESH_TOKEN);
+        }
+
         for(Cookie cookie : cookies){
             if(cookie.getName().equals("refresh")){
                 refresh = cookie.getValue();
@@ -34,7 +39,7 @@ public class ReissueService {
         }
 
         if(refresh == null){
-
+            System.out.println("리프레쉬 토큰이 존재하지 않습니다");
             throw new BaseException(BaseResponseStatus.NO_REFRESH_TOKEN);
         }
 
