@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class AuthController {
             @ApiResponse(responseCode = "3010", description = "이미 존재하는 이메일 입니다"),
             @ApiResponse(responseCode = "3011", description = "이미 존재하는 닉네임 입니다")
     })
-    public BaseResponse<String> signUp(@Valid SignUpDto signUpDto){ //Dto에 multi-media 타입이 들어있을 때는 @RequestBody를 빼자
+    public BaseResponse<String> signUp(@RequestBody @Valid SignUpDto signUpDto){ //Dto에 multi-media 타입이 들어있을 때는 @RequestBody를 빼자
         try{
             authService.signUp(signUpDto);
 
