@@ -102,7 +102,16 @@ public class CommunityService {
             throw new BaseException(BaseResponseStatus.POST_EMPTY);
         }
 
-        communityRepository.deletePost(userId,  updatePostDto.getPostId());
+        String imgUrl;
+
+        if(updatePostDto.getImgUrl().isEmpty() || Objects.isNull(updatePostDto.getImgUrl().getOriginalFilename()) || updatePostDto.getImgUrl() == null){
+            imgUrl = null;
+        }
+        else{
+            imgUrl = s3Uploader.upload(updatePostDto.getImgUrl());
+        }
+
+        communityRepository.updatePost(userId,  updatePostDto, imgUrl);
     }
 
     public PostListDto searchPosts(Long userId, String keyword) {

@@ -64,7 +64,7 @@ public class CommunityController {
     }
 
     @PutMapping("/post/update")
-    public BaseResponse<String> updatePost (@RequestBody @Valid UpdatePostDto updatePostDto){
+    public BaseResponse<String> updatePost (@Valid UpdatePostDto updatePostDto){
         try{
             Long userId = SecurityUtil.getCurrentUserId()
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));

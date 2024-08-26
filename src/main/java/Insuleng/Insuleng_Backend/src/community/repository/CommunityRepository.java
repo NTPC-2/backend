@@ -69,13 +69,13 @@ public class CommunityRepository {
         return count != null && count > 0;
     }
 
-    public void updatePost(Long userId, UpdatePostDto updatePostDto){
+    public void updatePost(Long userId, UpdatePostDto updatePostDto, String imgUrl){
         String sql =  "UPDATE post SET topic = ?, contents = ?, img_url = ? WHERE post_id = ? AND user_id = ?";
 
         jdbcTemplate.update(sql,
                 updatePostDto.getTopic(),
                 updatePostDto.getContents(),
-                updatePostDto.getImgUrl(),
+                imgUrl,
                 updatePostDto.getPostId(),
                 userId);
 
