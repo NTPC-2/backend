@@ -308,10 +308,11 @@ public class CommunityService {
             throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
         }
         // 게시글 세부정보를 가져오기
-        PostDetailsDto postDetailsDto = communityRepository.getPostDetails(postId);
-        if (postDetailsDto == null) {
-            throw new BaseException(BaseResponseStatus.POST_EMPTY);
-        }
+        PostDetailsDto postDetailsDto = new PostDetailsDto();
+
+        postDetailsDto.setPostInfoDto(communityRepository.getPostInfo(userId, postId));
+        postDetailsDto.setCommentInfoDtoList(communityRepository.getCommentInfo(userId, postId));
+
         return postDetailsDto;
     }
 

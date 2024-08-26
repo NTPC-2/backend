@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -19,7 +21,6 @@ import java.util.List;
 @Repository
 public class CommunityRepository {
     private final JdbcTemplate jdbcTemplate;
-
     public CommunityRepository(DataSource dataSource){
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
@@ -220,28 +221,76 @@ public class CommunityRepository {
         return postSummaryList;
     }
 
-    public PostDetailsDto getPostDetails(Long postId) {
-        String sql = "SELECT p.post_id AS postId, p.topic, p.contents, p.count_like AS countLike, " +
-                "p.count_comment AS countComment, p.count_scrap AS countScrap, p.img_url AS imgUrl, " +
-                "u.nickname AS authorName, p.created_at AS createdAt " +
+    public PostInfoDto getPostInfo(Long userId, Long postId) {
+        String sql = "SELECT p.post_id, p.topic, p.contents, p.count_like, " +
+                "p.count_comment, p.count_scrap, p.img_url, " +
+                "u.nickname, p.created_at, u.profile_img, " +
+                "COALESCE(pl.user_id IS NOT NULL, FALSE) AS is_my_like, " +
+                "COALESCE(pc.user_id IS NOT NULL, FALSE) AS is_my_scrap " +
                 "FROM post p " +
                 "JOIN user u ON p.user_id = u.user_id " +
+                "LEFT JOIN post_like pl ON p.post_id = pl.post_id AND pl.user_id = ? AND pl.status = 'ACTIVE' " +
+                "LEFT JOIN scrap pc ON p.post_id = pc.post_id AND pc.user_id = ? AND pc.status = 'ACTIVE' " +
                 "WHERE p.post_id = ? AND p.status = 'ACTIVE'";
 
-        // 직접 매핑 처리
-        return jdbcTemplate.queryForObject(sql, new Object[]{postId}, (rs, rowNum) -> {
-            Long postIdResult = rs.getLong("postId");
+        return jdbcTemplate.queryForObject(sql, new Object[]{userId, userId, postId}, (rs, rowNum) -> {
+            Long postIdResult = rs.getLong("p.post_id");
             String topic = rs.getString("topic");
             String contents = rs.getString("contents");
-            int countLike = rs.getInt("countLike");
-            int countComment = rs.getInt("countComment");
-            int countScrap = rs.getInt("countScrap");
-            String imgUrl = rs.getString("imgUrl");
-            String authorName = rs.getString("authorName");
-            LocalDateTime createdAt = rs.getObject("createdAt", LocalDateTime.class);
+            int countLike = rs.getInt("count_like");
+            int countComment = rs.getInt("count_comment");
+            int countScrap = rs.getInt("count_scrap");
+            String postImgUrl = rs.getString("p.img_url");
+            String authorName = rs.getString("nickname");
+            LocalDateTime createdAt = rs.getObject("p.created_at", LocalDateTime.class);
+            String userImgUrl = rs.getString("u.profile_img");
+            Boolean isMyLike = rs.getBoolean("is_my_like");
+            Boolean isMyScrap = rs.getBoolean("is_my_scrap");
 
-            return new PostDetailsDto(postIdResult, topic, contents, countLike, countComment, countScrap, imgUrl, authorName, createdAt);
+            return new PostInfoDto(postIdResult, authorName, createdAt, userImgUrl, topic, contents, countLike, countComment, countScrap, postImgUrl, isMyLike, isMyScrap);
         });
+    }
+
+    public List<CommentInfoDto> getCommentInfo(Long userId, Long postId) {
+
+        String sql = "SELECT \n" +
+                "    c.comment_id,\n" +
+                "    c.contents,\n" +
+                "    c.count_like,\n" +
+                "    c.created_at,\n" +
+                "    c.group_number,\n" +
+                "    c.comment_level,\n" +
+                "    u.user_id,\n" +
+                "    u.nickname,\n" +
+                "    u.profile_img,\n" +
+                "    COALESCE(cl.user_id IS NOT NULL, FALSE) AS is_my_like\n" +
+                "FROM \n" +
+                "    comment c\n" +
+                "JOIN \n" +
+                "    user u ON c.user_id = u.user_id\n" +
+                "LEFT JOIN \n" +
+                "    comment_like cl ON c.comment_id = cl.comment_id AND cl.user_id = ? AND cl.status = 'ACTIVE'\n" +
+                "WHERE \n" +
+                "    c.post_id = ?\n" +
+                "ORDER BY \n" +
+                "    c.group_number ASC,\n" +
+                "    c.comment_level ASC,\n" +
+                "    c.created_at ASC;";
+
+        // userId와 postId를 파라미터로 전달하여 PreparedStatement에 바인딩
+        List<CommentInfoDto> commentInfoDtoList = jdbcTemplate.query(sql, new Object[]{userId, postId}, (rs, rowNum) -> {
+            String contents = rs.getString("c.contents");
+            Integer countLike = rs.getInt("c.count_like");
+            LocalDateTime createdAt = rs.getObject("c.created_at", LocalDateTime.class);
+            Long userId2 = rs.getLong("u.user_id");
+            String userNickname = rs.getString("u.nickname");
+            String userImgUrl = rs.getString("u.profile_img");
+            Boolean isMyLike = rs.getBoolean("is_my_like");
+
+            return new CommentInfoDto(userId2, userNickname, userImgUrl, contents, countLike, isMyLike, createdAt);
+        });
+
+        return commentInfoDtoList;
     }
 
     public void createComment(Long userId, Long postId, CommentRequestDto commentRequestDto) {
