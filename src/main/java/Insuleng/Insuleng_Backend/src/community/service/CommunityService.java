@@ -308,6 +308,21 @@ public class CommunityService {
 
     }
 
+    @Transactional
+    public void createReplyComment(Long userId, Long postId, Long parentCommentId, CommentRequestDto commentRequestDto) {
+
+        String postStatus = communityRepository.checkPostStatus(postId);
+
+        if(postStatus.equals("ACTIVE")){
+            communityRepository.createReplyComment(userId, postId, parentCommentId, commentRequestDto);
+            communityRepository.increaseCountComment(postId);
+        }else{
+            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+        }
+
+
+    }
+
 //    @Transactional
 //    public void createComment(Long userId, Long postId, CommentRequestDto commentRequestDto) {
 //        // groupNumber 설정: 새로운 댓글인 경우

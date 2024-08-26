@@ -194,6 +194,18 @@ public class CommunityController {
         }
     }
 
+    @PostMapping("comment/reply/{postId}/{parentCommentId}")
+    public BaseResponse<String> createComment(@PathVariable Long postId, @PathVariable Long parentCommentId, @RequestBody CommentRequestDto commentRequestDto) {
+        try {
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
+            communityService.createReplyComment(userId, postId, parentCommentId, commentRequestDto);
+            return new BaseResponse<>("대댓글을 작성했습니다");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
 //
 //    @ApiOperation(value = "댓글,대댓글 작성 API")
 //    @ApiResponses(value = {

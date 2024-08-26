@@ -281,6 +281,28 @@ public class CommunityRepository {
         );
     }
 
+    public void createReplyComment(Long userId, Long postId, Long parentCommentId, CommentRequestDto commentRequestDto) {
+
+        String sql = "insert into comment(group_number, comment_level, count_like, parent_comment_id, post_id, user_id, contents, status)" +
+                "values((select groupNum from (select distinct group_number as groupNum from comment where comment_id = ?) as c), 2 , 0,  ? , ? , ? ,?, 'ACTIVE')";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(
+                con -> {
+                    PreparedStatement ps = con.prepareStatement(sql, new String[] {"comment_id"});
+                    ps.setLong(1, parentCommentId);
+                    ps.setLong(2, parentCommentId);
+                    ps.setLong(3, postId);
+                    ps.setLong(4, userId);
+                    ps.setString(5, commentRequestDto.getContents());
+                    return ps;
+                },
+                keyHolder
+        );
+
+    }
+
 //    // 최대 groupNumber 가져오기
 //    public int getMaxGroupNumber(Long postId) {
 //        String sql = "SELECT COALESCE(MAX(group_number), 0) FROM comment WHERE post_id = ?";
