@@ -45,7 +45,7 @@ public class CommunityRepository {
     }
     public boolean testUserId(Long userId){
 
-        int rowCount = this.jdbcTemplate.queryForObject("select count(*) from user where user_id = ?", Integer.class, userId);
+        int rowCount = this.jdbcTemplate.queryForObject("select count(*) from user where user_id = ? and status = 'ACTIVE'", Integer.class, userId);
         if(rowCount == 0){
             return false;
         }
@@ -286,8 +286,9 @@ public class CommunityRepository {
             String userNickname = rs.getString("u.nickname");
             String userImgUrl = rs.getString("u.profile_img");
             Boolean isMyLike = rs.getBoolean("is_my_like");
+            Integer commentLevel = rs.getInt("comment_level");
 
-            return new CommentInfoDto(userId2, userNickname, userImgUrl, contents, countLike, isMyLike, createdAt);
+            return new CommentInfoDto(userId2, userNickname, userImgUrl, contents, countLike, isMyLike, createdAt, commentLevel);
         });
 
         return commentInfoDtoList;
@@ -376,6 +377,17 @@ public class CommunityRepository {
                 updateCommentDto.getContents(),
                 commentId,
                 userId);
+    }
+
+    public boolean testPostId(Long postId) {
+        int rowCount = this.jdbcTemplate.queryForObject("select count(*) from post where post_id = ? and status = 'ACTIVE'", Integer.class, postId);
+        if(rowCount == 0){
+            return false;
+        }
+        else{
+            return true;
+        }
+
     }
 
 //    // 최대 groupNumber 가져오기

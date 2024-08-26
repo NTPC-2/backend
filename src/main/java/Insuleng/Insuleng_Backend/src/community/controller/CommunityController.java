@@ -172,6 +172,13 @@ public class CommunityController {
         }
     }
     @GetMapping("post/details/{postId}")
+    @Operation(summary = "게시글 자세히 보기 api", description = "게시글 dto와 댓글 리스트 dto를 반환한다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다")
+    })
     public BaseResponse<PostDetailsDto> getPostDetails(@PathVariable("postId") Long postId){
         try {
             Long userId = SecurityUtil.getCurrentUserId()

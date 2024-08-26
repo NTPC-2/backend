@@ -307,6 +307,11 @@ public class CommunityService {
         if (userExist == false) {
             throw new BaseException(BaseResponseStatus.USER_NO_EXIST);
         }
+        boolean postExist = communityRepository.testPostId(postId);
+        if(postExist == false){
+            throw new BaseException(BaseResponseStatus.POST_EMPTY);
+        }
+
         // 게시글 세부정보를 가져오기
         PostDetailsDto postDetailsDto = new PostDetailsDto();
 
