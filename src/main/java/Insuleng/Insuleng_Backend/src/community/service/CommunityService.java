@@ -323,6 +323,24 @@ public class CommunityService {
 
     }
 
+    public void updateComment(Long userId, Long commentId, UpdateCommentDto updateCommentDto) {
+
+        String commentStatus = communityRepository.checkCommentStatus(commentId);
+
+        if(commentStatus.equals("ACTIVE")){
+            Long findUserIdByCommentId = communityRepository.findUserIdByCommentId(commentId);
+
+            if(findUserIdByCommentId.longValue() != userId.longValue()){
+                throw new BaseException(BaseResponseStatus.NO_PRIVILEGE_COMMENT);
+            }
+
+            communityRepository.updateComment(userId, commentId, updateCommentDto);
+        }else{
+            throw new BaseException(BaseResponseStatus.COMMENT_EMPTY);
+        }
+
+    }
+
 //    @Transactional
 //    public void createComment(Long userId, Long postId, CommentRequestDto commentRequestDto) {
 //        // groupNumber 설정: 새로운 댓글인 경우

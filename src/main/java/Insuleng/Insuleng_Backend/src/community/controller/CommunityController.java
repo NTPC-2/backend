@@ -9,6 +9,7 @@ import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
 import Insuleng.Insuleng_Backend.src.community.repository.CommunityRepository;
 import Insuleng.Insuleng_Backend.src.community.service.CommunityService;
 import Insuleng.Insuleng_Backend.utils.SecurityUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -183,6 +184,13 @@ public class CommunityController {
     }
 
     @PostMapping("comment/create/{postId}")
+    @Operation(summary = "댓글 작성 api", description = "CommentRequestDto 의 정보로 값을 받는다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다")
+    })
     public BaseResponse<String> createComment(@PathVariable Long postId, @RequestBody CommentRequestDto commentRequestDto) {
         try {
             Long userId = SecurityUtil.getCurrentUserId()
@@ -195,6 +203,13 @@ public class CommunityController {
     }
 
     @PostMapping("comment/reply/{postId}/{parentCommentId}")
+    @Operation(summary = "대댓글 작성 api", description = "CommentRequestDto 의 정보로 값을 받는다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다")
+    })
     public BaseResponse<String> createComment(@PathVariable Long postId, @PathVariable Long parentCommentId, @RequestBody CommentRequestDto commentRequestDto) {
         try {
             Long userId = SecurityUtil.getCurrentUserId()
@@ -205,6 +220,30 @@ public class CommunityController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    @PutMapping("comment/update/{commentId}")
+    @Operation(summary = "댓글 수정 api", description = "UpdateCommentDto 의 정보로 값을 받는다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다"),
+            @ApiResponse(responseCode = "4101", description = "댓글 작성자가 아니여서 글을 수정할 수 없습니다")
+    })
+    public BaseResponse<String> updateComment(@PathVariable Long commentId, @RequestBody UpdateCommentDto updateCommentDto){
+        try{
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
+
+            communityService.updateComment(userId, commentId, updateCommentDto);
+            return new BaseResponse<>("댓글을 수정했습니다");
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+
+    }
+
 
 //
 //    @ApiOperation(value = "댓글,대댓글 작성 API")

@@ -303,6 +303,32 @@ public class CommunityRepository {
 
     }
 
+    public String checkCommentStatus(Long commentId) {
+        return this.jdbcTemplate.queryForObject(
+                "select status from comment where comment_id = ?;",
+                String.class, commentId
+        );
+
+    }
+
+    public Long findUserIdByCommentId(Long commentId){
+        return this.jdbcTemplate.queryForObject(
+                "select user_id from comment where comment_id = ?;",
+                Long.class, commentId
+        );
+
+    }
+
+    public void updateComment(Long userId, Long commentId, UpdateCommentDto updateCommentDto) {
+
+        String sql =  "UPDATE comment SET contents = ? WHERE comment_id = ? AND user_id = ?";
+
+        jdbcTemplate.update(sql,
+                updateCommentDto.getContents(),
+                commentId,
+                userId);
+    }
+
 //    // 최대 groupNumber 가져오기
 //    public int getMaxGroupNumber(Long postId) {
 //        String sql = "SELECT COALESCE(MAX(group_number), 0) FROM comment WHERE post_id = ?";
