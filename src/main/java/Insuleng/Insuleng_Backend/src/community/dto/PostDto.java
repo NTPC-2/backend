@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -21,5 +22,5 @@ public class PostDto {
     @Size
     private String contents;
 
-    private String imgUrl;
+    private MultipartFile imgUrl;
 }

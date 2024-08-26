@@ -24,7 +24,7 @@ public class CommunityRepository {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public void createPost(Long userId, PostDto postDto){
+    public void createPost(Long userId, PostDto postDto, String imgUrl){
         String sql = "INSERT INTO post(count_comment, count_like, count_parent_comment, user_id, contents, img_url, topic, status,count_scrap)"
                 + " VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -35,7 +35,7 @@ public class CommunityRepository {
             ps.setInt(3, 0);
             ps.setLong(4, userId);
             ps.setString(5, postDto.getContents());
-            ps.setString(6, postDto.getImgUrl());
+            ps.setString(6, imgUrl);
             ps.setString(7, postDto.getTopic());
             ps.setString(8, "ACTIVE");
             ps.setInt(9, 0);

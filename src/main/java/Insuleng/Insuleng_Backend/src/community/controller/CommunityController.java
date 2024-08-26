@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +35,8 @@ public class CommunityController {
         this.communityService = communityService;
     }
 
-    @PostMapping ("/post")
-    public BaseResponse<String> createPost (@RequestBody @Valid PostDto postDto){
+    @PostMapping (value = "/post" , consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public BaseResponse<String> createPost (@Valid PostDto postDto){
         try {
             Long userId = SecurityUtil.getCurrentUserId()
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));

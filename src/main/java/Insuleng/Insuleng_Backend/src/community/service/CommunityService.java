@@ -8,6 +8,7 @@ import Insuleng.Insuleng_Backend.src.community.dto.*;
 import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
 import Insuleng.Insuleng_Backend.src.community.repository.CommunityRepository;
 import Insuleng.Insuleng_Backend.src.community.repository.PostRepository;
+import Insuleng.Insuleng_Backend.src.storage.S3Uploader;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class CommunityService {
@@ -27,12 +29,14 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final S3Uploader s3Uploader;
 
-    public CommunityService(CommunityRepository communityRepository, UserRepository userRepository, PostRepository postRepository) {
+    public CommunityService(CommunityRepository communityRepository, UserRepository userRepository, PostRepository postRepository, S3Uploader s3Uploader) {
 
         this.communityRepository = communityRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
+        this.s3Uploader = s3Uploader;
     }
 
     public void createPost(Long userId, PostDto postDto) {
@@ -43,7 +47,16 @@ public class CommunityService {
         }
         else {
             //게시글 작성
-            communityRepository.createPost(userId, postDto);
+            String imgUrl;
+
+            if(postDto.getImgUrl().isEmpty() || Objects.isNull(postDto.getImgUrl().getOriginalFilename()) || postDto.getImgUrl() == null){
+                imgUrl = null;
+            }
+            else{
+                imgUrl = s3Uploader.upload(postDto.getImgUrl());
+            }
+
+            communityRepository.createPost(userId, postDto, imgUrl);
         }
     }
     @Transactional
