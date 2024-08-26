@@ -41,4 +41,10 @@ public class PostEntity extends BaseEntity {
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
+    public void increaseCountComment(){
+        countComment++;
+    }
+
+
+
 }

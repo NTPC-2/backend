@@ -5,7 +5,11 @@ import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.community.dto.*;
+import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
 import Insuleng.Insuleng_Backend.src.community.repository.CommunityRepository;
+import Insuleng.Insuleng_Backend.src.community.repository.PostRepository;
+import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
+import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +25,14 @@ import java.util.Map;
 public class CommunityService {
 
     private final CommunityRepository communityRepository;
+    private final UserRepository userRepository;
+    private final PostRepository postRepository;
 
-    public CommunityService(CommunityRepository communityRepository) {
+    public CommunityService(CommunityRepository communityRepository, UserRepository userRepository, PostRepository postRepository) {
+
         this.communityRepository = communityRepository;
+        this.userRepository = userRepository;
+        this.postRepository = postRepository;
     }
 
     public void createPost(Long userId, PostDto postDto) {
@@ -283,6 +292,22 @@ public class CommunityService {
         }
         return postDetailsDto;
     }
+
+    @Transactional
+    public void createComment(Long userId, Long postId, CommentRequestDto commentRequestDto){
+
+       String postStatus = communityRepository.checkPostStatus(postId);
+
+       if(postStatus.equals("ACTIVE")) {
+           communityRepository.createComment(userId, postId, commentRequestDto);
+           communityRepository.increaseCountComment(postId);
+       }
+       else{
+           throw new BaseException(BaseResponseStatus.POST_EMPTY);
+       }
+
+    }
+
 //    @Transactional
 //    public void createComment(Long userId, Long postId, CommentRequestDto commentRequestDto) {
 //        // groupNumber 설정: 새로운 댓글인 경우

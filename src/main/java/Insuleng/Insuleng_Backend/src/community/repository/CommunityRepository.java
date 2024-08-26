@@ -5,6 +5,7 @@ import Insuleng.Insuleng_Backend.src.community.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -241,6 +242,43 @@ public class CommunityRepository {
 
             return new PostDetailsDto(postIdResult, topic, contents, countLike, countComment, countScrap, imgUrl, authorName, createdAt);
         });
+    }
+
+    public void createComment(Long userId, Long postId, CommentRequestDto commentRequestDto) {
+
+        //group number는 최초 댓글일 경우에는 1로, 최초 댓글이 아닐 경우는 group_number의 값들 중 (가장 큰 값 + 1) 로 할당
+        String sql = "INSERT INTO comment (group_number, contents, parent_comment_id, comment_level,  count_like, user_id, post_id, status) " +
+                "VALUES (if((select counting from(select count(*) as counting from comment where post_id = ?) c) = 0, 1, ((select num + 1  from (select max(group_number) as num from comment) as A) ) ), ?, 0, 1, 0, ?, ?, 'ACTIVE')";
+
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(
+                con -> {
+                    PreparedStatement ps = con.prepareStatement(sql, new String[] {"comment_id"});
+                    ps.setLong(1, postId);
+                    ps.setString(2, commentRequestDto.getContents());
+                    ps.setLong(3, userId);
+                    ps.setLong(4, postId);
+                    return ps;
+                },
+                keyHolder
+        );
+
+    }
+
+    public void increaseCountComment(Long post_id) {
+        this.jdbcTemplate.update(
+                "update post set count_comment = count_comment + 1 where post_id = ?",
+                post_id
+        );
+    }
+
+    public String checkPostStatus(Long post_id) {
+        return this.jdbcTemplate.queryForObject(
+                "select status from post where post_id = ?;",
+                String.class, post_id
+        );
     }
 
 //    // 최대 groupNumber 가져오기
