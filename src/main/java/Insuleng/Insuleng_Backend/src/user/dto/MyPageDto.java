@@ -12,19 +12,21 @@ import java.util.List;
 public class MyPageDto {
 
     private String userNickname;
+    private String profileImg;
     private int countMyBookmark;
     private int countMyReview;
     private int countMyHeart;
     private int countMyPost;
     private int countMyScrap;
 
-    public MyPageDto(UserStatics userStatics, String userNickname){
+    public MyPageDto(UserStatics userStatics, String userNickname, String profileImg){
         this.countMyBookmark = userStatics.getCountBookmark();
         this.countMyReview = userStatics.getCountMyReview();
         this.countMyHeart = userStatics.getCountMyHeart();
         this.countMyPost = userStatics.getCountMyPost();
         this.countMyScrap = userStatics.getCountMyScrap();
         this.userNickname = userNickname;
+        this.profileImg = profileImg;
     }
 
 }
