@@ -5,6 +5,7 @@ import Insuleng.Insuleng_Backend.src.home.dto.PopularRestaurantInterface;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryDto;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.RestaurantSummaryInterface;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.RestaurantEntity;
+import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -132,6 +133,10 @@ public interface RestaurantRepository extends JpaRepository<RestaurantEntity, Lo
             nativeQuery = true
     )
     public List<PopularRestaurantInterface> findPopularRestaurants();
+
+    @Query("select r from RestaurantEntity r inner join BookmarkEntity b on b.restaurantEntity = r where b.status = :status and b.userEntity = :user")
+    public List<RestaurantEntity> findRouletteList(@Param("status") Status status, @Param("user") UserEntity user);
+
 
 
 }
