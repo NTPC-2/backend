@@ -71,7 +71,7 @@ public class UserService {
 
         String profileImg;
 
-        if(myPageUpdateDto.getProfileImg().isEmpty() || Objects.isNull(myPageUpdateDto.getProfileImg().getOriginalFilename())){
+        if(myPageUpdateDto.getProfileImg().isEmpty() || Objects.isNull(myPageUpdateDto.getProfileImg().getOriginalFilename()) || myPageUpdateDto.getProfileImg() == null){
             profileImg = null;
         }
         else{

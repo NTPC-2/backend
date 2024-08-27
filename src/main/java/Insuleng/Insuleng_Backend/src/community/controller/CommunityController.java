@@ -36,6 +36,12 @@ public class CommunityController {
     }
 
     @PostMapping (value = "/post" , consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Operation(summary = "게시글을 작성하는 api", description = "PostDto(제목, 내용, 사진 파일)을 form data 형식을 볻아 게시글 작성", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다")
+    })
     public BaseResponse<String> createPost (@Valid PostDto postDto){
         try {
             Long userId = SecurityUtil.getCurrentUserId()
@@ -50,6 +56,14 @@ public class CommunityController {
         }
     }
     @DeleteMapping("/post/delete")
+    @Operation(summary = "게시글을 삭제하는 api", description = "DeletePostDto(post_id)을 받아, 해당 post_id 맞는 게시글 삭제", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다"),
+            @ApiResponse(responseCode = "4003", description = "유효하지 않은 사용자입니다"),
+    })
     public BaseResponse<String> deletePost (@RequestBody @Valid DeletePostDto deletePostDto){
         try {
             Long userId = SecurityUtil.getCurrentUserId()
@@ -64,6 +78,14 @@ public class CommunityController {
     }
 
     @PutMapping("/post/update")
+    @Operation(summary = "게시글을 수정하는 api", description = "UpdatePostDto(제목, 내용, 사진 파일)을 form data 형식을 볻아 게시글 수정", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다"),
+            @ApiResponse(responseCode = "4003", description = "유효하지 않은 사용자입니다"),
+    })
     public BaseResponse<String> updatePost (@Valid UpdatePostDto updatePostDto){
         try{
             Long userId = SecurityUtil.getCurrentUserId()
@@ -77,6 +99,14 @@ public class CommunityController {
     }
 
     @GetMapping("/post/search")
+    @Operation(summary = "게시글 검색결과 api", description = "SearchRequestDto의 keyword가 포함된 음식점 리스트 출력", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다"),
+            @ApiResponse(responseCode = "4004", description = "검색어가 존재하지 않습니다"),
+
+    })
     public BaseResponse<PostListDto> searchPosts(@RequestBody(required = false) SearchRequestDto searchRequestDto) {
         Long userId = SecurityUtil.getCurrentUserId()
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
@@ -92,6 +122,15 @@ public class CommunityController {
     }
 
     @PostMapping("post/addpostlike/{post_id}")
+    @Operation(summary = "게시글 좋아요 api", description = "게시글에 좋아요를 누릅니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다"),
+            @ApiResponse(responseCode = "4005", description = "이미 게시글 좋아요가 되어있습니다")
+
+    })
     public BaseResponse<String> addPostLike(@PathVariable("post_id") Long postId){
         try{
             Long userId = SecurityUtil.getCurrentUserId()
@@ -104,6 +143,15 @@ public class CommunityController {
     }
 
     @PatchMapping("post/removepostlike/{post_id}")
+    @Operation(summary = "게시글 좋아요 해제 api", description = "게시글에 좋아요를 해제합니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다"),
+            @ApiResponse(responseCode = "4006", description = "이미 게시글 좋아요가 해제 되어있습니다")
+
+    })
     public BaseResponse<String> removePostLike(@PathVariable("post_id") Long postId){
         try{
             Long userId = SecurityUtil.getCurrentUserId()
@@ -115,6 +163,15 @@ public class CommunityController {
         }
     }
     @PostMapping("comment/addcommentlike/{comment_id}")
+    @Operation(summary = "댓글 좋아요 api", description = "댓글에 좋아요를 누릅니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4002", description = "댓글이 존재하지 않습니다"),
+            @ApiResponse(responseCode = "4007", description = "이미 댓글 좋아요가 되어있습니다")
+
+    })
     public BaseResponse<String> addCommentLike(@PathVariable("comment_id") Long commentId){
         try{
             Long userId = SecurityUtil.getCurrentUserId()
@@ -127,6 +184,15 @@ public class CommunityController {
     }
 
     @PatchMapping("comment/removecommentlike/{comment_id}")
+    @Operation(summary = "댓글 좋아요 해제 api", description = "댓글에 좋아요를 누릅니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4002", description = "댓글이 존재하지 않습니다"),
+            @ApiResponse(responseCode = "4008", description = "이미 댓글 좋아요가 해제 되어있습니다")
+
+    })
     public BaseResponse<String> removeCommentLike(@PathVariable("comment_id") Long commentId){
         try{
             Long userId = SecurityUtil.getCurrentUserId()
@@ -140,6 +206,15 @@ public class CommunityController {
     }
 
     @PostMapping("post/addpostscrap/{post_id}")
+    @Operation(summary = "게시글 스크랩 api", description = "게시글에 스크랩을 누릅니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다"),
+            @ApiResponse(responseCode = "4010", description = "이미 게시글 스크랩이 되어있습니다")
+
+    })
     public BaseResponse<String> addPostScrap(@PathVariable("post_id") Long postId){
         try{
             Long userId = SecurityUtil.getCurrentUserId()
@@ -151,6 +226,15 @@ public class CommunityController {
         }
     }
     @PatchMapping("post/removepostscrap/{post_id}")
+    @Operation(summary = "게시글 스크랩 해제 api", description = "게시글에 스크랩을 해제합니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다"),
+            @ApiResponse(responseCode = "4011", description = "이미 게시글 스크랩이 해제 되어있습니다")
+
+    })
     public BaseResponse<String> removePostScrap(@PathVariable("post_id") Long postId){
         try{
             Long userId = SecurityUtil.getCurrentUserId()
@@ -163,6 +247,13 @@ public class CommunityController {
         }
     }
     @GetMapping("post/list")
+    @Operation(summary = "게시글 목록보기 api", description = "게시글 목록을 보여줍니다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다")
+    })
     public BaseResponse<PostListDto> getPostsList(){
         try {
             PostListDto postsList = communityService.getPostslist();
