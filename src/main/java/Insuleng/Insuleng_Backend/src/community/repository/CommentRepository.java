@@ -15,4 +15,6 @@ import java.util.Optional;
 public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
 
     Optional<CommentEntity> findCommentEntityByCommentIdAndStatusAndPost(Long parentCommentId, Status status, PostEntity post);
+    Optional<CommentEntity> findCommentEntityByCommentIdAndStatus(Long commentId, Status status);
+
 }

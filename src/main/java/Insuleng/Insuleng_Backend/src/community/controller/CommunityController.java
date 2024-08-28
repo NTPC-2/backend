@@ -309,7 +309,7 @@ public class CommunityController {
             @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
             @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다")
     })
-    public BaseResponse<String> createComment(@PathVariable Long postId, @PathVariable Long parentCommentId, @RequestBody CommentRequestDto commentRequestDto) {
+    public BaseResponse<String> createReplyComment(@PathVariable Long postId, @PathVariable Long parentCommentId, @RequestBody CommentRequestDto commentRequestDto) {
         try {
             Long userId = SecurityUtil.getCurrentUserId()
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
@@ -327,7 +327,7 @@ public class CommunityController {
             @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
             @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
             @ApiResponse(responseCode = "4001", description = "게시글이 존재하지 않습니다"),
-            @ApiResponse(responseCode = "4101", description = "댓글 작성자가 아니여서 글을 수정할 수 없습니다")
+            @ApiResponse(responseCode = "4101", description = "댓글 작성자가 아니여서 글에 대한 권한이 없습니다")
     })
     public BaseResponse<String> updateComment(@PathVariable Long commentId, @RequestBody UpdateCommentDto updateCommentDto){
         try{
@@ -341,6 +341,30 @@ public class CommunityController {
         }
 
 
+    }
+
+    @PatchMapping("comment/delete/{commentId}")
+    @Operation(summary = "댓글 삭제 api", description = "댓글의 status를 INACTIVE로 변경한다", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2005", description = "존재하지 않은 유저입니다"),
+            @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다"),
+            @ApiResponse(responseCode = "4002", description = "댓글이 존재하지 않습니다"),
+            @ApiResponse(responseCode = "4101", description = "댓글 작성자가 아니여서 글에 대한 권한이 없습니다")
+    })
+    public BaseResponse<String> deleteComment(@PathVariable Long commentId){
+
+        try{
+            Long userId = SecurityUtil.getCurrentUserId()
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
+
+            communityService.deleteComment(userId, commentId);
+
+            return new BaseResponse<>("댓글을 삭제했습니다");
+
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 
 

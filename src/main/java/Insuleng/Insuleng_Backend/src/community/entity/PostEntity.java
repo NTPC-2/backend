@@ -44,7 +44,7 @@ public class PostEntity extends BaseEntity {
     public void increaseCountComment(){
         countComment++;
     }
-
+    public void decreaseCountComment() {countComment--;}
 
 
 }

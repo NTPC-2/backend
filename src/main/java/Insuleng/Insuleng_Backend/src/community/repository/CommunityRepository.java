@@ -255,13 +255,19 @@ public class CommunityRepository {
 
         String sql = "SELECT \n" +
                 "    c.comment_id,\n" +
-                "    c.contents,\n" +
+                "    CASE \n" +
+                "        WHEN c.status = 'INACTIVE' THEN '삭제된 메시지입니다'\n" +
+                "        ELSE c.contents\n" +
+                "    END AS contents1,\n" +
                 "    c.count_like,\n" +
                 "    c.created_at,\n" +
                 "    c.group_number,\n" +
                 "    c.comment_level,\n" +
                 "    u.user_id,\n" +
-                "    u.nickname,\n" +
+                "    CASE \n" +
+                "        WHEN c.status = 'INACTIVE' THEN '익명'\n" +
+                "        ELSE u.nickname\n" +
+                "    END AS nickname1,\n" +
                 "    u.profile_img,\n" +
                 "    COALESCE(cl.user_id IS NOT NULL, FALSE) AS is_my_like\n" +
                 "FROM \n" +
@@ -279,11 +285,11 @@ public class CommunityRepository {
 
         // userId와 postId를 파라미터로 전달하여 PreparedStatement에 바인딩
         List<CommentInfoDto> commentInfoDtoList = jdbcTemplate.query(sql, new Object[]{userId, postId}, (rs, rowNum) -> {
-            String contents = rs.getString("c.contents");
+            String contents = rs.getString("contents1");
             Integer countLike = rs.getInt("c.count_like");
             LocalDateTime createdAt = rs.getObject("c.created_at", LocalDateTime.class);
             Long userId2 = rs.getLong("u.user_id");
-            String userNickname = rs.getString("u.nickname");
+            String userNickname = rs.getString("nickname1");
             String userImgUrl = rs.getString("u.profile_img");
             Boolean isMyLike = rs.getBoolean("is_my_like");
             Integer commentLevel = rs.getInt("comment_level");

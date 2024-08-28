@@ -381,6 +381,32 @@ public class CommunityService {
 
     }
 
+    public void deleteComment(Long userId, Long commentId) {
+
+        UserEntity user = userRepository.findUserEntityByUserIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NO_EXIST));
+
+        CommentEntity comment = commentRepository.findCommentEntityByCommentIdAndStatus(commentId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.COMMENT_EMPTY));
+
+        if(comment.getUser().getUserId() != userId ){
+            throw new BaseException(BaseResponseStatus.NO_PRIVILEGE_COMMENT);
+        }
+
+        //유효성 검사 통과 후,
+        //게시글 댓글 수 감소
+        PostEntity post = comment.getPost();
+        post.decreaseCountComment();
+
+        //댓글의 status를 INACTVIE로 변경
+        comment.changeToInActive();
+
+        postRepository.save(post);
+        commentRepository.save(comment);
+
+
+    }
+
 //    @Transactional
 //    public void createComment(Long userId, Long postId, CommentRequestDto commentRequestDto) {
 //        // groupNumber 설정: 새로운 댓글인 경우

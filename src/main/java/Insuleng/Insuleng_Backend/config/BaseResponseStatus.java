@@ -82,7 +82,7 @@ public enum BaseResponseStatus {
     ALREADY_POST_NO_SCRAP(false, 4011, "이미 게시글 스크랩이 해제되어 있습니다"),
     COMMENT_EMPTY_IN_THIS_POST(false, 4012, "이 게시글에는 해당 댓글이 존재하지 않습니다"),
 
-    NO_PRIVILEGE_COMMENT(false, 4101, "댓글 작성자가 아니여서 글을 수정할 수 없습니다");
+    NO_PRIVILEGE_COMMENT(false, 4101, "댓글 작성자가 아니여서 글에 대한 권한이 없습니다");
 
     private final boolean isSuccess;
     private final int code;
