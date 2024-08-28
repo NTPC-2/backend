@@ -244,7 +244,6 @@ public class RestaurantController {
     public BaseResponse<RestaurantDetailsDto> getRestaurantDetails(@PathVariable("restaurant_id")Long restaurantId){
         try {
             Long userId = SecurityUtil.getCurrentUserId().orElse(null);
-
             //로그인이 안 된 사용자 -> 즐겨찾기/좋아요 불가, 리뷰 보기 불가
             /*if(userId == null){
                 return new BaseResponse<>(restaurantService.getRestaurantDetails(restaurantId));

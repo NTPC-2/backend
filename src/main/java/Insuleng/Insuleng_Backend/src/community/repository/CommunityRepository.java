@@ -299,7 +299,7 @@ public class CommunityRepository {
 
         //group number는 최초 댓글일 경우에는 1로, 최초 댓글이 아닐 경우는 group_number의 값들 중 (가장 큰 값 + 1) 로 할당
         String sql = "INSERT INTO comment (group_number, contents, parent_comment_id, comment_level,  count_like, user_id, post_id, status) " +
-                "VALUES (if((select counting from(select count(*) as counting from comment where post_id = ?) c) = 0, 1, ((select num + 1  from (select max(group_number) as num from comment) as A) ) ), ?, 0, 1, 0, ?, ?, 'ACTIVE')";
+                "VALUES (if((select counting from(select count(*) as counting from comment where post_id = ?) c) = 0, 1, ((select num + 1  from (select max(group_number) as num from comment where post_id = ?) as A) ) ), ?, 0, 1, 0, ?, ?, 'ACTIVE')";
 
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -308,9 +308,10 @@ public class CommunityRepository {
                 con -> {
                     PreparedStatement ps = con.prepareStatement(sql, new String[] {"comment_id"});
                     ps.setLong(1, postId);
-                    ps.setString(2, commentRequestDto.getContents());
-                    ps.setLong(3, userId);
-                    ps.setLong(4, postId);
+                    ps.setLong(2, postId);
+                    ps.setString(3, commentRequestDto.getContents());
+                    ps.setLong(4, userId);
+                    ps.setLong(5, postId);
                     return ps;
                 },
                 keyHolder
