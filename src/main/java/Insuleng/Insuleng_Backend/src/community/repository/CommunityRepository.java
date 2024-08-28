@@ -82,10 +82,11 @@ public class CommunityRepository {
 
     }
     public List<PostSummaryDto> searchPosts(Long userId, String keyword) {
-        String sql = "SELECT p.post_id, p.topic, p.contents, p.count_like, p.count_comment, p.count_scrap, p.img_url, u.nickname " +
+        String sql = "SELECT p.post_id, p.topic, p.contents, p.count_like, p.count_comment, p.count_scrap, p.img_url, u.nickname, p.created_at AS createdAt " +
                 "FROM post p " +
                 "JOIN user u ON p.user_id = u.user_id " +
-                "WHERE (p.topic LIKE ? OR p.contents LIKE ?) AND p.status = 'ACTIVE'";
+                "WHERE (p.topic LIKE ? OR p.contents LIKE ?) AND p.status = 'ACTIVE'" +
+                "ORDER BY p.created_at DESC";
 
 
         return jdbcTemplate.query(sql, new Object[]{"%" + keyword + "%", "%" + keyword + "%"}, (rs, rowNum) -> {
@@ -97,10 +98,12 @@ public class CommunityRepository {
             int countScrap = rs.getInt("count_scrap");
             String imgUrl = rs.getString("img_url");
             String authorName = rs.getString("nickname");
+            LocalDateTime createdAt = rs.getObject("createdAt", LocalDateTime.class);
+
 
             String contentsSnippet = getSnippet(contents);
 
-            return new PostSummaryDto(postId, topic, contentsSnippet, countLike, countComment, imgUrl, authorName, countScrap);
+            return new PostSummaryDto(postId, topic, contentsSnippet, countLike, countComment, imgUrl, authorName, countScrap, createdAt);
         });
     }
     private String getSnippet(String content) {
@@ -199,11 +202,12 @@ public class CommunityRepository {
 
     public List<PostSummaryDto> findAllPosts() {
         String sql = "SELECT p.post_id AS postId, p.topic, p.contents AS contentsSnippet, " +
-                "p.count_like AS countLike, p.count_comment AS countComment, p.img_url AS imgUrl, " +
+                "p.count_like AS countLike, p.count_comment AS countComment, p.img_url AS imgUrl, p.created_at AS createdAt," +
                 "u.nickname AS authorName, p.count_scrap AS countScrap " +
                 "FROM post p " +
                 "JOIN user u ON p.user_id = u.user_id " +
-                "WHERE p.status = 'ACTIVE'";
+                "WHERE p.status = 'ACTIVE'" +
+                "ORDER BY p.created_at DESC";
 
         List<PostSummaryDto> postSummaryList = jdbcTemplate.query(sql, (rs, rowNum) -> {
             Long postId = rs.getLong("postId");
@@ -214,8 +218,9 @@ public class CommunityRepository {
             String imgUrl = rs.getString("imgUrl");
             String authorName = rs.getString("authorName");
             int countScrap = rs.getInt("countScrap");
+            LocalDateTime createdAt = rs.getObject("createdAt", LocalDateTime.class);
 
-            return new PostSummaryDto(postId, topic, contentsSnippet, countLike, countComment, imgUrl, authorName, countScrap);
+            return new PostSummaryDto(postId, topic, contentsSnippet, countLike, countComment, imgUrl, authorName, countScrap, createdAt);
         });
 
         return postSummaryList;
