@@ -49,12 +49,17 @@ public class CommunityService {
             //게시글 작성
             String imgUrl;
 
-            if(postDto.getImgUrl().isEmpty() || Objects.isNull(postDto.getImgUrl().getOriginalFilename()) || postDto.getImgUrl() == null){
+            try{
+                if(postDto.getImgUrl().isEmpty() || Objects.isNull(postDto.getImgUrl().getOriginalFilename()) || postDto.getImgUrl() == null){
+                    imgUrl = null;
+                }
+                else{
+                    imgUrl = s3Uploader.upload(postDto.getImgUrl());
+                }
+            }catch (NullPointerException e){
                 imgUrl = null;
             }
-            else{
-                imgUrl = s3Uploader.upload(postDto.getImgUrl());
-            }
+
 
             communityRepository.createPost(userId, postDto, imgUrl);
         }

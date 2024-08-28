@@ -26,5 +26,5 @@ public class PostDto {
     private String contents;
 
     @Schema(description = "이미지 파일", nullable = true)
-    private MultipartFile imgUrl;
+    private MultipartFile imgUrl = null;
 }

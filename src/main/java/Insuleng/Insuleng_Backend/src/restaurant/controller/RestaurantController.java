@@ -13,7 +13,9 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -253,6 +255,25 @@ public class RestaurantController {
         }
 
     }
+
+    @PatchMapping(value = "/restaurant/write/img/{restaurant_id}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Operation(summary = "음식점 이미지 추가 api", description = "ROLE_ADMIN 권한을 갖는 사용자만 해당 기능을 사용할 수 있음", responses = {
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "400", description = "파라미터 오류"),
+            @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다")
+    })
+    public BaseResponse<String> writeRestaurantImg(@PathVariable("restaurant_id") Long restaurantId, @RequestPart MultipartFile file){
+        try{
+            restaurantService.writeRestaurantImg(restaurantId, file);
+
+            return new BaseResponse<>("레스토랑 이미지 수정완료");
+
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
 
 
 }

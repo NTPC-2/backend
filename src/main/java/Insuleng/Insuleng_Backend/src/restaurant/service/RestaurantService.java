@@ -6,6 +6,7 @@ import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.restaurant.dto.*;
 import Insuleng.Insuleng_Backend.src.restaurant.entity.*;
 import Insuleng.Insuleng_Backend.src.restaurant.repository.*;
+import Insuleng.Insuleng_Backend.src.storage.S3Uploader;
 import Insuleng.Insuleng_Backend.src.user.dto.MyReviewDto;
 import Insuleng.Insuleng_Backend.src.user.entity.UserEntity;
 import Insuleng.Insuleng_Backend.src.user.repository.UserRepository;
@@ -13,11 +14,9 @@ import Insuleng.Insuleng_Backend.utils.TimeUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +28,7 @@ public class RestaurantService {
     private final ReviewImgRepository reviewImgRepository;
     private final BookmarkRepository bookmarkRepository;
     private final MenuRepository menuRepository;
+    private final S3Uploader s3Uploader;
 
     /*public RestaurantListDto getRestaurantList(Long categoryId) {
         if(categoryId >7 || categoryId <0){
@@ -444,5 +444,24 @@ public class RestaurantService {
             restaurantDetailsDto.setReviewDetailsDtoList(reviewDetailsDtoList);
         }
         return restaurantDetailsDto;
+    }
+
+    public void writeRestaurantImg(Long restaurantId, MultipartFile file) {
+
+        RestaurantEntity restaurant = restaurantRepository.findRestaurantEntityByRestaurantIdAndStatus(restaurantId, Status.ACTIVE)
+                .orElseThrow(()->new BaseException(BaseResponseStatus.RESTAURANT_NO_EXIST));
+
+        String mainImg;
+
+        if(file.isEmpty() || Objects.isNull(file.getOriginalFilename()) || file == null){
+            mainImg = null;
+        }
+        else{
+            mainImg = s3Uploader.upload(file);
+        }
+
+        restaurant.updateMainImg(mainImg);
+        restaurantRepository.save(restaurant);
+
     }
 }

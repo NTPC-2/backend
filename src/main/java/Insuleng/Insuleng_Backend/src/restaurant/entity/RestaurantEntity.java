@@ -104,4 +104,8 @@ public class RestaurantEntity extends BaseEntity {
 
     }
 
+    public void updateMainImg(String mainImg){
+        this.mainImg = mainImg;
+    }
+
 }
