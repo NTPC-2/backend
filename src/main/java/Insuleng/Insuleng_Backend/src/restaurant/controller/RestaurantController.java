@@ -138,9 +138,11 @@ public class RestaurantController {
     })
     public BaseResponse<String> writeReview(@PathVariable("restaurant_id") Long restaurantId, @RequestBody @Valid WriteReviewDto writeReviewDto){
         try{
-            Long userId = SecurityUtil.getCurrentUserId()
+           /* Long userId = SecurityUtil.getCurrentUserId()
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
-            restaurantService.writeReview(userId, restaurantId, writeReviewDto);
+            restaurantService.writeReview(userId, restaurantId, writeReviewDto);*/
+
+            restaurantService.writeReview(4L, restaurantId, writeReviewDto);
 
             return new BaseResponse<>("리뷰를 작성했습니다");
         }catch (BaseException e){
@@ -244,8 +246,11 @@ public class RestaurantController {
             Long userId = SecurityUtil.getCurrentUserId().orElse(null);
 
             //로그인이 안 된 사용자 -> 즐겨찾기/좋아요 불가, 리뷰 보기 불가
-            if(userId == null){
+            /*if(userId == null){
                 return new BaseResponse<>(restaurantService.getRestaurantDetails(restaurantId));
+            }*/
+            if(userId == null){
+                return new BaseResponse<>(restaurantService.getRestaurantDetails(4L, restaurantId));
             }
 
             //로그인된 사용자 -> 즐겨찾기/좋아요 가능, 리뷰 시청 가능
