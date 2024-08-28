@@ -287,8 +287,9 @@ public class CommunityRepository {
             String userImgUrl = rs.getString("u.profile_img");
             Boolean isMyLike = rs.getBoolean("is_my_like");
             Integer commentLevel = rs.getInt("comment_level");
+            Integer groupNumber = rs.getInt("group_number");
 
-            return new CommentInfoDto(userId2, userNickname, userImgUrl, contents, countLike, isMyLike, createdAt, commentLevel);
+            return new CommentInfoDto(userId2, userNickname, userImgUrl, contents, countLike, isMyLike, createdAt, commentLevel, groupNumber);
         });
 
         return commentInfoDtoList;

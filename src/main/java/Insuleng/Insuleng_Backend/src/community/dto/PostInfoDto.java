@@ -29,6 +29,8 @@ public class PostInfoDto {
     private Boolean isMyLike;
     private Boolean isMyScrap;
 
+
+
     public PostInfoDto(Long postId, String authorName, LocalDateTime localDateTime, String userImgUrl, String topic, String contents, int countLike, int countComment,
                        int countScrap, String postImgUrl, Boolean isMyLike, Boolean isMyScrap){
         this.postId = postId;
@@ -43,7 +45,6 @@ public class PostInfoDto {
         this.postImgUrl = postImgUrl;
         this.isMyLike = isMyLike;
         this.isMyScrap = isMyScrap;
-
     }
 
 }
