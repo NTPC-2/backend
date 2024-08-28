@@ -297,7 +297,7 @@ public class RestaurantService {
             throw new BaseException(BaseResponseStatus.NO_PRIVILEGE);
         }
 
-        ReviewFormDto reviewFormDto = new ReviewFormDto(review.getContents(), review.getStar());
+        ReviewFormDto reviewFormDto = new ReviewFormDto(reviewId, review.getContents(), review.getStar());
         List<ReviewImgEntity> reviewImgEntityList = reviewImgRepository.findReviewImgEntitiesByReviewEntityAndStatus(review, Status.ACTIVE);
         List<String> imgUrlList = null;
         if(reviewImgEntityList != null){
