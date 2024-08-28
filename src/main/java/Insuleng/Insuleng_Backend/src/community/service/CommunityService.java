@@ -5,7 +5,9 @@ import Insuleng.Insuleng_Backend.config.BaseResponse;
 import Insuleng.Insuleng_Backend.config.BaseResponseStatus;
 import Insuleng.Insuleng_Backend.config.Status;
 import Insuleng.Insuleng_Backend.src.community.dto.*;
+import Insuleng.Insuleng_Backend.src.community.entity.CommentEntity;
 import Insuleng.Insuleng_Backend.src.community.entity.PostEntity;
+import Insuleng.Insuleng_Backend.src.community.repository.CommentRepository;
 import Insuleng.Insuleng_Backend.src.community.repository.CommunityRepository;
 import Insuleng.Insuleng_Backend.src.community.repository.PostRepository;
 import Insuleng.Insuleng_Backend.src.storage.S3Uploader;
@@ -30,13 +32,15 @@ public class CommunityService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final S3Uploader s3Uploader;
+    private final CommentRepository commentRepository;
 
-    public CommunityService(CommunityRepository communityRepository, UserRepository userRepository, PostRepository postRepository, S3Uploader s3Uploader) {
+    public CommunityService(CommunityRepository communityRepository, UserRepository userRepository, PostRepository postRepository, S3Uploader s3Uploader, CommentRepository commentRepository) {
 
         this.communityRepository = communityRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.s3Uploader = s3Uploader;
+        this.commentRepository = commentRepository;
     }
 
     public void createPost(Long userId, PostDto postDto) {
@@ -348,15 +352,14 @@ public class CommunityService {
     @Transactional
     public void createReplyComment(Long userId, Long postId, Long parentCommentId, CommentRequestDto commentRequestDto) {
 
-        String postStatus = communityRepository.checkPostStatus(postId);
+        PostEntity postEntity = postRepository.findPostEntityByPostIdAndStatus(postId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_EMPTY));
 
-        if(postStatus.equals("ACTIVE")){
-            communityRepository.createReplyComment(userId, postId, parentCommentId, commentRequestDto);
-            communityRepository.increaseCountComment(postId);
-        }else{
-            throw new BaseException(BaseResponseStatus.POST_EMPTY);
-        }
+        CommentEntity commentEntity = commentRepository.findCommentEntityByCommentIdAndStatusAndPost(parentCommentId, Status.ACTIVE, postEntity)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.COMMENT_EMPTY_IN_THIS_POST));
 
+        communityRepository.createReplyComment(userId, postId, parentCommentId, commentRequestDto);
+        communityRepository.increaseCountComment(postId);
 
     }
 
