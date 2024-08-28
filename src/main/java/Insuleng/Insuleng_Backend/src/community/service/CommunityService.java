@@ -109,11 +109,15 @@ public class CommunityService {
 
         String imgUrl;
 
-        if(updatePostDto.getImgUrl().isEmpty() || Objects.isNull(updatePostDto.getImgUrl().getOriginalFilename()) || updatePostDto.getImgUrl() == null){
+        try{
+            if(updatePostDto.getImgUrl().isEmpty() || Objects.isNull(updatePostDto.getImgUrl().getOriginalFilename()) || updatePostDto.getImgUrl() == null){
+                imgUrl = null;
+            }
+            else{
+                imgUrl = s3Uploader.upload(updatePostDto.getImgUrl());
+            }
+        }catch (NullPointerException e){
             imgUrl = null;
-        }
-        else{
-            imgUrl = s3Uploader.upload(updatePostDto.getImgUrl());
         }
 
         communityRepository.updatePost(userId,  updatePostDto, imgUrl);
