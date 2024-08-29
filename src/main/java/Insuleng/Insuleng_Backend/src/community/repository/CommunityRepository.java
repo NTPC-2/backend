@@ -82,10 +82,15 @@ public class CommunityRepository {
 
     }
     public List<PostSummaryDto> searchPosts(Long userId, String keyword) {
-        String sql = "SELECT p.post_id, p.topic, p.contents, p.count_like, p.count_comment, p.count_scrap, p.img_url, u.nickname, p.created_at AS createdAt " +
+        String sql = "SELECT p.post_id, p.topic, p.contents, p.count_like, p.count_comment, p.count_scrap, p.img_url, " +
+                "CASE " +
+                "    WHEN u.status = 'INACTIVE' THEN '삭제된 유저' " +
+                "    ELSE u.nickname " +
+                "END AS nickname1, " +
+                "p.created_at AS createdAt " +
                 "FROM post p " +
                 "JOIN user u ON p.user_id = u.user_id " +
-                "WHERE (p.topic LIKE ? OR p.contents LIKE ?) AND p.status = 'ACTIVE'" +
+                "WHERE (p.topic LIKE ? OR p.contents LIKE ?) AND p.status = 'ACTIVE' " +
                 "ORDER BY p.created_at DESC";
 
 
@@ -97,7 +102,7 @@ public class CommunityRepository {
             int countComment = rs.getInt("count_comment");
             int countScrap = rs.getInt("count_scrap");
             String imgUrl = rs.getString("img_url");
-            String authorName = rs.getString("nickname");
+            String authorName = rs.getString("nickname1");
             LocalDateTime createdAt = rs.getObject("createdAt", LocalDateTime.class);
 
 
@@ -202,12 +207,17 @@ public class CommunityRepository {
 
     public List<PostSummaryDto> findAllPosts() {
         String sql = "SELECT p.post_id AS postId, p.topic, p.contents AS contentsSnippet, " +
-                "p.count_like AS countLike, p.count_comment AS countComment, p.img_url AS imgUrl, p.created_at AS createdAt," +
-                "u.nickname AS authorName, p.count_scrap AS countScrap " +
+                "p.count_like AS countLike, p.count_comment AS countComment, p.img_url AS imgUrl, p.created_at AS createdAt, " +
+                "CASE " +
+                "    WHEN u.status = 'INACTIVE' THEN '삭제된 유저' " +
+                "    ELSE u.nickname " +
+                "END AS authorName, " +
+                "p.count_scrap AS countScrap " +
                 "FROM post p " +
                 "JOIN user u ON p.user_id = u.user_id " +
-                "WHERE p.status = 'ACTIVE'" +
+                "WHERE p.status = 'ACTIVE' " +
                 "ORDER BY p.created_at DESC";
+
 
         List<PostSummaryDto> postSummaryList = jdbcTemplate.query(sql, (rs, rowNum) -> {
             Long postId = rs.getLong("postId");
@@ -229,7 +239,11 @@ public class CommunityRepository {
     public PostInfoDto getPostInfo(Long userId, Long postId) {
         String sql = "SELECT p.post_id, p.topic, p.contents, p.count_like, " +
                 "p.count_comment, p.count_scrap, p.img_url, " +
-                "u.nickname, p.created_at, u.profile_img, " +
+                "CASE " +
+                "    WHEN u.status = 'INACTIVE' THEN '익명' " +
+                "    ELSE u.nickname " +
+                "END AS nickname, " +
+                "p.created_at, u.profile_img, " +
                 "COALESCE(pl.user_id IS NOT NULL, FALSE) AS is_my_like, " +
                 "COALESCE(pc.user_id IS NOT NULL, FALSE) AS is_my_scrap " +
                 "FROM post p " +
@@ -237,6 +251,7 @@ public class CommunityRepository {
                 "LEFT JOIN post_like pl ON p.post_id = pl.post_id AND pl.user_id = ? AND pl.status = 'ACTIVE' " +
                 "LEFT JOIN scrap pc ON p.post_id = pc.post_id AND pc.user_id = ? AND pc.status = 'ACTIVE' " +
                 "WHERE p.post_id = ? AND p.status = 'ACTIVE'";
+
 
         return jdbcTemplate.queryForObject(sql, new Object[]{userId, userId, postId}, (rs, rowNum) -> {
             Long postIdResult = rs.getLong("p.post_id");
@@ -271,6 +286,7 @@ public class CommunityRepository {
                 "    u.user_id,\n" +
                 "    CASE \n" +
                 "        WHEN c.status = 'INACTIVE' THEN '익명'\n" +
+                "        WHEN u.status = 'INACTIVE' THEN '삭제된 유저'\n" +
                 "        ELSE u.nickname\n" +
                 "    END AS nickname1,\n" +
                 "    u.profile_img,\n" +
