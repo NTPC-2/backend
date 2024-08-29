@@ -128,7 +128,7 @@ public class RestaurantController {
     }
 
 
-    @PostMapping("restaurant/{restaurant_id}/review")
+    @PostMapping(value = "restaurant/{restaurant_id}/review", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "리뷰 작성 api", description = "해당 음식점의 리뷰를 작성합니다", responses = {
             @ApiResponse(responseCode = "200", description = "성공"),
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
@@ -136,7 +136,7 @@ public class RestaurantController {
             @ApiResponse(responseCode = "2006", description = "존재하지 않는 음식점입니다"),
             @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다")
     })
-    public BaseResponse<String> writeReview(@PathVariable("restaurant_id") Long restaurantId, @RequestBody @Valid WriteReviewDto writeReviewDto){
+    public BaseResponse<String> writeReview(@PathVariable("restaurant_id") Long restaurantId, @Valid WriteReviewDto writeReviewDto){
         try{
            /* Long userId = SecurityUtil.getCurrentUserId()
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));
@@ -177,7 +177,7 @@ public class RestaurantController {
     //JPA의 영속성 컨텍스트, 엔티티 매니저, 1차 캐시 시점, 트랜잭션 커밋 시점 좀 더 공부하기 + 더티 체킹, 벌크연산
     //실제로 review가 수정되는 api
     @Transactional
-    @PutMapping("restaurant/review/{review_id}")
+    @PutMapping(value = "restaurant/review/{review_id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "리뷰를 실제로 수정하는 api", description = "updateReviewDto 내용으로 리뷰를  수정합니다", responses = {
             @ApiResponse(responseCode = "200", description = "성공"),
             @ApiResponse(responseCode = "400", description = "파라미터 오류"),
@@ -186,7 +186,7 @@ public class RestaurantController {
             @ApiResponse(responseCode = "2100", description = "해당 글에 대한 권한이 없습니다"),
             @ApiResponse(responseCode = "2360", description = "로그인이 필요한 서비스입니다")
     })
-    public BaseResponse<String> updateReview(@PathVariable("review_id") Long reviewId, @RequestBody @Valid UpdateReviewDto updateReviewDto){
+    public BaseResponse<String> updateReview(@PathVariable("review_id") Long reviewId, @Valid UpdateReviewDto updateReviewDto){
         try{
             Long userId = SecurityUtil.getCurrentUserId()
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.REQUIRED_LOGIN));

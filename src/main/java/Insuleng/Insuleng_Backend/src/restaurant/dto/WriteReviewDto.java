@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class WriteReviewDto {
     private String contents;
 
     @Schema(description = "이미지", nullable = true, example = "Amigo.jpg")
-    List<String> reviewImg;
+    private MultipartFile file;
 
 
 }

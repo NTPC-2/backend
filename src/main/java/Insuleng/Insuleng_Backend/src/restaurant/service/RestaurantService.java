@@ -231,15 +231,23 @@ public class RestaurantService {
         //review table에 작성한 리뷰 저장
         reviewRepository.save(reviewEntity);
 
-        //리뷰 작성시 이미지를 첨부했으면 각 이미지가 review_img table에 저장
-        if(writeReviewDto.getReviewImg() != null){
-            for(int i =0; i<writeReviewDto.getReviewImg().size(); i++){
-                String imgUrl = writeReviewDto.getReviewImg().get(i);
+        String imgUrl;
 
-                ReviewImgEntity reviewImgEntity = new ReviewImgEntity(imgUrl, reviewEntity);
-                reviewImgRepository.save(reviewImgEntity);
+        try{
+            if(writeReviewDto.getFile().isEmpty() || Objects.isNull(writeReviewDto.getFile().getOriginalFilename()) || writeReviewDto.getFile() == null){
+                imgUrl = null;
             }
+            else{
+                imgUrl = s3Uploader.upload(writeReviewDto.getFile());
+            }
+        }catch (NullPointerException e){
+            imgUrl = null;
         }
+
+
+        //리뷰 작성시 이미지를 첨부했으면 이미지가 review_img table에 저장
+        ReviewImgEntity reviewImgEntity = new ReviewImgEntity(imgUrl, reviewEntity);
+        reviewImgRepository.save(reviewImgEntity);
 
         //'전체 평점/평점 개수'와 리뷰 개수를 restaurant table에 업데이트
         restaurant.writeReview(writeReviewDto.getStar());
@@ -267,14 +275,21 @@ public class RestaurantService {
 
         reviewImgRepository.updateStatusOfRestaurantImgEntities(Status.INACTIVE, review);
 
-        if(updateReviewDto.getReviewImg() != null){
-            for(int i =0; i<updateReviewDto.getReviewImg().size(); i++){
-                String imgUrl = updateReviewDto.getReviewImg().get(i);
+        String imgUrl;
 
-                ReviewImgEntity reviewImgEntity = new ReviewImgEntity(imgUrl, review);
-                reviewImgRepository.save(reviewImgEntity);
+        try{
+            if(updateReviewDto.getFile().isEmpty() || Objects.isNull(updateReviewDto.getFile().getOriginalFilename()) || updateReviewDto.getFile() == null){
+                imgUrl = null;
             }
+            else{
+                imgUrl = s3Uploader.upload(updateReviewDto.getFile());
+            }
+        }catch (NullPointerException e){
+            imgUrl = null;
         }
+
+        ReviewImgEntity reviewImgEntity = new ReviewImgEntity(imgUrl, review);
+        reviewImgRepository.save(reviewImgEntity);
 
         review.updateReview(updateReviewDto.getContents(), updateReviewDto.getStar());
         reviewRepository.save(review);
@@ -298,7 +313,9 @@ public class RestaurantService {
         }
 
         ReviewFormDto reviewFormDto = new ReviewFormDto(reviewId, review.getContents(), review.getStar());
-        List<ReviewImgEntity> reviewImgEntityList = reviewImgRepository.findReviewImgEntitiesByReviewEntityAndStatus(review, Status.ACTIVE);
+
+        List<ReviewImgEntity> reviewImgEntityList = null;
+        reviewImgEntityList = reviewImgRepository.findReviewImgEntitiesByReviewEntityAndStatus(review, Status.ACTIVE);
         List<String> imgUrlList = null;
         if(reviewImgEntityList != null){
             imgUrlList = new ArrayList<>();
